@@ -2,10 +2,10 @@ import { expect, test } from "@playwright/test";
 
 const routes = [
   { path: "/", heading: "Same answer." },
-  { path: "/demo", heading: "See the shape of a reasoning journey" },
+  { path: "/demo", heading: "Same answer. Different reasoning journey." },
   {
     path: "/demo/session/example-session",
-    heading: "The misconception interview will live here.",
+    heading: "If advertising cost becomes 5",
   },
   { path: "/report/example-session", heading: "Evidence, not just a score." },
   { path: "/technology", heading: "Adaptation proposed by AI." },
@@ -146,4 +146,90 @@ test("health API returns a success envelope", async ({ request }) => {
     data: { status: "ok" },
     error: null,
   });
+});
+
+test("guided comparison shows different learner paths", async ({ page }) => {
+  await page.goto("/demo");
+  await page.getByRole("link", { name: "Start the guided comparison" }).click();
+
+  await page.getByRole("button", { name: "Load learner response" }).click();
+  await page.getByRole("button", { name: "Submit initial reasoning" }).click();
+  await page.getByText("Demo controls").click();
+  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
+  await expect(page.getByText("Direction without rate").first()).toBeVisible();
+  await expect(
+    page.getByText("When advertising increases from 1 to 2").first(),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Load guided response" }).click();
+  await page.getByRole("button", { name: "Submit verification" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
+  await page
+    .getByRole("button", { name: "Show smallest useful intervention" })
+    .click();
+  await expect(page.getByText("Consecutive differences")).toBeVisible();
+
+  await page.getByRole("button", { name: "Restart" }).first().click();
+  await page.getByRole("tab", { name: "Learner B" }).click();
+  await page.getByRole("button", { name: "Load learner response" }).click();
+  await page.getByRole("button", { name: "Submit initial reasoning" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
+  await expect(page.getByText("Starting offset ignored").first()).toBeVisible();
+  await expect(
+    page.getByText("If sales were exactly double").first(),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Load guided response" }).click();
+  await page.getByRole("button", { name: "Submit verification" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
+  await page
+    .getByRole("button", { name: "Show smallest useful intervention" })
+    .click();
+  await expect(page.getByText("Check the multiplication claim")).toBeVisible();
+});
+
+test("can complete retry, transfer, and open report", async ({ page }) => {
+  await page.goto("/demo/session/demo-session?mode=compare");
+  await page.getByRole("button", { name: "Load learner response" }).click();
+  await page.getByRole("button", { name: "Submit initial reasoning" }).click();
+  await page.getByText("Demo controls").click();
+
+  for (let index = 0; index < 2; index += 1) {
+    await page.getByRole("button", { name: "Next" }).click();
+  }
+
+  await page.getByRole("button", { name: "Load guided response" }).click();
+  await page.getByRole("button", { name: "Submit verification" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
+  await page
+    .getByRole("button", { name: "Show smallest useful intervention" })
+    .click();
+  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "Load revised response" }).click();
+  await page.getByRole("button", { name: "Submit retry" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "Next" }).click();
+  await page.getByRole("button", { name: "Load transfer response" }).click();
+  await page.getByRole("button", { name: "Submit transfer" }).click();
+  await page.getByRole("link", { name: "Open Reasoning Delta report" }).click();
+
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "Evidence, not just a score.",
+  );
+});
+
+test("workspace has no mobile horizontal overflow with reduced motion", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/demo/session/demo-session?mode=compare");
+
+  const hasOverflow = await page.evaluate(
+    () =>
+      document.documentElement.scrollWidth >
+      document.documentElement.clientWidth,
+  );
+  expect(hasOverflow).toBe(false);
+  await expect(page.getByText("Stage: Problem")).toBeVisible();
 });

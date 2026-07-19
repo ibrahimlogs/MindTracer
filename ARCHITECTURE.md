@@ -4,7 +4,7 @@ MindTrace is organized around a staged reasoning lifecycle while keeping model c
 
 ## Application layer
 
-`src/app` uses the Next.js App Router. Public product positioning lives at `/`, `/demo`, and `/technology`. Session and report placeholders remain at `/demo/session/[sessionId]` and `/report/[sessionId]`. Route loading states, a recoverable error boundary, and the `/api/health` response envelope remain intact.
+`src/app` uses the Next.js App Router. Public product positioning lives at `/`, `/demo`, and `/technology`. The static Learning Workspace lives at `/demo/session/[sessionId]`, and the mocked Reasoning Delta report lives at `/report/[sessionId]`. Route loading states, a recoverable error boundary, and the `/api/health` response envelope remain intact.
 
 The landing and positioning pages are server components by default. Client components are limited to behavior that requires them: the animated headline, reasoning-delta explanation, and optional 3D enhancement. Mobile navigation uses a native disclosure and does not require hydration.
 
@@ -29,7 +29,7 @@ The canvas uses lightweight spheres and lines, constrained device-pixel ratio, l
 
 Static, reviewed fixtures remain separated into concepts, problems, misconceptions, and evaluation data. Domain services are planned under `src/lib/misconception`, `intervention`, and `analytics`. Prisma is configured for PostgreSQL, but no product models exist yet.
 
-Step 3 will build a deterministic static learning workspace and mocked reasoning journey before persistence or model behavior is introduced.
+Step 3 adds deterministic demo fixtures under `src/data/demo` before persistence or model behavior is introduced. Learner A and Learner B share the same wrong answer while following different mocked reasoning paths, verification questions, interventions, and Reasoning Delta reports.
 
 ## AI boundary
 
@@ -37,10 +37,10 @@ Step 3 will build a deterministic static learning workspace and mocked reasoning
 
 ## State and validation
 
-Zustand is reserved for ephemeral interaction state. Durable session state will eventually belong in PostgreSQL. React Hook Form will coordinate forms with shared Zod schemas. Environment variables and future request payloads are validated at their boundary.
+Zustand manages the mocked learning-session state machine for Step 3. Durable session state will eventually belong in PostgreSQL. React Hook Form coordinates workspace forms with shared Zod schemas. Environment variables and future request payloads are validated at their boundary.
 
 ## Operational foundation
 
 API handlers use consistent success/error envelopes. The logger emits structured records behind a replaceable interface. Vitest covers isolated logic and fallback meaning. Playwright uses the production server with bounded worker concurrency to verify routes, navigation, responsive layout, fallbacks, and hydration behavior.
 
-Error reporting transport, analytics transport, rate limiting, production telemetry, the learning workflow, and evaluation logic are planned but not implemented.
+Error reporting transport, analytics transport, rate limiting, production telemetry, durable learning sessions, live misconception logic, and real evaluation logic are planned but not implemented.
