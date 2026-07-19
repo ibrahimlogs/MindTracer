@@ -2,22 +2,26 @@
 
 > Same answer. Different minds.
 
-MindTrace Reasoning Lab is an AI learning product designed to identify why learners can arrive at the same wrong answer for different reasons. The planned system will form misconception hypotheses, verify them with targeted questions, give the smallest useful intervention, and test independent transfer. This repository currently contains the verified technical foundation, not the diagnostic product workflow.
+MindTrace Reasoning Lab is an AI learning product designed to distinguish the different reasoning patterns that can produce the same wrong answer. The planned system will form misconception hypotheses, verify them with targeted questions, provide the smallest useful intervention, and test independent transfer.
+
+The repository currently contains a verified technical foundation and the premium visual product phase. The public site explains the product thesis honestly; it does not implement the diagnostic learning workflow.
 
 ## Tech stack
 
 - Next.js App Router, React, and strict TypeScript
-- Tailwind CSS and shadcn/ui foundations
-- Framer Motion, Zustand, React Hook Form, and Zod
+- Tailwind CSS v4 and shadcn/ui foundations
+- Framer Motion and a semantic reduced-motion system
+- React Three Fiber, Drei, and Three.js for the optional hero enhancement
+- Zustand, React Hook Form, and Zod
 - Prisma with a PostgreSQL-compatible datasource
-- OpenAI SDK placeholder (server-only and lazily initialized)
+- Server-only, lazy OpenAI SDK placeholder
 - Lucide icons
 - Vitest, Testing Library, and Playwright
 - ESLint and Prettier
 
 ## Installation
 
-Requirements: Node.js 20.9 or newer and a PostgreSQL-compatible database.
+Requirements: Node.js 20.9 or newer. PostgreSQL is required only when future database-backed functionality is introduced; public pages do not connect to a database.
 
 ```bash
 corepack enable
@@ -29,7 +33,7 @@ If Corepack cannot create a global shim, prefix commands with `corepack`, for ex
 
 ## Environment setup
 
-Copy `.env.example` to `.env.local` and provide server credentials:
+Copy `.env.example` to `.env.local` when working on server integrations:
 
 ```dotenv
 DATABASE_URL=postgresql://user:password@localhost:5432/mindtrace
@@ -38,7 +42,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 DEMO_MODE=true
 ```
 
-Server variables are validated lazily with Zod when a database or AI client is requested. This allows static pages and CI checks to run without credentials while preventing an integration from running with malformed configuration. `OPENAI_API_KEY` is never exposed through a `NEXT_PUBLIC_` variable.
+Server variables are validated lazily when the database or AI client is requested. The landing, demo teaser, technology page, tests, and production build work without secrets. `OPENAI_API_KEY` is never exposed through a `NEXT_PUBLIC_` variable.
 
 ## Development commands
 
@@ -46,12 +50,12 @@ Server variables are validated lazily with Zod when a database or AI client is r
 pnpm dev                 # start the development server
 pnpm build               # create a production build
 pnpm start               # serve the production build
-pnpm lint                # lint all source and configuration files
+pnpm lint                # lint source and configuration files
 pnpm typecheck           # run strict TypeScript checks
 pnpm format              # format the repository
 pnpm format:check        # verify formatting
-pnpm prisma:migrate      # create/apply a development migration
-pnpm prisma:studio       # inspect the configured database
+pnpm prisma:migrate      # create/apply a future development migration
+pnpm prisma:studio       # inspect a configured database
 ```
 
 ## Test commands
@@ -60,7 +64,14 @@ pnpm prisma:studio       # inspect the configured database
 pnpm test                # run unit tests once
 pnpm test:watch          # run unit tests in watch mode
 pnpm test:e2e:install    # install Chromium once
-pnpm test:e2e            # run browser route checks
+pnpm build               # required before the production E2E server
+pnpm test:e2e            # run browser, accessibility, fallback, and route checks
 ```
 
-No authentication, payment, production database models, or AI reasoning workflow is implemented in this foundation.
+The Playwright suite verifies critical routes, landing sections, CTA targets, anchor navigation, native mobile navigation, reduced-motion and WebGL fallbacks, hydration warnings, and common mobile/tablet overflow.
+
+## Current scope
+
+Implemented: technical foundation, design system, public landing page, optional reasoning visualization, technology positioning, and demo teaser.
+
+Not implemented: authentication, payments, product database models, session lifecycle, misconception logic, AI generation, or a learning workspace.

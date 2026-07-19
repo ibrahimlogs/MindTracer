@@ -1,45 +1,61 @@
-"use client";
-
-import { motion } from "framer-motion";
-import { ArrowRight, ScanSearch } from "lucide-react";
+import { ArrowDownRight, ArrowRight, ScanSearch } from "lucide-react";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
+import { SectionContainer } from "@/components/layout/primitives";
+import { PrimaryButton, SecondaryButton } from "@/components/ui/actions";
+import { AnimatedHeadline } from "@/components/ui/animated-headline";
+import { Eyebrow } from "@/components/ui/eyebrow";
+import { ReasoningNetwork } from "@/components/visualization/reasoning-network";
 
 export function Hero() {
   return (
-    <main className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl items-center px-6 py-24">
-      <motion.div
-        initial={{ opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-        className="max-w-4xl"
-      >
-        <div className="mb-8 flex items-center gap-2 font-mono text-xs tracking-[0.18em] text-reasoning uppercase">
-          <ScanSearch className="size-4" aria-hidden="true" />
-          Diagnostic reasoning environment
+    <section
+      className="border-b border-border/70 py-16 sm:py-20 lg:py-24"
+      aria-labelledby="hero-title"
+    >
+      <SectionContainer>
+        <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,0.92fr)_minmax(34rem,1.08fr)] lg:gap-10 xl:gap-16">
+          <div>
+            <Eyebrow
+              marker={<ScanSearch className="size-3.5" aria-hidden="true" />}
+            >
+              AI for human reasoning
+            </Eyebrow>
+            <div id="hero-title" className="mt-7">
+              <AnimatedHeadline />
+            </div>
+            <p className="mt-7 max-w-[42.5rem] text-lg leading-8 text-text-secondary">
+              MindTrace discovers why a learner is struggling, verifies what
+              they need, provides the smallest useful intervention, and measures
+              whether their reasoning becomes independent.
+            </p>
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+              <PrimaryButton asChild size="lg">
+                <Link href="/demo">
+                  Experience the reasoning demo
+                  <ArrowRight className="size-4" aria-hidden="true" />
+                </Link>
+              </PrimaryButton>
+              <SecondaryButton asChild size="lg">
+                <Link href="#how-it-works">
+                  See how it works
+                  <ArrowDownRight className="size-4" aria-hidden="true" />
+                </Link>
+              </SecondaryButton>
+            </div>
+            <div className="mt-10 flex items-start gap-3 border-l border-reasoning/40 pl-4">
+              <p className="font-mono text-xs leading-5 text-text-muted">
+                Answers are becoming abundant.
+                <span className="block text-text-primary">
+                  Independent reasoning is not.
+                </span>
+              </p>
+            </div>
+          </div>
+
+          <ReasoningNetwork />
         </div>
-        <h1 className="max-w-3xl text-5xl leading-[1.02] font-semibold tracking-[-0.045em] sm:text-7xl">
-          Same answer.
-          <span className="block text-text-secondary">Different minds.</span>
-        </h1>
-        <p className="mt-8 max-w-2xl text-lg leading-8 text-text-secondary">
-          MindTrace finds the reasoning behind a learner’s mistake, tests the
-          most likely misconception, and measures whether understanding
-          transfers beyond the original problem.
-        </p>
-        <div className="mt-10 flex flex-wrap gap-3">
-          <Button asChild size="lg">
-            <Link href="/demo">
-              Explore the lab{" "}
-              <ArrowRight className="size-4" aria-hidden="true" />
-            </Link>
-          </Button>
-          <Button asChild size="lg" variant="outline">
-            <Link href="/technology">See the architecture</Link>
-          </Button>
-        </div>
-      </motion.div>
-    </main>
+      </SectionContainer>
+    </section>
   );
 }

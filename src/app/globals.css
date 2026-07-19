@@ -7,6 +7,7 @@
   --background: #070809;
   --surface-elevated: #101214;
   --surface-soft: #171a1d;
+  --surface-inset: #0b0d0f;
   --text-primary: #f5f7f8;
   --text-secondary: #a7afb7;
   --text-muted: #6f7881;
@@ -15,6 +16,7 @@
   --attention: #f1c875;
   --error: #f17d7d;
   --border: #25292d;
+  --border-strong: #343a40;
   --ring: #8da8ff;
   --radius: 0.75rem;
 }
@@ -23,6 +25,7 @@
   --color-background: var(--background);
   --color-surface-elevated: var(--surface-elevated);
   --color-surface-soft: var(--surface-soft);
+  --color-surface-inset: var(--surface-inset);
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
@@ -31,6 +34,7 @@
   --color-attention: var(--attention);
   --color-error: var(--error);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-ring: var(--ring);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -38,6 +42,10 @@
   --radius-xl: calc(var(--radius) + 4px);
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-micro: 160ms;
+  --duration-panel: 300ms;
+  --duration-explain: 700ms;
 }
 
 * {
@@ -47,6 +55,8 @@
 html {
   background: var(--background);
   color-scheme: dark;
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
 }
 
 body {
@@ -65,4 +75,53 @@ body {
 
 ::selection {
   background: rgb(141 168 255 / 30%);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+@keyframes trace-flow {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes reasoning-pulse {
+  0%,
+  100% {
+    opacity: 0.42;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-reasoning-pulse {
+  animation: reasoning-pulse 3.6s ease-in-out infinite;
+}
+
+.animate-trace-flow {
+  animation: trace-flow 1.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
