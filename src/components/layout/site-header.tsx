@@ -1,41 +1,79 @@
+import { BrainCircuit, Menu, X } from "lucide-react";
 import Link from "next/link";
-import { BrainCircuit } from "lucide-react";
+
+import { PrimaryButton } from "@/components/ui/actions";
 
 const navigation = [
-  { href: "/demo", label: "Demo" },
+  { href: "/#how-it-works", label: "How it works" },
+  { href: "/#reasoning-system", label: "Reasoning system" },
   { href: "/technology", label: "Technology" },
 ] as const;
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/88 backdrop-blur-xl">
+      <div className="mx-auto flex h-16 max-w-[90rem] items-center justify-between px-5 sm:px-8 lg:px-12">
         <Link
           href="/"
-          className="flex items-center gap-2.5 text-sm font-medium tracking-tight"
+          className="flex items-center gap-2.5 rounded-md text-sm font-medium tracking-tight"
         >
-          <span className="grid size-8 place-items-center rounded-lg bg-reasoning/10 text-reasoning">
+          <span className="grid size-8 place-items-center rounded-lg border border-reasoning/20 bg-reasoning/8 text-reasoning">
             <BrainCircuit className="size-4" aria-hidden="true" />
           </span>
-          MindTrace{" "}
+          <span>MindTrace</span>
           <span className="hidden text-text-muted sm:inline">
             Reasoning Lab
           </span>
         </Link>
-        <nav
-          aria-label="Primary navigation"
-          className="flex items-center gap-6"
-        >
-          {navigation.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-sm text-text-secondary transition-colors hover:text-text-primary"
+
+        <div className="hidden items-center gap-7 md:flex">
+          <nav
+            aria-label="Primary navigation"
+            className="flex items-center gap-7"
+          >
+            {navigation.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="rounded-sm text-sm text-text-secondary transition-colors duration-150 hover:text-text-primary"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+          <PrimaryButton asChild size="sm">
+            <Link href="/demo">Demo</Link>
+          </PrimaryButton>
+        </div>
+
+        <details className="group md:hidden">
+          <summary
+            className="grid size-10 cursor-pointer list-none place-items-center rounded-md text-text-secondary hover:bg-surface-soft hover:text-text-primary [&::-webkit-details-marker]:hidden"
+            aria-label="Toggle navigation menu"
+          >
+            <Menu className="size-5 group-open:hidden" aria-hidden="true" />
+            <X className="hidden size-5 group-open:block" aria-hidden="true" />
+          </summary>
+          <div className="absolute inset-x-0 top-16 border-b border-border bg-background px-5">
+            <nav
+              aria-label="Mobile navigation"
+              className="mx-auto flex max-w-[90rem] flex-col py-4"
             >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+              {navigation.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="rounded-md border-b border-border/70 py-4 text-base text-text-secondary last:border-0 hover:text-text-primary"
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <PrimaryButton asChild className="mt-3 w-full">
+                <Link href="/demo">Experience the demo</Link>
+              </PrimaryButton>
+            </nav>
+          </div>
+        </details>
       </div>
     </header>
   );

@@ -2,13 +2,13 @@ import { expect, test } from "@playwright/test";
 
 const routes = [
   { path: "/", heading: "Same answer." },
-  { path: "/demo", heading: "A controlled space for tracing reasoning." },
+  { path: "/demo", heading: "See the shape of a reasoning journey" },
   {
     path: "/demo/session/example-session",
     heading: "The misconception interview will live here.",
   },
   { path: "/report/example-session", heading: "Evidence, not just a score." },
-  { path: "/technology", heading: "A testable reasoning pipeline." },
+  { path: "/technology", heading: "Adaptation proposed by AI." },
 ] as const;
 
 for (const route of routes) {
@@ -17,6 +17,124 @@ for (const route of routes) {
     await expect(page.getByRole("heading", { level: 1 })).toContainText(
       route.heading,
     );
+  });
+}
+
+test("landing page renders its primary product sections", async ({ page }) => {
+  await page.goto("/");
+
+  await expect(
+    page.getByRole("heading", { name: /The answer is identical/i }),
+  ).toBeVisible();
+  await expect(page.locator("#how-it-works")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /Measure the change in reasoning/i }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /Answer completion and capability/i }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /Generative where adaptation matters/i }),
+  ).toBeVisible();
+});
+
+test("landing calls to action point to demo and technology", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  await expect(
+    page.getByRole("link", { name: "Experience the reasoning demo" }),
+  ).toHaveAttribute("href", "/demo");
+  await expect(
+    page.getByRole("link", { name: "Explore the architecture" }),
+  ).toHaveAttribute("href", "/technology");
+});
+
+test("how-it-works anchor navigates to the connected journey", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: "See how it works" }).click();
+
+  await expect(page).toHaveURL(/#how-it-works$/);
+  await expect(page.locator("#how-it-works")).toBeInViewport();
+});
+
+test("mobile menu opens, exposes navigation, and closes", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  const menuDisclosure = page.locator(
+    'summary[aria-label="Toggle navigation menu"]',
+  );
+  await menuDisclosure.click();
+  await expect(
+    page.getByRole("navigation", { name: "Mobile navigation" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Experience the demo" }),
+  ).toHaveAttribute("href", "/demo");
+  await menuDisclosure.click();
+  await expect(
+    page.getByRole("navigation", { name: "Mobile navigation" }),
+  ).not.toBeVisible();
+});
+
+test("essential reasoning meaning exists when WebGL is unavailable", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(HTMLCanvasElement.prototype, "getContext", {
+      configurable: true,
+      value: () => null,
+    });
+  });
+  await page.goto("/");
+
+  await expect(page.getByTestId("reasoning-static-fallback")).toBeVisible();
+  await expect(
+    page.getByText("Independent transfer", { exact: true }),
+  ).toBeVisible();
+});
+
+test("reduced-motion preference receives the static reasoning fallback", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  await expect(page.getByTestId("reasoning-static-fallback")).toBeVisible();
+});
+
+test("landing hydration produces no warnings", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
+  });
+
+  await page.goto("/");
+  await page.waitForLoadState("networkidle");
+
+  expect(errors.filter((message) => /hydration/i.test(message))).toEqual([]);
+});
+
+for (const viewport of [
+  { width: 390, height: 844 },
+  { width: 768, height: 1024 },
+] as const) {
+  test(`landing has no horizontal overflow at ${viewport.width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+
+    const hasOverflow = await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth >
+        document.documentElement.clientWidth,
+    );
+    expect(hasOverflow).toBe(false);
   });
 }
 
