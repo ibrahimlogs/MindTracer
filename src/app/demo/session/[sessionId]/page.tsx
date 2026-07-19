@@ -1,21 +1,25 @@
-import { GitBranch } from "lucide-react";
+import type { Metadata } from "next";
 
-import { RoutePlaceholder } from "@/components/layout/route-placeholder";
+import { WorkspaceShell } from "@/components/demo";
+import type { DemoMode } from "@/types/demo-learning";
+
+export const metadata: Metadata = {
+  title: "Learning Workspace",
+  description:
+    "A complete deterministic MindTrace learning session using mocked reasoning data.",
+};
 
 interface SessionPageProps {
-  params: Promise<{ sessionId: string }>;
+  searchParams: Promise<{ mode?: string }>;
 }
 
-export default async function SessionPage({ params }: SessionPageProps) {
-  const { sessionId } = await params;
+function normalizeMode(mode?: string): DemoMode {
+  if (mode === "learner" || mode === "pipeline") return mode;
+  return "compare";
+}
 
-  return (
-    <RoutePlaceholder
-      eyebrow="Reasoning session"
-      title="The misconception interview will live here."
-      description="This workspace is reserved for targeted verification questions, confidence tracking, and the smallest useful intervention. No diagnostic claims are generated in this foundation step."
-      icon={GitBranch}
-      reference={sessionId}
-    />
-  );
+export default async function SessionPage({ searchParams }: SessionPageProps) {
+  const { mode } = await searchParams;
+
+  return <WorkspaceShell mode={normalizeMode(mode)} />;
 }

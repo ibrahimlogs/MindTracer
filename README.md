@@ -4,7 +4,7 @@
 
 MindTrace Reasoning Lab is an AI learning product designed to distinguish the different reasoning patterns that can produce the same wrong answer. The planned system will form misconception hypotheses, verify them with targeted questions, provide the smallest useful intervention, and test independent transfer.
 
-The repository currently contains a verified technical foundation and the premium visual product phase. The public site explains the product thesis honestly; it does not implement the diagnostic learning workflow.
+The repository currently contains a verified technical foundation, the premium visual product phase, and a complete static Learning Workspace. The workspace demonstrates the diagnostic learning workflow with deterministic mocked data; it does not run live AI analysis or persist sessions.
 
 ## Tech stack
 
@@ -68,10 +68,12 @@ pnpm build               # required before the production E2E server
 pnpm test:e2e            # run browser, accessibility, fallback, and route checks
 ```
 
-The Playwright suite verifies critical routes, landing sections, CTA targets, anchor navigation, native mobile navigation, reduced-motion and WebGL fallbacks, hydration warnings, and common mobile/tablet overflow.
+The Playwright suite verifies critical routes, landing sections, CTA targets, anchor navigation, native mobile navigation, reduced-motion and WebGL fallbacks, hydration warnings, common mobile/tablet overflow, and the mocked Learning Workspace journey.
 
 ## Current scope
 
-Implemented: technical foundation, design system, public landing page, optional reasoning visualization, technology positioning, and demo teaser.
+Implemented: technical foundation, design system, public landing page, optional reasoning visualization, technology positioning, static demo selector, mocked Learning Workspace, deterministic learner comparison, and static Reasoning Delta report.
 
-Not implemented: authentication, payments, product database models, session lifecycle, misconception logic, AI generation, or a learning workspace.
+Not implemented: authentication, payments, product database models, persistent session lifecycle, real misconception classification, AI generation, or real benchmark calculations.
+
+See `LEARNING_WORKSPACE.md` for the Step 3 architecture and mocked journey details.
