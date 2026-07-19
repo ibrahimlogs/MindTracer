@@ -1,0 +1,68 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: #070809;
+  --surface-elevated: #101214;
+  --surface-soft: #171a1d;
+  --text-primary: #f5f7f8;
+  --text-secondary: #a7afb7;
+  --text-muted: #6f7881;
+  --reasoning: #8da8ff;
+  --success: #71d6a0;
+  --attention: #f1c875;
+  --error: #f17d7d;
+  --border: #25292d;
+  --ring: #8da8ff;
+  --radius: 0.75rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-surface-soft: var(--surface-soft);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-reasoning: var(--reasoning);
+  --color-success: var(--success);
+  --color-attention: var(--attention);
+  --color-error: var(--error);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  background: var(--background);
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(
+      circle at 50% -20%,
+      rgb(141 168 255 / 12%),
+      transparent 42rem
+    ),
+    var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgb(141 168 255 / 30%);
+}
