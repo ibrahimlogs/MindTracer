@@ -1,6 +1,6 @@
 # Session engine
 
-Step 5 introduced an anonymous session lifecycle behind the MindTrace demo. Steps 7 and 8 add server-authoritative misconception ranking, verification checkpoints, and adaptive intervention delivery inside that lifecycle.
+Step 5 introduced an anonymous session lifecycle behind the MindTrace demo. Steps 7-9 add server-authoritative misconception ranking, verification checkpoints, adaptive intervention delivery, retry analysis, Reasoning Delta, transfer evaluation, and final reports inside that lifecycle.
 
 ## State machine
 
@@ -27,6 +27,10 @@ Hypothesis generation is no longer a demo-only stub. `/hypotheses` runs candidat
 ## Step 8 services
 
 `/interventions` runs intervention selection after verification has resolved the learning need. `/interventions/more-help` records a learner-requested escalation and returns the next allowed support level. `/interventions/acknowledge` marks the support as seen and unlocks retry submission.
+
+## Step 9 services
+
+`/retry` saves retry evidence and stores retry analysis separately from initial analysis. `/delta` creates the qualitative before/after comparison. `/transfer/start` selects the curated transfer problem and starts independent support fading. `/transfer/submit` evaluates answer, reasoning, concept application, independence, copied-structure risk, and final report readiness.
 
 ## Deterministic services
 
@@ -71,4 +75,4 @@ Without `--execute`, cleanup is a dry run. No cleanup runs during normal request
 - In-memory fallback is process-local and not durable.
 - Database-backed repository operations are scaffolded through Prisma schema, migration, and seed scripts; this workspace validation did not have a live PostgreSQL URL.
 - Sessions are anonymous.
-- No authentication, production analytics, retry analysis, transfer expansion, or automated cleanup exists yet.
+- No authentication, production analytics, judge-mode polish, live PostgreSQL verification, or automated cleanup exists yet.

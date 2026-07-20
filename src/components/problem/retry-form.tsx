@@ -17,7 +17,11 @@ interface RetryFormProps {
 export function RetryForm({ learner, onSubmit }: RetryFormProps) {
   const form = useForm<RetryValues>({
     resolver: zodResolver(retrySchema),
-    defaultValues: { answer: "", explanation: "" },
+    defaultValues: {
+      answer: "",
+      explanation: "",
+      confidence: "Somewhat confident",
+    },
   });
 
   return (
@@ -41,6 +45,15 @@ export function RetryForm({ learner, onSubmit }: RetryFormProps) {
           error={form.formState.errors.explanation}
         />
       </label>
+      <label className="block">
+        <span className={labelClassName}>Updated confidence</span>
+        <select className={inputClassName} {...form.register("confidence")}>
+          <option>Confident</option>
+          <option>Somewhat confident</option>
+          <option>Unsure</option>
+          <option>Guessing</option>
+        </select>
+      </label>
       <div className="flex flex-wrap gap-2">
         <Button
           type="button"
@@ -49,6 +62,7 @@ export function RetryForm({ learner, onSubmit }: RetryFormProps) {
             form.reset({
               answer: learner.revisedAnswer,
               explanation: learner.revisedExplanation,
+              confidence: "Somewhat confident",
             })
           }
         >

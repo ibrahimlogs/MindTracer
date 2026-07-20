@@ -129,6 +129,7 @@ function sessionFor(
       },
     ],
     analysis: null,
+    retryAnalysis: null,
     hypotheses: null,
     verification,
     intervention: null,

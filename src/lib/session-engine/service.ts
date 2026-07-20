@@ -1,6 +1,5 @@
 import { createHash } from "node:crypto";
 
-import { getDemoLearner } from "@/data/demo/demo-learners";
 import {
   buildReasoningAnalysisInput,
   createReasoningAnalyzer,
@@ -12,6 +11,12 @@ import {
   createInterventionSelector,
   logInterventionEngineEvent,
 } from "@/lib/intervention-engine";
+import {
+  buildReasoningDeltaInput,
+  createReasoningDeltaEvaluator,
+  logReasoningDeltaEvent,
+  type ReasoningDeltaOutput,
+} from "@/lib/reasoning-delta";
 import {
   buildCandidateRetrievalInput,
   buildHypothesisRankingInput,
@@ -29,6 +34,7 @@ import type {
   InterventionMoreHelpInput,
   TransferSubmitInput,
   VerificationSubmitInput,
+  RetryAttemptInput,
 } from "@/lib/session-engine/contracts";
 import { SessionEngineError } from "@/lib/session-engine/errors";
 import {
@@ -37,34 +43,14 @@ import {
 } from "@/lib/session-engine/repository";
 import type { SessionStage } from "@/lib/session-engine/stages";
 import { canTransitionSession } from "@/lib/session-engine/transitions";
-
-export interface HypothesisGenerator {
-  generate(session: SessionSnapshot): Record<string, unknown>;
-}
-
-export interface VerificationService {
-  create(session: SessionSnapshot): { templateId: string; question: string };
-}
-
-export interface InterventionSelector {
-  select(session: SessionSnapshot): {
-    misconceptionId: string;
-    interventionRecordId: string;
-    level: number;
-    title: string;
-  };
-}
-
-export interface ReasoningDeltaEvaluator {
-  evaluate(session: SessionSnapshot): {
-    learnerFacingSummary: string;
-    remainingGaps: readonly string[];
-  };
-}
-
-export interface TransferEvaluator {
-  evaluateTransfer(answer: string): boolean;
-}
+import {
+  buildTransferEvaluationInput,
+  createTransferEvaluator,
+  CuratedTransferProblemSelector,
+  logTransferEngineEvent,
+  type TransferEvaluationOutput,
+} from "@/lib/transfer-engine";
+import { getProblemById } from "@/data/education";
 
 function hashPayload(payload: unknown) {
   return createHash("sha256").update(JSON.stringify(payload)).digest("hex");
@@ -79,55 +65,57 @@ function assertTransition(from: SessionStage, to: SessionStage) {
   }
 }
 
-class DeterministicServices
-  implements
-    HypothesisGenerator,
-    VerificationService,
-    InterventionSelector,
-    ReasoningDeltaEvaluator,
-    TransferEvaluator
-{
-  generate(session: SessionSnapshot) {
-    const learner = getDemoLearner(session.currentLearnerKey);
-    return {
-      hypotheses: learner.hypotheses,
-      primaryMisconceptionIds: learner.primaryMisconceptionIds,
-    };
-  }
+function reportFromSession(
+  session: SessionSnapshot,
+  delta: ReasoningDeltaOutput,
+  transferOutcome: TransferEvaluationOutput | null,
+) {
+  const initialAttempt = session.attempts.find(
+    (attempt) => attempt.attemptType === "initial",
+  );
+  const retryAttempt = session.attempts.find(
+    (attempt) => attempt.attemptType === "retry",
+  );
+  const transferProblem = session.transfer
+    ? getProblemById(session.transfer.problemId)
+    : null;
+  const nextConcept =
+    session.currentLearnerKey === "learner-b"
+      ? "Slope-intercept form"
+      : "Linear rate of change";
 
-  create(session: SessionSnapshot) {
-    const learner = getDemoLearner(session.currentLearnerKey);
-    return {
-      templateId: `${learner.primaryMisconceptionIds[0]}_demo_template`,
-      question: learner.verification.question,
-    };
-  }
-
-  select(session: SessionSnapshot) {
-    const learner = getDemoLearner(session.currentLearnerKey);
-    return {
-      misconceptionId:
-        learner.primaryMisconceptionIds[0] ?? "direction_without_rate",
-      interventionRecordId: `${learner.primaryMisconceptionIds[0]}_demo_intervention`,
-      level: 3,
-      title: learner.intervention.title,
-    };
-  }
-
-  evaluate(session: SessionSnapshot) {
-    const learner = getDemoLearner(session.currentLearnerKey);
-    return {
-      learnerFacingSummary: learner.report.revised,
-      remainingGaps: [learner.report.remainingGap],
-    };
-  }
-
-  evaluateTransfer(answer: string) {
-    return answer.trim() === "64";
-  }
+  return {
+    delta,
+    startingMentalModel:
+      initialAttempt?.explanation ?? "Initial explanation was not available.",
+    preservedUnderstanding: delta.preservedUnderstanding,
+    hypothesesConsidered:
+      session.hypotheses?.ranking.hypotheses.map(
+        (hypothesis) => hypothesis.misconceptionId,
+      ) ?? [],
+    verificationEvidence:
+      session.verification?.response ??
+      "No verification response was recorded.",
+    verifiedLearningNeed:
+      session.verification?.hypothesisAfter?.safeLearnerSummary
+        .verifiedLearningNeed ?? "Verified learning need was not available.",
+    interventionFamily: session.intervention?.family ?? "none",
+    interventionLevel: session.supportUsage.highestLevelUsed,
+    revisedMentalModel:
+      retryAttempt?.explanation ?? "Retry explanation was not available.",
+    transferChallenge: transferProblem?.title ?? null,
+    transferOutcome,
+    supportUsed: session.supportUsage,
+    nextConcept,
+    learnerFacingSummary: transferOutcome
+      ? `${delta.learnerFacingSummary} Transfer result: ${transferOutcome.learnerFacingSummary}`
+      : delta.learnerFacingSummary,
+    remainingGaps: transferOutcome?.remainingGap
+      ? [...delta.remainingGaps, transferOutcome.remainingGap]
+      : delta.remainingGaps,
+    createdAt: new Date().toISOString(),
+  };
 }
-
-const deterministic = new DeterministicServices();
 
 export class SessionEngineService {
   createSession(input: CreateSessionInput) {
@@ -613,12 +601,17 @@ export class SessionEngineService {
     );
   }
 
-  submitRetry(sessionId: string, input: AttemptInput, idempotencyKey: string) {
-    return inMemorySessionRepository.mutate(
+  async submitRetry(
+    sessionId: string,
+    input: RetryAttemptInput,
+    idempotencyKey: string,
+    requestId = crypto.randomUUID(),
+  ) {
+    return inMemorySessionRepository.mutateAsync(
       sessionId,
       idempotencyKey,
       hashPayload(input),
-      (session) => {
+      async (session) => {
         if (!session.intervention?.acknowledgedAt) {
           throw new SessionEngineError(
             "INTERVENTION_NOT_READY",
@@ -638,29 +631,85 @@ export class SessionEngineService {
           "retry.started",
         );
         assertTransition(session.currentStage, "retry_submitted");
-        inMemorySessionRepository.addAttempt(session, input, "retry");
+        const retryAttempt = inMemorySessionRepository.addAttempt(
+          session,
+          input,
+          "retry",
+        );
+        const snapshot = inMemorySessionRepository.get(session.publicId);
+        const analysisInput = buildReasoningAnalysisInput(
+          snapshot,
+          retryAttempt,
+          requestId,
+        );
+        const output = await createReasoningAnalyzer().analyze(analysisInput);
+        inMemorySessionRepository.setAnalysis(
+          session,
+          {
+            attemptId: retryAttempt.id,
+            source: output.source,
+            result: output.result,
+            summary: output.result.safeLearnerSummary,
+            promptVersion: reasoningPromptVersion,
+            metadata: output.metadata,
+          },
+          "retry",
+        );
         inMemorySessionRepository.transition(
           session,
           "retry_submitted",
-          "retry.submitted",
+          "retry.submitted_and_analyzed",
+          {
+            retryAnalysisSource: output.source,
+            extractionConfidenceBand: output.result.extractionConfidenceBand,
+          },
         );
+        logReasoningAnalysis({
+          requestId,
+          sessionPublicId: session.publicId,
+          attemptId: retryAttempt.id,
+          analyzerMode: output.metadata.analyzerMode,
+          analysisSource: output.source,
+          model: output.metadata.model,
+          promptVersion: reasoningPromptVersion,
+          latencyMs: output.metadata.latencyMs,
+          retryCount: output.metadata.retryCount,
+          errorCategory: output.metadata.errorCategory,
+          fallbackUsed: output.source === "fallback",
+          finalStatus: output.metadata.finishStatus,
+        });
       },
     );
   }
 
-  createDelta(sessionId: string, idempotencyKey: string) {
-    return inMemorySessionRepository.mutate(
+  async createDelta(sessionId: string, idempotencyKey: string) {
+    return inMemorySessionRepository.mutateAsync(
       sessionId,
       idempotencyKey,
       hashPayload({ action: "delta" }),
-      (session) => {
+      async (session) => {
         assertTransition(session.currentStage, "reasoning_delta");
-        session.report = deterministic.evaluate(session);
+        const snapshot = inMemorySessionRepository.get(session.publicId);
+        const input = buildReasoningDeltaInput(snapshot);
+        const delta = await createReasoningDeltaEvaluator().evaluate(input);
+        inMemorySessionRepository.setReport(
+          session,
+          reportFromSession(snapshot, delta, null),
+        );
         inMemorySessionRepository.transition(
           session,
           "reasoning_delta",
           "delta.created",
+          {
+            overallChange: delta.overallChange,
+            transferReady: delta.transferReady,
+          },
         );
+        logReasoningDeltaEvent({
+          sessionPublicId: session.publicId,
+          overallChange: delta.overallChange,
+          transferReady: delta.transferReady,
+        });
       },
     );
   }
@@ -677,26 +726,47 @@ export class SessionEngineService {
             "A transfer attempt cannot start before a Reasoning Delta report exists.",
           );
         }
+        if (!session.report.delta.transferReady) {
+          throw new SessionEngineError(
+            "TRANSFER_NOT_READY",
+            "Reasoning Delta did not mark this session transfer-ready.",
+          );
+        }
+        const snapshot = inMemorySessionRepository.get(session.publicId);
+        const selection = new CuratedTransferProblemSelector().select(snapshot);
+        inMemorySessionRepository.setTransferSelection(session, selection);
         assertTransition(session.currentStage, "transfer_presented");
         inMemorySessionRepository.transition(
           session,
           "transfer_presented",
           "transfer.started",
+          {
+            transferProblemId: selection.problemId,
+            supportState: selection.supportState,
+            selectorSource: selection.selectorSource,
+          },
         );
+        logTransferEngineEvent({
+          sessionPublicId: session.publicId,
+          eventType: "transfer.selected",
+          problemId: selection.problemId,
+          supportState: selection.supportState,
+        });
       },
     );
   }
 
-  submitTransfer(
+  async submitTransfer(
     sessionId: string,
     input: TransferSubmitInput,
     idempotencyKey: string,
+    requestId = crypto.randomUUID(),
   ) {
-    return inMemorySessionRepository.mutate(
+    return inMemorySessionRepository.mutateAsync(
       sessionId,
       idempotencyKey,
       hashPayload(input),
-      (session) => {
+      async (session) => {
         if (!session.report) {
           throw new SessionEngineError(
             "TRANSFER_NOT_READY",
@@ -705,17 +775,90 @@ export class SessionEngineService {
         }
         assertTransition(session.currentStage, "transfer_submitted");
         inMemorySessionRepository.addTransfer(session, input);
+        const transfer = session.transfer;
+        if (!transfer) {
+          throw new SessionEngineError(
+            "TRANSFER_NOT_READY",
+            "Transfer selection is missing.",
+          );
+        }
+        const transferAttempt = inMemorySessionRepository.addAttempt(
+          session,
+          {
+            answer: input.answer,
+            explanation: input.explanation,
+            confidence: input.confidence,
+            submissionKey: input.submissionKey,
+          },
+          "transfer",
+          transfer.problemId,
+        );
+        const snapshotForAnalysis = inMemorySessionRepository.get(
+          session.publicId,
+        );
+        const analysisInput = buildReasoningAnalysisInput(
+          snapshotForAnalysis,
+          transferAttempt,
+          requestId,
+        );
+        const analysis = await createReasoningAnalyzer().analyze(analysisInput);
+        inMemorySessionRepository.setTransferAnalysis(session, {
+          attemptId: transferAttempt.id,
+          source: analysis.source,
+          result: analysis.result,
+          summary: analysis.result.safeLearnerSummary,
+          promptVersion: reasoningPromptVersion,
+          metadata: analysis.metadata,
+        });
+        const transferInput = buildTransferEvaluationInput(
+          inMemorySessionRepository.get(session.publicId),
+        );
+        const transferEvaluation =
+          await createTransferEvaluator().evaluate(transferInput);
+        inMemorySessionRepository.setTransferEvaluation(
+          session,
+          transferEvaluation,
+        );
+        const reportSnapshot = inMemorySessionRepository.get(session.publicId);
+        if (!reportSnapshot.report?.delta) {
+          throw new SessionEngineError(
+            "TRANSFER_NOT_READY",
+            "Final report requires an existing Reasoning Delta.",
+          );
+        }
+        inMemorySessionRepository.setReport(
+          session,
+          reportFromSession(
+            reportSnapshot,
+            reportSnapshot.report.delta,
+            transferEvaluation,
+          ),
+        );
         inMemorySessionRepository.transition(
           session,
           "transfer_submitted",
           "transfer.submitted",
+          {
+            answerCorrect: transferEvaluation.answerCorrect,
+            transferStatus: transferEvaluation.transferStatus,
+            independenceState: transferEvaluation.independenceState,
+          },
         );
         assertTransition(session.currentStage, "session_complete");
         inMemorySessionRepository.transition(
           session,
           "session_complete",
           "session.completed",
+          {
+            reportReady: true,
+          },
         );
+        logTransferEngineEvent({
+          sessionPublicId: session.publicId,
+          eventType: "transfer.evaluated",
+          transferStatus: transferEvaluation.transferStatus,
+          independenceState: transferEvaluation.independenceState,
+        });
       },
     );
   }

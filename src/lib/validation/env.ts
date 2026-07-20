@@ -47,6 +47,12 @@ export const serverEnvSchema = publicEnvSchema.extend({
   INTERVENTION_ADAPTER_MODE: z
     .enum(["openai", "deterministic", "fallback"])
     .default("deterministic"),
+  REASONING_DELTA_MODE: z
+    .enum(["openai", "deterministic", "fallback"])
+    .default("deterministic"),
+  TRANSFER_EVALUATOR_MODE: z
+    .enum(["openai", "deterministic", "fallback"])
+    .default("deterministic"),
   DEMO_MODE: booleanString.default(true),
   ALLOW_IN_MEMORY_SESSION_FALLBACK: booleanString.default(true),
 });
@@ -71,6 +77,8 @@ export function getServerEnv(): ServerEnv {
     VERIFICATION_EVALUATOR_MODE: process.env.VERIFICATION_EVALUATOR_MODE,
     INTERVENTION_SELECTOR_MODE: process.env.INTERVENTION_SELECTOR_MODE,
     INTERVENTION_ADAPTER_MODE: process.env.INTERVENTION_ADAPTER_MODE,
+    REASONING_DELTA_MODE: process.env.REASONING_DELTA_MODE,
+    TRANSFER_EVALUATOR_MODE: process.env.TRANSFER_EVALUATOR_MODE,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     DEMO_MODE: process.env.DEMO_MODE,
     ALLOW_IN_MEMORY_SESSION_FALLBACK:

@@ -73,6 +73,8 @@ The fixed rubrics cover constant difference, additive/multiplicative relationshi
 
 Every active primary problem references at least one transfer problem with overlapping required concepts. Validation prevents self-transfer and accidental circular primary/transfer loops.
 
+Step 9 consumes these mappings through `src/lib/transfer-engine`. The selector does not invent transfer problems or reuse the original answer.
+
 ## Validation command
 
 ```bash

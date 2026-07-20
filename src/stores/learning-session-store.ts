@@ -28,6 +28,7 @@ interface AttemptPayload {
 interface RetryPayload {
   answer: string;
   explanation: string;
+  confidence: string;
 }
 
 interface LearningSessionState {
@@ -53,6 +54,7 @@ interface LearningSessionState {
   verificationQuestion: SessionSnapshot["verification"];
   interventionSummary: SessionSnapshot["intervention"];
   supportUsage: SessionSnapshot["supportUsage"];
+  report: SessionSnapshot["report"];
   pendingAction: string | null;
   error: string | null;
   hydrateFromServer: (snapshot: SessionSnapshot) => void;
@@ -108,6 +110,7 @@ const initialState = {
     partialAnswerRevealed: false,
     fullAnswerRevealed: false,
   },
+  report: null,
   pendingAction: null,
   error: null,
 };
@@ -197,6 +200,7 @@ function stateFromSnapshot(
     verificationQuestion: snapshot.verification,
     interventionSummary: snapshot.intervention,
     supportUsage: snapshot.supportUsage,
+    report: snapshot.report,
     error: null,
   };
 }
@@ -464,6 +468,7 @@ export const useLearningSessionStore = create<LearningSessionState>((set) => ({
         const snapshot = await postSessionAction(sessionId, "/retry", {
           answer: payload.answer,
           explanation: payload.explanation,
+          confidence: payload.confidence,
           submissionKey: createSubmissionKey("retry"),
         });
         useLearningSessionStore.setState(stateFromSnapshot(snapshot));
@@ -502,6 +507,7 @@ export const useLearningSessionStore = create<LearningSessionState>((set) => ({
           {
             answer: payload.answer,
             explanation: payload.explanation,
+            confidence: payload.confidence,
             supportUsed: false,
             submissionKey: createSubmissionKey("transfer"),
           },

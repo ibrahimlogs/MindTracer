@@ -1,4 +1,3 @@
-import { demoTransfer } from "@/data/demo/demo-transfer";
 import { getProblemById } from "@/data/education";
 import type {
   ReasoningAnalyzerMetadata,
@@ -17,6 +16,12 @@ import type {
   InterventionSelection,
   SupportUsageSummary,
 } from "@/lib/intervention-engine";
+import type { ReasoningDeltaOutput } from "@/lib/reasoning-delta";
+import type {
+  TransferEvaluationOutput,
+  TransferSelection,
+  TransferSupportStateValue,
+} from "@/lib/transfer-engine";
 import type {
   AttemptInput,
   CreateSessionInput,
@@ -32,6 +37,9 @@ import type {
 
 export const educationalDataVersion = "step-04-prototype-v1";
 const retentionMs = 7 * 24 * 60 * 60 * 1000;
+
+export type { SupportUsageSummary };
+export type TransferSupportState = TransferSupportStateValue;
 
 export interface SessionEventRecord {
   id: string;
@@ -99,8 +107,22 @@ export interface InterventionSnapshot {
 }
 
 export interface ReasoningDeltaSnapshot {
+  delta: ReasoningDeltaOutput;
+  startingMentalModel: string;
+  preservedUnderstanding: readonly string[];
+  hypothesesConsidered: readonly string[];
+  verificationEvidence: string;
+  verifiedLearningNeed: string;
+  interventionFamily: string;
+  interventionLevel: number;
+  revisedMentalModel: string;
+  transferChallenge: string | null;
+  transferOutcome: TransferEvaluationOutput | null;
+  supportUsed: SupportUsageSummary;
+  nextConcept: string;
   learnerFacingSummary: string;
   remainingGaps: readonly string[];
+  createdAt: string;
 }
 
 export interface ReasoningAnalysisSnapshot {
@@ -140,6 +162,7 @@ export interface SessionSnapshot {
   completedStages: readonly SessionStage[];
   attempts: readonly PersistedAttempt[];
   analysis: ReasoningAnalysisSnapshot | null;
+  retryAnalysis: ReasoningAnalysisSnapshot | null;
   hypotheses: HypothesisSnapshot | null;
   verification: VerificationSnapshot | null;
   intervention: InterventionSnapshot | null;
@@ -147,9 +170,15 @@ export interface SessionSnapshot {
   supportUsage: SupportUsageSummary;
   transfer: {
     problemId: string;
+    supportState: TransferSupportStateValue;
+    selection: TransferSelection;
     answer: string;
     explanation: string;
+    confidence?: string;
+    supportUsed: boolean;
     success: boolean;
+    analysis: ReasoningAnalysisSnapshot | null;
+    evaluation: TransferEvaluationOutput | null;
   } | null;
   report: ReasoningDeltaSnapshot | null;
   events: readonly SessionEventRecord[];
@@ -161,6 +190,7 @@ interface MutableSession
     | "completedStages"
     | "attempts"
     | "analysis"
+    | "retryAnalysis"
     | "hypotheses"
     | "events"
     | "verification"
@@ -173,6 +203,7 @@ interface MutableSession
   completedStages: SessionStage[];
   attempts: PersistedAttempt[];
   analysis: ReasoningAnalysisSnapshot | null;
+  retryAnalysis: ReasoningAnalysisSnapshot | null;
   hypotheses: HypothesisSnapshot | null;
   verification: VerificationSnapshot | null;
   intervention: InterventionSnapshot | null;
@@ -267,6 +298,9 @@ function cloneSession(session: MutableSession): SessionSnapshot {
           },
         }
       : null,
+    retryAnalysis: session.retryAnalysis
+      ? structuredClone(session.retryAnalysis)
+      : null,
     hypotheses: session.hypotheses
       ? {
           ...session.hypotheses,
@@ -291,12 +325,7 @@ function cloneSession(session: MutableSession): SessionSnapshot {
     ),
     supportUsage: structuredClone(session.supportUsage),
     transfer: session.transfer ? { ...session.transfer } : null,
-    report: session.report
-      ? {
-          learnerFacingSummary: session.report.learnerFacingSummary,
-          remainingGaps: [...session.report.remainingGaps],
-        }
-      : null,
+    report: session.report ? structuredClone(session.report) : null,
     events: session.events.map((event) => ({ ...event })),
   };
 }
@@ -330,6 +359,7 @@ export class InMemorySessionRepository {
       completedStages: [],
       attempts: [],
       analysis: null,
+      retryAnalysis: null,
       hypotheses: null,
       verification: null,
       intervention: null,
@@ -470,29 +500,101 @@ export class InMemorySessionRepository {
   }
 
   addTransfer(session: MutableSession, input: TransferSubmitInput) {
-    if (session.transfer) {
+    if (session.transfer?.answer) {
       throw new SessionEngineError(
         "DUPLICATE_SUBMISSION",
         "Transfer was already submitted.",
       );
     }
+    if (!session.transfer) {
+      throw new SessionEngineError(
+        "TRANSFER_NOT_READY",
+        "Transfer must be selected before submission.",
+      );
+    }
     session.transfer = {
-      problemId: demoTransfer.problemId,
+      ...session.transfer,
       answer: input.answer,
       explanation: input.explanation,
-      success: input.answer.trim() === demoTransfer.correctAnswer,
+      confidence: input.confidence,
+      supportUsed: input.supportUsed,
+      success:
+        input.answer.trim() ===
+        getProblemById(session.transfer.problemId).correctAnswer,
     };
   }
 
   setAnalysis(
     session: MutableSession,
     analysis: Omit<ReasoningAnalysisSnapshot, "id" | "createdAt">,
+    attemptType: AttemptType = "initial",
   ) {
-    session.analysis = {
+    const snapshot = {
       id: crypto.randomUUID(),
       createdAt: nowIso(),
       ...analysis,
     };
+    if (attemptType === "retry") {
+      session.retryAnalysis = snapshot;
+      return;
+    }
+    session.analysis = snapshot;
+  }
+
+  setTransferSelection(session: MutableSession, selection: TransferSelection) {
+    session.transfer = {
+      problemId: selection.problemId,
+      supportState: selection.supportState,
+      selection,
+      answer: "",
+      explanation: "",
+      confidence: undefined,
+      supportUsed: false,
+      success: false,
+      analysis: null,
+      evaluation: null,
+    };
+  }
+
+  setTransferAnalysis(
+    session: MutableSession,
+    analysis: Omit<ReasoningAnalysisSnapshot, "id" | "createdAt">,
+  ) {
+    if (!session.transfer) {
+      throw new SessionEngineError(
+        "TRANSFER_NOT_READY",
+        "Transfer analysis requires a selected transfer problem.",
+      );
+    }
+    session.transfer = {
+      ...session.transfer,
+      analysis: {
+        id: crypto.randomUUID(),
+        createdAt: nowIso(),
+        ...analysis,
+      },
+    };
+  }
+
+  setTransferEvaluation(
+    session: MutableSession,
+    evaluation: TransferEvaluationOutput,
+  ) {
+    if (!session.transfer) {
+      throw new SessionEngineError(
+        "TRANSFER_NOT_READY",
+        "Transfer evaluation requires a transfer attempt.",
+      );
+    }
+    session.transfer = {
+      ...session.transfer,
+      evaluation,
+      success: evaluation.transferStatus === "successful",
+    };
+  }
+
+  setReport(session: MutableSession, report: ReasoningDeltaSnapshot) {
+    session.report = report;
   }
 
   setHypotheses(

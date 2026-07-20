@@ -41,6 +41,9 @@ export const retrySchema = z.object({
     .string()
     .trim()
     .min(18, "Explain how the revised reasoning works."),
+  confidence: z.enum(confidenceOptions, {
+    error: "Choose a confidence level.",
+  }),
 });
 
 export const transferSchema = retrySchema;

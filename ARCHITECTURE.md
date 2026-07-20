@@ -37,13 +37,15 @@ Step 7 adds `src/lib/misconception-engine`, the first real misconception-ranking
 
 Step 8 adds `src/lib/intervention-engine`. It resolves a verified misconception to an intervention family, chooses a bounded support level, creates visualizer configuration, validates answer-leakage policy, records support usage, and exposes lazy deterministic/OpenAI adapter boundaries. Intervention visuals live under `src/components/visualization/interventions` and are driven by the server snapshot rather than client-side diagnosis logic.
 
+Step 9 adds `src/lib/reasoning-delta` and `src/lib/transfer-engine`. Retry analysis reuses the existing reasoning analyzer without overwriting the initial analysis. The delta engine compares before/after reasoning with fixed qualitative dimensions. The transfer engine selects only curated transfer problems, applies support fading, analyzes transfer reasoning, evaluates concept application separately from answer correctness, and updates the final report.
+
 ## AI boundary
 
 `src/lib/ai/reasoning` owns Step 6 reasoning extraction. It defines a typed analyzer interface, deterministic analyzer, OpenAI Responses API analyzer, fallback factory, versioned prompt, Zod structured-output schema, safety validator, mapper, errors, and telemetry. The OpenAI analyzer uses Structured Outputs through `responses.parse`, requests `store: false`, validates output with Zod, and records only safe metadata.
 
 The Step 6 model extracts observable reasoning evidence only. Step 7 adds an optional OpenAI ranker for curated misconception candidates using prompt `misconception-ranker-v1`, Structured Outputs, and `store: false`. It may not create IDs, diagnose, teach, correct, reveal answers, or infer learner traits. Verification question selection and response evaluation currently run deterministic/fallback-safe paths.
 
-Step 8 adds a lazy server-only intervention adapter boundary. The deterministic selector is the default. Lower intervention levels must not reveal the final answer, and OpenAI adaptation is not initialized unless a server path explicitly requests it.
+Step 8 adds a lazy server-only intervention adapter boundary. Step 9 adds lazy delta and transfer evaluator boundaries. Deterministic mode is the default; OpenAI-only mode must fail safely without silent fallback. These evaluators may not invent rubric dimensions, assign mastery percentages, hide remaining gaps, or ignore support usage.
 
 ## State and validation
 
@@ -53,4 +55,4 @@ The server-side session engine defines the authoritative lifecycle transitions. 
 
 API handlers use consistent success/error envelopes with request metadata. The logger emits structured records behind a replaceable interface. Vitest covers isolated logic, fallback meaning, education dataset invariants, session transitions, idempotency, and guarded writes. Playwright uses the production server with bounded worker concurrency to verify routes, navigation, responsive layout, fallbacks, hydration behavior, API-created sessions, refresh/resume, reports, and the dataset explorer.
 
-Error reporting transport, analytics transport, rate limiting, production telemetry, durable learning sessions, retry analysis, transfer expansion, and real benchmark evaluation are planned but not implemented.
+Error reporting transport, analytics transport, rate limiting, production telemetry, durable learning sessions, judge-mode polish, and real benchmark evaluation are planned but not implemented.

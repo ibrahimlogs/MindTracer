@@ -21,10 +21,15 @@ export const sessionPathSchema = z.object({
 
 export const attemptSchema = z.object({
   answer: z.string().trim().min(1).max(200),
-  explanation: z.string().trim().min(1).max(1200),
+  explanation: z.string().trim().min(2).max(1200),
   selectedApproach: z.string().trim().min(1).max(120).optional(),
   confidence: z.string().trim().min(1).max(80).optional(),
   submissionKey: submissionKeySchema,
+});
+
+export const retryAttemptSchema = attemptSchema.extend({
+  confidence: z.string().trim().min(1).max(80),
+  changedThinking: z.string().trim().max(500).optional(),
 });
 
 export const verificationSubmitSchema = z.object({
@@ -48,7 +53,8 @@ export const interventionMoreHelpSchema = z.object({
 
 export const transferSubmitSchema = z.object({
   answer: z.string().trim().min(1).max(200),
-  explanation: z.string().trim().min(1).max(1200),
+  explanation: z.string().trim().min(2).max(1200),
+  confidence: z.string().trim().min(1).max(80),
   supportUsed: z.boolean().default(false),
   submissionKey: submissionKeySchema,
 });
@@ -59,6 +65,7 @@ export const jumpStageSchema = z.object({
 
 export type CreateSessionInput = z.infer<typeof createSessionSchema>;
 export type AttemptInput = z.infer<typeof attemptSchema>;
+export type RetryAttemptInput = z.infer<typeof retryAttemptSchema>;
 export type VerificationSubmitInput = z.infer<typeof verificationSubmitSchema>;
 export type InterventionAcknowledgeInput = z.infer<
   typeof interventionAcknowledgeSchema
