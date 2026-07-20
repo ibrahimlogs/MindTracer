@@ -1,6 +1,6 @@
 {
   "name": "mindtrace-reasoning-lab",
-  "version": "0.1.0",
+  "version": "1.0.0-build-week",
   "private": true,
   "packageManager": "pnpm@11.15.0",
   "engines": {
@@ -30,6 +30,8 @@
     "test:openai:intervention-smoke": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --experimental-specifier-resolution=node scripts/openai-intervention-smoke.ts",
     "test:openai:delta-smoke": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --experimental-specifier-resolution=node scripts/openai-delta-smoke.ts",
     "test:openai:transfer-smoke": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --experimental-specifier-resolution=node scripts/openai-transfer-smoke.ts",
+    "test:openai:journey-smoke": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --experimental-specifier-resolution=node scripts/openai-journey-smoke.ts",
+    "test:postgres:smoke": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --experimental-specifier-resolution=node scripts/postgres-smoke.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --experimental-specifier-resolution=node scripts/prisma-migrate.ts",
     "prisma:seed": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --experimental-specifier-resolution=node scripts/seed-education.ts",

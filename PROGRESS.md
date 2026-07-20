@@ -9,7 +9,7 @@
 - [x] **Step 7 - Misconception Hypothesis Ranking and Verification Engine:** Candidate retrieval, hypothesis ranking, verification policy, question selection, response evaluation, audit snapshots, learner-safe UI, and prototype verification evaluation.
 - [x] **Step 8 - Adaptive Intervention Engine and Animated Reasoning Visualizers:** Deliver bounded hints tied to a verified misconception and animate the smallest useful support.
 - [x] **Step 9 - Retry Analysis, Reasoning Delta and Transfer Evaluation:** Measure independent application and explain observations separately from inference.
-- [ ] **Step 10 - Judge Mode, Reliability Hardening and Submission Package:** Add judge mode, reliability polish, final evaluation presentation, and submission packaging.
+- [x] **Step 10 - Judge Mode, Reliability Hardening and Submission Package:** Judge Mode, fallback labeling, readiness checks, final evaluation presentation, submission documentation, and deterministic validation.
 
 ## Step 2 verification record
 
@@ -95,6 +95,23 @@
 - Deterministic Delta verified; deterministic transfer verified; mocked/no-key OpenAI failure boundaries verified by optional smoke skip behavior.
 - Live OpenAI Delta and transfer smoke tests were skipped because no API key is configured.
 - Live PostgreSQL verification remains pending.
-- Known limitations: deterministic evaluators are prototype-scale, evaluation cases are safety/regression examples rather than educational outcome results, live OpenAI quality is not claimed, and Step 10 judge-mode polish/submission packaging is intentionally not implemented.
+- Known limitations: deterministic evaluators are prototype-scale, evaluation cases are safety/regression examples rather than educational outcome results, live OpenAI quality is not claimed, and live PostgreSQL verification remains pending.
+
+## Step 10 verification record
+
+- `/demo/judge` now provides the competition-grade Judge Mode path with one-click start, guided default behavior, interactive prototype labeling, pause/play, restart, previous/next scene, skip animation, normal/fast playback, local refresh restore, and report/evaluation/architecture links.
+- `src/lib/judge-demo` defines a deterministic scene system separate from persisted educational session stages, with explicit execution-source labels: `live_openai`, `deterministic`, `cached_demo`, and `fallback`.
+- Reviewed cached judge responses cover Learner A and Learner B reasoning extraction, hypotheses, verification, intervention, delta, and transfer; cached responses are labeled as cached and do not overwrite real session evidence.
+- `/technology/evaluation` presents a judge-facing “Prototype system-behavior evaluation” page that clearly distinguishes deterministic/handcrafted checks from educational efficacy claims.
+- `/api/health` and `/api/readiness` report safe operational status without exposing secrets.
+- Environment validation now supports `APP_ENV`, `JUDGE_MODE`, and `ALLOW_CACHED_JUDGE_FALLBACK`.
+- Lightweight rate-limit infrastructure was added and session creation now returns clear `429` responses with `Retry-After`.
+- Submission documents were created: `SUBMISSION.md`, `DEVPOST_DESCRIPTION.md`, `JUDGE_GUIDE.md`, `KNOWN_LIMITATIONS.md`, `SECURITY_REVIEW.md`, `DEPLOYMENT.md`, `CODEX_BUILD_LOG.md`, `RELEASE_CHECKLIST.md`, and `DEMO_SCRIPT.md`.
+- Application version set to `1.0.0-build-week`; license remains intentionally unselected with a clear placeholder.
+- Validation passed: format, education validation, Prisma generate, lint, strict typecheck, unit tests, production build, Playwright E2E, deterministic reasoning/verification/intervention/delta/transfer evaluations, optional smoke-test skip paths, and dev-server route checks.
+- Deterministic engines verified. Mocked/no-key OpenAI integration boundaries verified through skip/fallback behavior.
+- Live OpenAI integration pending because no `OPENAI_API_KEY` is configured.
+- Live PostgreSQL verification pending because no `DATABASE_URL` is configured.
+- Deployment pending. Demo video recording pending. Submission upload pending.
 
 Only a step that is implemented and passes its defined checks should be marked complete.
