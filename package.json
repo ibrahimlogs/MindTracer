@@ -20,8 +20,12 @@
     "test:e2e": "playwright test",
     "test:e2e:install": "playwright install chromium",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:migrate": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --experimental-specifier-resolution=node scripts/prisma-migrate.ts",
+    "prisma:seed": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --experimental-specifier-resolution=node scripts/seed-education.ts",
+    "prisma:studio": "prisma studio",
+    "db:reset": "prisma migrate reset",
+    "db:validate": "pnpm validate:education && pnpm prisma:generate",
+    "sessions:cleanup": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types --experimental-specifier-resolution=node scripts/cleanup-sessions.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "5.2.2",

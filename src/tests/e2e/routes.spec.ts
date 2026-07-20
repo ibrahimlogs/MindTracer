@@ -198,7 +198,10 @@ test("dataset explorer filters evaluation cases", async ({ page }) => {
 
 test("guided comparison shows different learner paths", async ({ page }) => {
   await page.goto("/demo");
-  await page.getByRole("link", { name: "Start the guided comparison" }).click();
+  await page
+    .getByRole("button", { name: "Start the guided comparison" })
+    .click();
+  await expect(page).toHaveURL(/\/demo\/session\/mt_[a-z0-9]+\?mode=compare/);
 
   await page.getByRole("button", { name: "Load learner response" }).click();
   await page.getByRole("button", { name: "Submit initial reasoning" }).click();
@@ -234,6 +237,27 @@ test("guided comparison shows different learner paths", async ({ page }) => {
     .getByRole("button", { name: "Show smallest useful intervention" })
     .click();
   await expect(page.getByText("Check the multiplication claim")).toBeVisible();
+});
+
+test("generated session refresh resumes the persisted stage", async ({
+  page,
+}) => {
+  await page.goto("/demo");
+  await page
+    .getByRole("button", { name: "Start the guided comparison" })
+    .click();
+  await expect(page).toHaveURL(/\/demo\/session\/mt_[a-z0-9]+\?mode=compare/);
+
+  await page.getByRole("button", { name: "Load learner response" }).click();
+  await page.getByRole("button", { name: "Submit initial reasoning" }).click();
+  await expect(
+    page.getByText("Analysis", { exact: true }).first(),
+  ).toBeVisible();
+
+  await page.reload();
+  await expect(
+    page.getByText("Analysis", { exact: true }).first(),
+  ).toBeVisible();
 });
 
 test("can complete retry, transfer, and open report", async ({ page }) => {

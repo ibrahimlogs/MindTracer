@@ -4,8 +4,8 @@
 - [x] **Step 2 - Premium visual product phase:** Editorial landing page, reusable visual system, responsive navigation, technology positioning, demo teaser, lightweight 3D reasoning network, and server-rendered motion/WebGL fallback.
 - [x] **Step 3 - Static Learning Workspace and Mocked Reasoning Journey:** Complete non-AI learning experience with deterministic content and mocked reasoning states.
 - [x] **Step 4 - Structured Educational Dataset and Misconception Library:** Prototype curated dataset, misconception taxonomy, validation command, typed loaders, dataset explorer, and Step 3 demo integration.
-- [ ] **Step 5 - Persistent Session Engine, Database Schema and API Contracts:** Define persistence models, lifecycle states, and safe session APIs after the static journey and dataset are proven.
-- [ ] **Step 6 - Learner response capture:** Add production-grade answer, reasoning, and confidence capture on top of the validated workspace.
+- [x] **Step 5 - Persistent Session Engine, Database Schema and API Contracts:** PostgreSQL schema and migration, dataset seed script, anonymous session APIs, server lifecycle guards, idempotency, refresh/resume hydration, fallback mode, cleanup script, and documentation.
+- [ ] **Step 6 - OpenAI Structured Reasoning Extraction:** Replace deterministic reasoning extraction with schema-constrained OpenAI output behind server boundaries.
 - [ ] **Step 7 - Misconception hypotheses:** Add schema-constrained hypothesis generation and audit records.
 - [ ] **Step 8 - Targeted verification:** Implement discriminating questions and evidence updates.
 - [ ] **Step 9 - Minimal intervention:** Deliver bounded hints tied to a verified misconception.
@@ -35,6 +35,16 @@
 - Typed loaders return readonly-safe records and clear missing-record errors for future database seeding.
 - The Step 3 demo now loads shared problem, transfer, misconception, verification, intervention, and rubric metadata from the dataset while keeping learner-specific scripted responses deterministic.
 - `/technology/dataset` provides a development dataset explorer with filters, validation metrics, concept/problem/misconception/rubric/evaluation detail panels, transfer mappings, and intervention ladders.
-- Known limitations: the dataset is curated and prototype-scale, evaluation cases are handcrafted examples rather than benchmark results, no external expert validation is claimed, no database persistence exists yet, and no OpenAI reasoning workflow is connected.
+- Step 4 limitations at the time: the dataset was curated and prototype-scale, evaluation cases were handcrafted examples rather than benchmark results, no external expert validation was claimed, database persistence had not yet been added, and no OpenAI reasoning workflow was connected.
+
+## Step 5 verification record
+
+- Prisma schema and migration `20260720120000_step_05_session_engine` define the product database foundation for educational records, anonymous sessions, attempts, deterministic analyses, hypotheses, verification interactions, interventions, transfers, reports, lifecycle events, and idempotency records.
+- `pnpm prisma:seed` validates the Step 4 dataset and upserts educational records when `DATABASE_URL` is configured. In this workspace, no `DATABASE_URL` is configured, so migration and seed commands completed in explicit fallback-skip mode.
+- Session APIs under `/api/sessions` create anonymous sessions, return generated public IDs, enforce deterministic lifecycle transitions, validate requests with Zod, protect write endpoints with idempotency keys, and return stable error envelopes.
+- `/demo` starts sessions through the API and redirects to generated session URLs. The workspace hydrates from the server snapshot on load, so refresh/resume works within the active server process.
+- The old `demo-session` URL remains a compatibility alias.
+- `pnpm sessions:cleanup` provides dry-run expired-session cleanup; deletion requires `-- --execute`.
+- Known limitations: AI reasoning remains deterministic, no authentication exists, sessions are anonymous, cleanup is manual, in-memory fallback is process-local, and this workspace did not validate against a live PostgreSQL instance.
 
 Only a step that is implemented and passes its defined checks should be marked complete.

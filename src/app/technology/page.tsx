@@ -148,8 +148,8 @@ export default function TechnologyPage() {
           <div className="grid gap-8 lg:grid-cols-[1fr_0.82fr]">
             <SectionHeader
               eyebrow="Current implementation status"
-              title="The foundation, visual explanation, static workspace, and curated dataset are real. Persistent sessions are not implemented yet."
-              description="There are currently no product database models, persistent sessions, real misconception classifier, or OpenAI-connected reasoning generator. The dataset is prototype-scale and auditable, not externally validated research evidence."
+              title="The foundation, visual explanation, dataset, and session API are real. AI reasoning remains deterministic."
+              description="The PostgreSQL schema, migration, seed path, anonymous session APIs, idempotency checks, and refresh/resume fallback are implemented. There is still no authentication, real misconception classifier, or OpenAI-connected reasoning generator."
             />
             <ElevatedSurface className="p-6 sm:p-8">
               <div className="flex items-center gap-3">
@@ -173,12 +173,20 @@ export default function TechnologyPage() {
                   <span className="text-success">implemented</span>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-border pb-3">
-                  <span className="text-text-secondary">Static workspace</span>
-                  <span className="text-success">verified</span>
+                  <span className="text-text-secondary">
+                    Anonymous session API
+                  </span>
+                  <span className="text-success">implemented</span>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-border pb-3">
                   <span className="text-text-secondary">Education dataset</span>
                   <span className="text-success">validated</span>
+                </div>
+                <div className="flex justify-between gap-4 border-b border-border pb-3">
+                  <span className="text-text-secondary">
+                    In-memory fallback
+                  </span>
+                  <span className="text-attention">development only</span>
                 </div>
                 <div className="flex justify-between gap-4">
                   <span className="text-text-secondary">

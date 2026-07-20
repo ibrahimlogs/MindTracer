@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 };
 
 interface SessionPageProps {
+  params: Promise<{ sessionId: string }>;
   searchParams: Promise<{ mode?: string }>;
 }
 
@@ -18,8 +19,12 @@ function normalizeMode(mode?: string): DemoMode {
   return "compare";
 }
 
-export default async function SessionPage({ searchParams }: SessionPageProps) {
+export default async function SessionPage({
+  params,
+  searchParams,
+}: SessionPageProps) {
+  const { sessionId } = await params;
   const { mode } = await searchParams;
 
-  return <WorkspaceShell mode={normalizeMode(mode)} />;
+  return <WorkspaceShell mode={normalizeMode(mode)} sessionId={sessionId} />;
 }

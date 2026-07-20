@@ -30,9 +30,10 @@ const speedMs = {
 
 interface WorkspaceShellProps {
   mode: DemoMode;
+  sessionId: string;
 }
 
-export function WorkspaceShell({ mode }: WorkspaceShellProps) {
+export function WorkspaceShell({ mode, sessionId }: WorkspaceShellProps) {
   const currentLearner = useLearningSessionStore(
     (state) => state.currentLearner,
   );
@@ -44,6 +45,8 @@ export function WorkspaceShell({ mode }: WorkspaceShellProps) {
   );
   const selectLearner = useLearningSessionStore((state) => state.selectLearner);
   const setDemoMode = useLearningSessionStore((state) => state.setDemoMode);
+  const loadSession = useLearningSessionStore((state) => state.loadSession);
+  const error = useLearningSessionStore((state) => state.error);
   const nextStage = useLearningSessionStore((state) => state.nextStage);
   const previousStage = useLearningSessionStore((state) => state.previousStage);
   const jumpToStage = useLearningSessionStore((state) => state.jumpToStage);
@@ -69,6 +72,10 @@ export function WorkspaceShell({ mode }: WorkspaceShellProps) {
   useEffect(() => {
     setDemoMode(mode);
   }, [mode, setDemoMode]);
+
+  useEffect(() => {
+    void loadSession(sessionId);
+  }, [loadSession, sessionId]);
 
   useEffect(() => {
     if (!autoPlay) return;
@@ -97,6 +104,8 @@ export function WorkspaceShell({ mode }: WorkspaceShellProps) {
               <span>{learner.name}</span>
               <span aria-hidden="true">/</span>
               <span aria-live="polite">{stageLabels[currentStage]}</span>
+              <span aria-hidden="true">/</span>
+              <span>Fallback-safe session</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -129,6 +138,11 @@ export function WorkspaceShell({ mode }: WorkspaceShellProps) {
         <div className="rounded-lg border border-border bg-surface-elevated p-3 text-sm md:hidden">
           Stage: {stageLabels[currentStage]}
         </div>
+        {error ? (
+          <div className="rounded-lg border border-error/40 bg-error/10 p-3 text-sm text-error">
+            {error}
+          </div>
+        ) : null}
         <h1 className="sr-only">
           If advertising cost becomes 5, what sales value would follow the
           pattern?

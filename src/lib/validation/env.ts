@@ -11,9 +11,17 @@ export const publicEnvSchema = z.object({
 });
 
 export const serverEnvSchema = publicEnvSchema.extend({
-  DATABASE_URL: z.url({ protocol: /^postgres(ql)?$/ }),
-  OPENAI_API_KEY: z.string().min(1, "OPENAI_API_KEY is required"),
+  DATABASE_URL: z
+    .url({ protocol: /^postgres(ql)?$/ })
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
+  OPENAI_API_KEY: z
+    .string()
+    .min(1, "OPENAI_API_KEY is required")
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
   DEMO_MODE: booleanString.default(true),
+  ALLOW_IN_MEMORY_SESSION_FALLBACK: booleanString.default(true),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
@@ -28,6 +36,8 @@ export function getServerEnv(): ServerEnv {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     DEMO_MODE: process.env.DEMO_MODE,
+    ALLOW_IN_MEMORY_SESSION_FALLBACK:
+      process.env.ALLOW_IN_MEMORY_SESSION_FALLBACK,
   });
 
   if (!result.success) {

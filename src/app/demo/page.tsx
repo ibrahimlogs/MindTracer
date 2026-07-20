@@ -21,6 +21,7 @@ const demoOptions = [
     href: "/demo/session/demo-session?mode=compare",
     cta: "Start the guided comparison",
     status: "Fully available",
+    mode: "compare",
     icon: GitCompare,
     featured: true,
   },
@@ -31,6 +32,7 @@ const demoOptions = [
     href: "/demo/session/demo-session?mode=learner",
     cta: "Try the learner path",
     status: "Mocked interaction",
+    mode: "learner",
     icon: UserRound,
   },
   {
@@ -40,6 +42,7 @@ const demoOptions = [
     href: "/demo/session/demo-session?mode=pipeline",
     cta: "Explore the pipeline",
     status: "Available",
+    mode: "pipeline",
     icon: Route,
   },
 ] as const;
@@ -53,7 +56,7 @@ export default function DemoPage() {
           <PageHeader
             eyebrow="Product demo"
             title="Same answer. Different reasoning journey."
-            description="Choose a deterministic demo path through MindTrace's mocked learning workspace. No live AI, database session, authentication, or persistence is used in this phase."
+            description="Choose a deterministic demo path through MindTrace's learning workspace. Sessions are API-created and resumable; when no database is configured, development fallback mode is clearly used."
             className="mt-8 max-w-4xl"
           />
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
