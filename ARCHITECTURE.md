@@ -1,6 +1,6 @@
 # Planned architecture
 
-MindTrace is organized around a staged reasoning lifecycle while keeping model calls behind server boundaries. The current code establishes the technical, visual, dataset, and anonymous session foundations while keeping reasoning behavior deterministic.
+MindTrace is organized around a staged reasoning lifecycle while keeping model calls behind server boundaries. The current code establishes the technical, visual, dataset, anonymous session, and structured reasoning-extraction foundations.
 
 ## Application layer
 
@@ -37,7 +37,9 @@ Domain services are planned under `src/lib/misconception`, `intervention`, and `
 
 ## AI boundary
 
-`src/lib/ai` exposes a lazy, server-only OpenAI client placeholder. Future model calls must return schema-validated structured output behind server boundaries. Hypotheses must remain labeled as inference, while observations and learner-provided evidence remain distinct. Step 5 route handlers use deterministic service interfaces and do not call OpenAI.
+`src/lib/ai/reasoning` owns Step 6 reasoning extraction. It defines a typed analyzer interface, deterministic analyzer, OpenAI Responses API analyzer, fallback factory, versioned prompt, Zod structured-output schema, safety validator, mapper, errors, and telemetry. The OpenAI analyzer uses Structured Outputs through `responses.parse`, requests `store: false`, validates output with Zod, and records only safe metadata.
+
+The model extracts observable reasoning evidence only. Hypothesis ranking, verification question selection, intervention selection, delta evaluation, and transfer evaluation remain deterministic until later phases.
 
 ## State and validation
 

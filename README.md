@@ -4,7 +4,7 @@
 
 MindTrace Reasoning Lab is an AI learning product designed to distinguish the different reasoning patterns that can produce the same wrong answer. The planned system will form misconception hypotheses, verify them with targeted questions, provide the smallest useful intervention, and test independent transfer.
 
-The repository currently contains a verified technical foundation, the premium visual product phase, a complete Learning Workspace, a prototype curated educational dataset, and an anonymous session-engine foundation. The workspace demonstrates the diagnostic learning workflow with deterministic data backed by shared concept, problem, misconception, rubric, intervention, transfer, and API session records; it does not run live AI analysis.
+The repository currently contains a verified technical foundation, the premium visual product phase, a complete Learning Workspace, a prototype curated educational dataset, an anonymous session-engine foundation, and OpenAI Structured Reasoning Extraction. The model role is narrow: extract structured reasoning evidence from learner text; misconception ranking, verification, intervention, and transfer evaluation remain deterministic.
 
 ## Tech stack
 
@@ -38,6 +38,11 @@ Copy `.env.example` to `.env.local` when working on server integrations:
 ```dotenv
 DATABASE_URL=postgresql://user:password@localhost:5432/mindtrace
 OPENAI_API_KEY=your-server-only-key
+OPENAI_REASONING_MODEL=gpt-5.6
+OPENAI_REASONING_TIMEOUT_MS=12000
+OPENAI_REASONING_MAX_RETRIES=1
+OPENAI_STORE_RESPONSES=false
+REASONING_ANALYZER_MODE=deterministic
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 DEMO_MODE=true
 ALLOW_IN_MEMORY_SESSION_FALLBACK=true
@@ -56,6 +61,7 @@ pnpm typecheck           # run strict TypeScript checks
 pnpm validate:education  # validate the curated education dataset
 pnpm prisma:seed         # seed educational records when DATABASE_URL is set
 pnpm sessions:cleanup    # dry-run expired anonymous session cleanup
+pnpm evaluate:reasoning  # run prototype reasoning-extraction evaluation
 pnpm format              # format the repository
 pnpm format:check        # verify formatting
 pnpm prisma:migrate      # create/apply a future development migration
@@ -70,16 +76,18 @@ pnpm test:watch          # run unit tests in watch mode
 pnpm test:e2e:install    # install Chromium once
 pnpm build               # required before the production E2E server
 pnpm test:e2e            # run browser, accessibility, fallback, and route checks
+pnpm test:openai:smoke   # optional live OpenAI smoke test; skips without key
 ```
 
 The Playwright suite verifies critical routes, landing sections, CTA targets, anchor navigation, native mobile navigation, reduced-motion and WebGL fallbacks, hydration warnings, common mobile/tablet overflow, the API-created Learning Workspace journey, generated session URLs, refresh/resume behavior, and the development dataset explorer.
 
 ## Current scope
 
-Implemented: technical foundation, design system, public landing page, optional reasoning visualization, technology positioning, demo selector, deterministic Learning Workspace, anonymous session APIs, generated session URLs, refresh/resume fallback behavior, static Reasoning Delta report, and prototype curated educational dataset.
+Implemented: technical foundation, design system, public landing page, optional reasoning visualization, technology positioning, demo selector, Learning Workspace, anonymous session APIs, generated session URLs, refresh/resume fallback behavior, structured reasoning extraction, static Reasoning Delta report, and prototype curated educational dataset.
 
-Not implemented: authentication, payments, real misconception classification, AI generation, production analytics, automatic cleanup, or real benchmark calculations.
+Not implemented: authentication, payments, real misconception ranking, AI-generated verification, AI-generated intervention, production analytics, automatic cleanup, or real benchmark calculations.
 
 See `LEARNING_WORKSPACE.md` for the Step 3 architecture and mocked journey details.
 See `EDUCATIONAL_DATASET.md` for the Step 4 dataset structure, validation rules, and review workflow.
 See `SESSION_ENGINE.md`, `API_CONTRACTS.md`, and `DATABASE.md` for the Step 5 session, API, and persistence foundation.
+See `OPENAI_REASONING_ANALYSIS.md`, `REASONING_EVALUATION.md`, and `AI_PRIVACY.md` for the Step 6 reasoning extraction boundary.

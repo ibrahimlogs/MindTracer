@@ -43,6 +43,9 @@ export function WorkspaceShell({ mode, sessionId }: WorkspaceShellProps) {
   const completedStages = useLearningSessionStore(
     (state) => state.completedStages,
   );
+  const analysisSummary = useLearningSessionStore(
+    (state) => state.analysisSummary,
+  );
   const selectLearner = useLearningSessionStore((state) => state.selectLearner);
   const setDemoMode = useLearningSessionStore((state) => state.setDemoMode);
   const loadSession = useLearningSessionStore((state) => state.loadSession);
@@ -199,12 +202,18 @@ export function WorkspaceShell({ mode, sessionId }: WorkspaceShellProps) {
               <ReasoningWorkspaceCanvas
                 learner={learner}
                 stage={currentStage}
+                analysis={analysisSummary}
               />
             </div>
           </ElevatedSurface>
 
           <ElevatedSurface className="p-5">
-            <GuidePanel learner={learner} stage={currentStage} />
+            <GuidePanel
+              learner={learner}
+              stage={currentStage}
+              analysis={analysisSummary}
+              mode={mode}
+            />
           </ElevatedSurface>
         </div>
 

@@ -48,6 +48,7 @@ interface LearningSessionState {
   demoSpeed: DemoSpeed;
   completedStages: LearningStage[];
   serverSessionId: string | null;
+  analysisSummary: SessionSnapshot["analysis"];
   pendingAction: string | null;
   error: string | null;
   hydrateFromServer: (snapshot: SessionSnapshot) => void;
@@ -86,6 +87,7 @@ const initialState = {
   demoSpeed: "normal" as DemoSpeed,
   completedStages: [] as LearningStage[],
   serverSessionId: null,
+  analysisSummary: null,
   pendingAction: null,
   error: null,
 };
@@ -134,7 +136,7 @@ async function postSessionAction<TBody>(
   });
   const payload = (await response.json()) as {
     success: boolean;
-    data: SessionSnapshot | null;
+    data: SessionSnapshot | { session: SessionSnapshot } | null;
     error: { message: string } | null;
   };
 
@@ -142,7 +144,7 @@ async function postSessionAction<TBody>(
     throw new Error(payload.error?.message ?? "Session action failed.");
   }
 
-  return payload.data;
+  return "session" in payload.data ? payload.data.session : payload.data;
 }
 
 function stateFromSnapshot(
@@ -170,6 +172,7 @@ function stateFromSnapshot(
     transferAttempt: snapshot.transfer?.answer ?? "",
     transferExplanation: snapshot.transfer?.explanation ?? "",
     transferCorrect: snapshot.transfer?.success ?? null,
+    analysisSummary: snapshot.analysis,
     error: null,
   };
 }

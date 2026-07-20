@@ -1,6 +1,12 @@
 import { createHash } from "node:crypto";
 
 import { getDemoLearner } from "@/data/demo/demo-learners";
+import {
+  buildReasoningAnalysisInput,
+  createReasoningAnalyzer,
+  logReasoningAnalysis,
+  reasoningPromptVersion,
+} from "@/lib/ai/reasoning";
 import type {
   AttemptInput,
   CreateSessionInput,
@@ -14,10 +20,6 @@ import {
 } from "@/lib/session-engine/repository";
 import type { SessionStage } from "@/lib/session-engine/stages";
 import { canTransitionSession } from "@/lib/session-engine/transitions";
-
-export interface ReasoningAnalyzer {
-  analyze(session: SessionSnapshot): Record<string, unknown>;
-}
 
 export interface HypothesisGenerator {
   generate(session: SessionSnapshot): Record<string, unknown>;
@@ -62,22 +64,12 @@ function assertTransition(from: SessionStage, to: SessionStage) {
 
 class DeterministicServices
   implements
-    ReasoningAnalyzer,
     HypothesisGenerator,
     VerificationService,
     InterventionSelector,
     ReasoningDeltaEvaluator,
     TransferEvaluator
 {
-  analyze(session: SessionSnapshot) {
-    const learner = getDemoLearner(session.currentLearnerKey);
-    return {
-      source: "deterministic",
-      evidence: learner.analysis.evidence,
-      interpretation: learner.analysis.interpretation,
-    };
-  }
-
   generate(session: SessionSnapshot) {
     const learner = getDemoLearner(session.currentLearnerKey);
     return {
@@ -156,20 +148,74 @@ export class SessionEngineService {
     );
   }
 
-  generateAnalysis(sessionId: string, idempotencyKey: string) {
-    return inMemorySessionRepository.mutate(
+  async generateAnalysis(
+    sessionId: string,
+    idempotencyKey: string,
+    requestId = crypto.randomUUID(),
+  ) {
+    return inMemorySessionRepository.mutateAsync(
       sessionId,
       idempotencyKey,
       hashPayload({ action: "analysis" }),
-      (session) => {
+      async (session) => {
         assertTransition(session.currentStage, "hypothesis_ready");
-        const analysis = deterministic.analyze(session);
+        if (session.analysis) {
+          inMemorySessionRepository.transition(
+            session,
+            "hypothesis_ready",
+            "analysis.reused",
+            { analysisId: session.analysis.id },
+          );
+          return;
+        }
+        const snapshot = inMemorySessionRepository.get(session.publicId);
+        const initialAttempt = snapshot.attempts.find(
+          (attempt) => attempt.attemptType === "initial",
+        );
+        if (!initialAttempt) {
+          throw new SessionEngineError(
+            "INVALID_STATE_TRANSITION",
+            "Analysis requires an initial learner attempt.",
+          );
+        }
+        const input = buildReasoningAnalysisInput(
+          snapshot,
+          initialAttempt,
+          requestId,
+        );
+        const output = await createReasoningAnalyzer().analyze(input);
+        inMemorySessionRepository.setAnalysis(session, {
+          attemptId: initialAttempt.id,
+          source: output.source,
+          result: output.result,
+          summary: output.result.safeLearnerSummary,
+          promptVersion: reasoningPromptVersion,
+          metadata: output.metadata,
+        });
         inMemorySessionRepository.transition(
           session,
           "hypothesis_ready",
           "analysis.generated",
-          analysis,
+          {
+            analysisSource: output.source,
+            extractionConfidenceBand: output.result.extractionConfidenceBand,
+            needsClarification: output.result.needsClarification,
+          },
         );
+        logReasoningAnalysis({
+          requestId,
+          sessionPublicId: session.publicId,
+          attemptId: initialAttempt.id,
+          analyzerMode: output.metadata.analyzerMode,
+          analysisSource: output.source,
+          model: output.metadata.model,
+          promptVersion: reasoningPromptVersion,
+          latencyMs: output.metadata.latencyMs,
+          retryCount: output.metadata.retryCount,
+          errorCategory: output.metadata.errorCategory,
+          fallbackUsed: output.source === "fallback",
+          finalStatus: output.metadata.finishStatus,
+        });
       },
     );
   }

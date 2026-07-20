@@ -1,6 +1,12 @@
 import { demoTransfer } from "@/data/demo/demo-transfer";
 import { getProblemById } from "@/data/education";
 import type {
+  ReasoningAnalyzerMetadata,
+  ReasoningAnalysisResult,
+  ReasoningAnalysisSource,
+  SafeLearnerSummary,
+} from "@/lib/ai/reasoning";
+import type {
   AttemptInput,
   CreateSessionInput,
   TransferSubmitInput,
@@ -59,6 +65,17 @@ export interface ReasoningDeltaSnapshot {
   remainingGaps: readonly string[];
 }
 
+export interface ReasoningAnalysisSnapshot {
+  id: string;
+  attemptId: string;
+  source: ReasoningAnalysisSource;
+  result: ReasoningAnalysisResult;
+  summary: SafeLearnerSummary;
+  promptVersion: string;
+  metadata: ReasoningAnalyzerMetadata;
+  createdAt: string;
+}
+
 export interface SessionSnapshot {
   sessionId: string;
   publicId: string;
@@ -75,6 +92,7 @@ export interface SessionSnapshot {
   fallbackMode: boolean;
   completedStages: readonly SessionStage[];
   attempts: readonly PersistedAttempt[];
+  analysis: ReasoningAnalysisSnapshot | null;
   verification: VerificationSnapshot | null;
   intervention: InterventionSnapshot | null;
   transfer: {
@@ -92,6 +110,7 @@ interface MutableSession
     SessionSnapshot,
     | "completedStages"
     | "attempts"
+    | "analysis"
     | "events"
     | "verification"
     | "intervention"
@@ -100,6 +119,7 @@ interface MutableSession
   > {
   completedStages: SessionStage[];
   attempts: PersistedAttempt[];
+  analysis: ReasoningAnalysisSnapshot | null;
   verification: VerificationSnapshot | null;
   intervention: InterventionSnapshot | null;
   transfer: SessionSnapshot["transfer"];
@@ -135,6 +155,18 @@ function cloneSession(session: MutableSession): SessionSnapshot {
     fallbackMode: session.fallbackMode,
     completedStages: [...session.completedStages],
     attempts: session.attempts.map((attempt) => ({ ...attempt })),
+    analysis: session.analysis
+      ? {
+          ...session.analysis,
+          summary: {
+            preservedUnderstanding: [
+              ...session.analysis.summary.preservedUnderstanding,
+            ],
+            stillUnclear: [...session.analysis.summary.stillUnclear],
+            nextSystemAction: session.analysis.summary.nextSystemAction,
+          },
+        }
+      : null,
     verification: session.verification ? { ...session.verification } : null,
     intervention: session.intervention ? { ...session.intervention } : null,
     transfer: session.transfer ? { ...session.transfer } : null,
@@ -176,6 +208,7 @@ export class InMemorySessionRepository {
       fallbackMode: true,
       completedStages: [],
       attempts: [],
+      analysis: null,
       verification: null,
       intervention: null,
       transfer: null,
@@ -245,6 +278,42 @@ export class InMemorySessionRepository {
     return snapshot;
   }
 
+  async mutateAsync(
+    sessionId: string,
+    idempotencyKey: string,
+    requestHash: string,
+    operation: (session: MutableSession) => Promise<void>,
+  ) {
+    const session = sessions.get(sessionId);
+    if (!session) {
+      throw new SessionEngineError(
+        "SESSION_NOT_FOUND",
+        `Session ${sessionId} was not found.`,
+      );
+    }
+
+    const replay = session.idempotency.get(idempotencyKey);
+    if (replay) {
+      if (replay.requestHash !== requestHash) {
+        throw new SessionEngineError(
+          "IDEMPOTENCY_PAYLOAD_MISMATCH",
+          "This Idempotency-Key was already used with a different payload.",
+        );
+      }
+      return replay.response;
+    }
+
+    this.assertWritableBase(session, true);
+    await operation(session);
+    session.updatedAt = nowIso();
+    const snapshot = cloneSession(session);
+    session.idempotency.set(idempotencyKey, {
+      requestHash,
+      response: snapshot,
+    });
+    return snapshot;
+  }
+
   addAttempt(
     session: MutableSession,
     input: AttemptInput,
@@ -288,6 +357,17 @@ export class InMemorySessionRepository {
       answer: input.answer,
       explanation: input.explanation,
       success: input.answer.trim() === demoTransfer.correctAnswer,
+    };
+  }
+
+  setAnalysis(
+    session: MutableSession,
+    analysis: Omit<ReasoningAnalysisSnapshot, "id" | "createdAt">,
+  ) {
+    session.analysis = {
+      id: crypto.randomUUID(),
+      createdAt: nowIso(),
+      ...analysis,
     };
   }
 
