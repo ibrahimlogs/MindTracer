@@ -4,6 +4,7 @@ export {
   idempotencyKeySchema,
   interventionAcknowledgeSchema,
   interventionMoreHelpSchema,
+  retryAttemptSchema,
   sessionPathSchema,
   transferSubmitSchema,
   verificationSubmitSchema,
@@ -13,12 +14,13 @@ export type {
   CreateSessionInput,
   InterventionAcknowledgeInput,
   InterventionMoreHelpInput,
+  RetryAttemptInput,
   TransferSubmitInput,
   VerificationSubmitInput,
 } from "./contracts";
 export { SessionEngineError, toSessionEngineError } from "./errors";
 export { inMemorySessionRepository } from "./repository";
-export type { SessionSnapshot } from "./repository";
+export type { SessionSnapshot, SupportUsageSummary } from "./repository";
 export { sessionEngine } from "./service";
 export type {
   AttemptType,

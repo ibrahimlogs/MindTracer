@@ -121,6 +121,16 @@ Learner-facing responses do not expose internal misconception IDs as labels, mod
 
 Intervention responses are hydrated through the session snapshot. Learner-facing content must preserve prior understanding, avoid diagnosis labels, and avoid final-answer leakage below the full-reconstruction level.
 
+## Step 9 retry, delta and transfer behavior
+
+`POST /api/sessions/[sessionId]/retry` saves the retry attempt, runs retry reasoning extraction, stores it separately from the initial analysis, and advances to `retry_submitted`.
+
+`POST /api/sessions/[sessionId]/delta` compares initial and retry reasoning with the fixed qualitative rubric and advances to `reasoning_delta`.
+
+`POST /api/sessions/[sessionId]/transfer/start` requires a transfer-ready Reasoning Delta, selects a curated transfer problem, applies independent support fading, and advances to `transfer_presented`.
+
+`POST /api/sessions/[sessionId]/transfer/submit` saves transfer evidence, runs transfer reasoning extraction, evaluates transfer, generates the final report, advances through `transfer_submitted`, and completes the session when the report is valid.
+
 ## Step 6 analysis response
 
 `POST /api/sessions/[sessionId]/analysis` now runs the selected reasoning analyzer.

@@ -14,13 +14,15 @@ Implemented now:
 - safety validation for answer leakage and full-answer reveal policy;
 - a lazy server-only OpenAI adapter boundary.
 
-Not implemented in Step 8:
+Implemented after Step 8:
 
-- reasoning-delta comparison;
-- transfer evaluation;
-- final teacher reporting;
+- Step 9 now consumes intervention history and support summaries when evaluating retry independence and transfer readiness.
+
+Still not implemented:
+
 - free-form tutoring;
-- production personalization.
+- production personalization;
+- teacher dashboard.
 
 ## Policy
 

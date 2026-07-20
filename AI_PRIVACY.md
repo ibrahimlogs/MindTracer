@@ -66,3 +66,9 @@ If `MISCONCEPTION_RANKER_MODE=openai`, only a bounded ranking payload is sent: s
 `INTERVENTION_SELECTOR_MODE=deterministic` and `INTERVENTION_ADAPTER_MODE=deterministic` avoid OpenAI calls entirely.
 
 The intervention adapter boundary is server-only and lazy. If a future live adapter is enabled, it must receive only the verified state, curated intervention record, bounded support level, learner-safe preserved-understanding summary, and prompt version. It must not receive API keys client-side, raw hidden reasoning, authentication identifiers, or unrelated session history.
+
+## Step 9 Reasoning Delta and transfer
+
+`REASONING_DELTA_MODE=deterministic` and `TRANSFER_EVALUATOR_MODE=deterministic` avoid OpenAI calls entirely.
+
+If future live evaluators are enabled, they may receive only the current problem, transfer problem, fixed rubric, structured initial/retry/transfer evidence, verification summary, intervention support summary, and prompt version. They may not receive learner identity, unrelated session history, other learners' responses, hidden database identifiers, or full curriculum data.

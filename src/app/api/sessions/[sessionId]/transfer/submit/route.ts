@@ -24,7 +24,7 @@ export async function POST(request: NextRequest, { params }: RouteProps) {
     const input = await parseJson(request, transferSubmitSchema);
     const idempotencyKey = parseIdempotencyKey(request);
     return sessionSuccess(
-      sessionEngine.submitTransfer(path.sessionId, input, idempotencyKey),
+      await sessionEngine.submitTransfer(path.sessionId, input, idempotencyKey),
       201,
       requestId,
     );

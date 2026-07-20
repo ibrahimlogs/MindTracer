@@ -116,16 +116,20 @@ describe("session engine", () => {
     ).toThrow(SessionEngineError);
   });
 
-  it("rejects retry before intervention", () => {
+  it("rejects retry before intervention", async () => {
     const session = createSession();
 
-    expect(() =>
+    await expect(
       sessionEngine.submitRetry(
         session.publicId,
-        { ...attempt, submissionKey: "retry-before-1" },
+        {
+          ...attempt,
+          confidence: "Somewhat confident",
+          submissionKey: "retry-before-1",
+        },
         "idem-retry-before-1",
       ),
-    ).toThrow(SessionEngineError);
+    ).rejects.toThrow(SessionEngineError);
   });
 
   it("rejects transfer before a delta report exists", () => {
@@ -151,21 +155,29 @@ describe("session engine", () => {
   it("completes the deterministic session and then rejects writes", async () => {
     const session = createSession();
     await progressToInterventionShown(session.publicId);
-    sessionEngine.submitRetry(
+    await sessionEngine.submitRetry(
       session.publicId,
-      { ...attempt, answer: "11", submissionKey: "retry-complete-1" },
+      {
+        ...attempt,
+        answer: "11",
+        explanation:
+          "Advertising increases by 1 each time, while sales increases by 2. From advertising 3 to 5 there are two more steps, so sales becomes 7 + 2 + 2 = 11.",
+        confidence: "Somewhat confident",
+        submissionKey: "retry-complete-1",
+      },
       "idem-retry-complete-1",
     );
-    sessionEngine.createDelta(session.publicId, "idem-delta-complete-1");
+    await sessionEngine.createDelta(session.publicId, "idem-delta-complete-1");
     sessionEngine.startTransfer(
       session.publicId,
       "idem-transfer-start-complete-1",
     );
-    const completed = sessionEngine.submitTransfer(
+    const completed = await sessionEngine.submitTransfer(
       session.publicId,
       {
         answer: "64",
         explanation: "The score increases by 3 each hour.",
+        confidence: "Confident",
         supportUsed: false,
         submissionKey: "transfer-complete-1",
       },
@@ -173,13 +185,17 @@ describe("session engine", () => {
     );
 
     expect(completed.status).toBe("completed");
-    expect(() =>
+    await expect(
       sessionEngine.submitRetry(
         session.publicId,
-        { ...attempt, submissionKey: "retry-after-complete-1" },
+        {
+          ...attempt,
+          confidence: "Somewhat confident",
+          submissionKey: "retry-after-complete-1",
+        },
         "idem-retry-after-complete-1",
       ),
-    ).toThrow(SessionEngineError);
+    ).rejects.toThrow(SessionEngineError);
   });
 
   it("restarts by cloning the session setup into a new active session", () => {

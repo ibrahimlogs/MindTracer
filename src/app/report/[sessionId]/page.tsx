@@ -3,11 +3,13 @@ import Link from "next/link";
 
 import { PageShell, SectionContainer } from "@/components/layout/primitives";
 import { PageHeader } from "@/components/layout/section-header";
+import { DeltaOverview } from "@/components/reasoning-delta";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { Button } from "@/components/ui/button";
 import { ElevatedSurface } from "@/components/ui/surface";
 import { demoLearners } from "@/data/demo/demo-learners";
 import { getMisconceptionById, getRubricById } from "@/data/education";
+import { sessionEngine, SessionEngineError } from "@/lib/session-engine";
 
 export const metadata: Metadata = {
   title: "Reasoning Delta Report",
@@ -25,7 +27,73 @@ const sections = [
   ["Next concept", "nextConcept"],
 ] as const;
 
-export default function ReportPage() {
+interface ReportPageProps {
+  params: Promise<{ sessionId: string }>;
+}
+
+function loadReportSession(sessionId: string) {
+  try {
+    const session = sessionEngine.getSession(sessionId);
+    return session.report ? session : null;
+  } catch (error) {
+    if (error instanceof SessionEngineError) return null;
+    throw error;
+  }
+}
+
+export default async function ReportPage({ params }: ReportPageProps) {
+  const { sessionId } = await params;
+  const session = loadReportSession(sessionId);
+
+  if (session?.report) {
+    return (
+      <PageShell>
+        <section className="py-16 sm:py-24">
+          <SectionContainer>
+            <PageHeader
+              eyebrow="Reasoning Delta report"
+              title="Evidence, not just a score."
+              description="This report separates the starting model, preserved understanding, verified conflict, support used, revised reasoning, and transfer evidence."
+            />
+            <div className="mt-10 grid gap-5 lg:grid-cols-[0.8fr_1.2fr]">
+              <ElevatedSurface className="p-5">
+                <p className="text-xs font-medium tracking-[0.14em] text-text-muted uppercase">
+                  Final summary
+                </p>
+                <h2 className="mt-2 text-2xl font-semibold text-text-primary">
+                  {session.currentLearnerKey === "learner-b"
+                    ? "Learner B"
+                    : "Learner A"}
+                </h2>
+                <p className="mt-4 text-sm leading-6 text-text-secondary">
+                  {session.report.learnerFacingSummary}
+                </p>
+                <div className="mt-5 rounded-lg border border-border bg-surface-inset p-4 text-sm text-text-secondary">
+                  <p>Transfer challenge: {session.report.transferChallenge}</p>
+                  <p className="mt-2">
+                    Next concept: {session.report.nextConcept}
+                  </p>
+                </div>
+              </ElevatedSurface>
+              <DeltaOverview report={session.report} />
+            </div>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button asChild>
+                <Link href={`/demo/session/${session.publicId}?mode=compare`}>
+                  Replay reasoning journey
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/demo">Restart session</Link>
+              </Button>
+            </div>
+          </SectionContainer>
+        </section>
+        <SiteFooter />
+      </PageShell>
+    );
+  }
+
   return (
     <PageShell>
       <section className="py-16 sm:py-24">

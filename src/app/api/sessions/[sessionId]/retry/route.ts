@@ -7,7 +7,7 @@ import {
   sessionSuccess,
 } from "@/app/api/sessions/route-utils";
 import {
-  attemptSchema,
+  retryAttemptSchema,
   sessionEngine,
   sessionPathSchema,
 } from "@/lib/session-engine";
@@ -21,10 +21,10 @@ export async function POST(request: NextRequest, { params }: RouteProps) {
 
   try {
     const path = sessionPathSchema.parse(await params);
-    const input = await parseJson(request, attemptSchema);
+    const input = await parseJson(request, retryAttemptSchema);
     const idempotencyKey = parseIdempotencyKey(request);
     return sessionSuccess(
-      sessionEngine.submitRetry(path.sessionId, input, idempotencyKey),
+      await sessionEngine.submitRetry(path.sessionId, input, idempotencyKey),
       201,
       requestId,
     );

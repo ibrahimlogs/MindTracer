@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 
 import { ReasoningDelta } from "@/components/reasoning";
+import { DeltaOverview } from "@/components/reasoning-delta";
 import { getStageIndex } from "@/lib/demo-learning/stages";
 import type { SessionSnapshot } from "@/lib/session-engine";
 import type { DemoLearner, LearningStage } from "@/types/demo-learning";
@@ -22,6 +23,7 @@ interface ReasoningWorkspaceCanvasProps {
   hypotheses: SessionSnapshot["hypotheses"];
   verification: SessionSnapshot["verification"];
   intervention: SessionSnapshot["intervention"];
+  report: SessionSnapshot["report"];
 }
 
 export function ReasoningWorkspaceCanvas({
@@ -31,6 +33,7 @@ export function ReasoningWorkspaceCanvas({
   hypotheses,
   verification,
   intervention,
+  report,
 }: ReasoningWorkspaceCanvasProps) {
   const index = getStageIndex(stage);
 
@@ -134,7 +137,11 @@ export function ReasoningWorkspaceCanvas({
       ) : null}
       {stage === "retry_submitted" ? <EquationBridge /> : null}
       {stage === "reasoning_delta" ? (
-        <ReasoningDelta learner={learner} />
+        report ? (
+          <DeltaOverview report={report} />
+        ) : (
+          <ReasoningDelta learner={learner} />
+        )
       ) : null}
       {stage === "transfer_presented" ||
       stage === "transfer_submitted" ||

@@ -55,6 +55,10 @@ export function WorkspaceShell({ mode, sessionId }: WorkspaceShellProps) {
   const interventionSummary = useLearningSessionStore(
     (state) => state.interventionSummary,
   );
+  const report = useLearningSessionStore((state) => state.report);
+  const serverSessionId = useLearningSessionStore(
+    (state) => state.serverSessionId,
+  );
   const selectLearner = useLearningSessionStore((state) => state.selectLearner);
   const setDemoMode = useLearningSessionStore((state) => state.setDemoMode);
   const loadSession = useLearningSessionStore((state) => state.loadSession);
@@ -216,7 +220,7 @@ export function WorkspaceShell({ mode, sessionId }: WorkspaceShellProps) {
                     Session complete. Transfer evidence is ready for review.
                   </p>
                   <Button asChild>
-                    <Link href="/report/demo-session">
+                    <Link href={`/report/${serverSessionId ?? "demo-session"}`}>
                       Open Reasoning Delta report
                     </Link>
                   </Button>
@@ -237,6 +241,7 @@ export function WorkspaceShell({ mode, sessionId }: WorkspaceShellProps) {
                 hypotheses={hypothesesSummary}
                 verification={verificationQuestion}
                 intervention={interventionSummary}
+                report={report}
               />
             </div>
           </ElevatedSurface>
@@ -249,6 +254,7 @@ export function WorkspaceShell({ mode, sessionId }: WorkspaceShellProps) {
               hypotheses={hypothesesSummary}
               verification={verificationQuestion}
               intervention={interventionSummary}
+              report={report}
               mode={mode}
             />
           </ElevatedSurface>

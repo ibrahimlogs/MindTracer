@@ -8,8 +8,8 @@
 - [x] **Step 6 - OpenAI Structured Reasoning Extraction:** Analyzer interface, deterministic/OpenAI/fallback implementations, Responses API Structured Outputs, prompt versioning, safety validation, evaluation harness, smoke-test command, safe UI summary, and session integration.
 - [x] **Step 7 - Misconception Hypothesis Ranking and Verification Engine:** Candidate retrieval, hypothesis ranking, verification policy, question selection, response evaluation, audit snapshots, learner-safe UI, and prototype verification evaluation.
 - [x] **Step 8 - Adaptive Intervention Engine and Animated Reasoning Visualizers:** Deliver bounded hints tied to a verified misconception and animate the smallest useful support.
-- [ ] **Step 9 - Retry Analysis, Reasoning Delta and Transfer Evaluation:** Measure independent application and explain observations separately from inference.
-- [ ] **Step 10 - Competition hardening:** Add evaluation datasets, observability, safety controls, accessibility review, and deployment checks.
+- [x] **Step 9 - Retry Analysis, Reasoning Delta and Transfer Evaluation:** Measure independent application and explain observations separately from inference.
+- [ ] **Step 10 - Judge Mode, Reliability Hardening and Submission Package:** Add judge mode, reliability polish, final evaluation presentation, and submission packaging.
 
 ## Step 2 verification record
 
@@ -84,5 +84,17 @@
 - Live OpenAI intervention smoke test was skipped because no API key is configured.
 - Pending verification: Run migration, seed, persistence smoke tests, and optional live OpenAI intervention review against configured services before final submission.
 - Known limitations: intervention selection remains prototype-scale and deterministic by default, evaluation cases remain handcrafted and not externally benchmarked, OpenAI intervention quality is not claimed without live reviewed outputs, and Step 9 retry analysis/reasoning-delta/transfer evaluation is intentionally not implemented.
+
+## Step 9 verification record
+
+- Retry submission now stores retry attempts, runs retry reasoning extraction, and preserves the initial analysis separately.
+- `src/lib/reasoning-delta` implements deterministic before/after comparison, fixed qualitative rubric dimensions, safety validation, lazy OpenAI boundary, telemetry, and report mapping.
+- `src/lib/transfer-engine` implements curated transfer selection, independent support fading, deterministic transfer evaluation, lazy OpenAI boundary, safety validation, and telemetry.
+- Final reports now include starting mental model, preserved understanding, hypotheses considered, verification evidence, verified learning need, intervention family/support level, revised mental model, Reasoning Delta, transfer challenge/outcome, support used, remaining gaps, and next concept.
+- `pnpm evaluate:reasoning-delta -- --mode=deterministic` and `pnpm evaluate:transfer -- --mode=deterministic` wrote local gitignored artifacts.
+- Deterministic Delta verified; deterministic transfer verified; mocked/no-key OpenAI failure boundaries verified by optional smoke skip behavior.
+- Live OpenAI Delta and transfer smoke tests were skipped because no API key is configured.
+- Live PostgreSQL verification remains pending.
+- Known limitations: deterministic evaluators are prototype-scale, evaluation cases are safety/regression examples rather than educational outcome results, live OpenAI quality is not claimed, and Step 10 judge-mode polish/submission packaging is intentionally not implemented.
 
 Only a step that is implemented and passes its defined checks should be marked complete.

@@ -16,7 +16,7 @@ interface TransferFormProps {
 export function TransferForm({ onSubmit }: TransferFormProps) {
   const form = useForm<RetryValues>({
     resolver: zodResolver(transferSchema),
-    defaultValues: { answer: "", explanation: "" },
+    defaultValues: { answer: "", explanation: "", confidence: "Confident" },
   });
 
   return (
@@ -40,6 +40,15 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
           error={form.formState.errors.explanation}
         />
       </label>
+      <label className="block">
+        <span className={labelClassName}>Transfer confidence</span>
+        <select className={inputClassName} {...form.register("confidence")}>
+          <option>Confident</option>
+          <option>Somewhat confident</option>
+          <option>Unsure</option>
+          <option>Guessing</option>
+        </select>
+      </label>
       <div className="flex flex-wrap gap-2">
         <Button
           type="button"
@@ -48,6 +57,7 @@ export function TransferForm({ onSubmit }: TransferFormProps) {
             form.reset({
               answer: demoTransfer.correctAnswer,
               explanation: demoTransfer.explanation,
+              confidence: "Confident",
             })
           }
         >

@@ -13,6 +13,7 @@ interface GuidePanelProps {
   hypotheses: SessionSnapshot["hypotheses"];
   verification: SessionSnapshot["verification"];
   intervention: SessionSnapshot["intervention"];
+  report: SessionSnapshot["report"];
   mode: DemoMode;
 }
 
@@ -42,6 +43,7 @@ export function GuidePanel({
   hypotheses,
   verification,
   intervention,
+  report,
   mode,
 }: GuidePanelProps) {
   const index = getStageIndex(stage);
@@ -240,6 +242,21 @@ export function GuidePanel({
             </p>
           </div>
         </GuideSection>
+      ) : null}
+      {index >= getStageIndex("reasoning_delta") && report ? (
+        <section className="rounded-lg border border-border bg-surface-inset p-4">
+          <h3 className="text-xs font-medium tracking-[0.14em] text-text-muted uppercase">
+            Reasoning Delta
+          </h3>
+          <p className="mt-2 text-sm leading-6 text-text-secondary">
+            {report.learnerFacingSummary}
+          </p>
+          <ul className="mt-3 space-y-2 text-sm text-text-secondary">
+            {report.remainingGaps.map((gap) => (
+              <li key={gap}>{gap}</li>
+            ))}
+          </ul>
+        </section>
       ) : null}
       {index >= getStageIndex("retry_required") ? (
         <GuideSection title="Retry guidance">

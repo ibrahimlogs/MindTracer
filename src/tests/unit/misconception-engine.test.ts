@@ -60,6 +60,7 @@ function createSession(attempt: PersistedAttempt): SessionSnapshot {
     completedStages: [],
     attempts: [attempt],
     analysis: null,
+    retryAnalysis: null,
     hypotheses: null,
     verification: null,
     intervention: null,

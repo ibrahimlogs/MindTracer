@@ -10,6 +10,8 @@
 /artifacts/reasoning-evaluation
 /artifacts/verification-evaluation
 /artifacts/intervention-evaluation
+/artifacts/reasoning-delta-evaluation
+/artifacts/transfer-evaluation
 
 # next.js
 /.next
