@@ -1,6 +1,6 @@
 # Session engine
 
-Step 5 introduced an anonymous session lifecycle behind the MindTrace demo. Step 7 adds server-authoritative misconception ranking and verification checkpoints inside that lifecycle.
+Step 5 introduced an anonymous session lifecycle behind the MindTrace demo. Steps 7 and 8 add server-authoritative misconception ranking, verification checkpoints, and adaptive intervention delivery inside that lifecycle.
 
 ## State machine
 
@@ -18,11 +18,15 @@ The Prisma schema and migration define PostgreSQL product tables for educational
 
 When `DATABASE_URL` is not configured, the session API uses explicit in-memory fallback mode for development review. Fallback mode is not durable across server restarts and does not pretend to be production persistence.
 
-The fallback repository now stores retrieved candidates, ranked hypotheses, the verification policy decision, pending/answered verification interaction data, hypothesis-before and hypothesis-after JSON, and session events for the Step 7 audit trail.
+The fallback repository now stores retrieved candidates, ranked hypotheses, the verification policy decision, pending/answered verification interaction data, hypothesis-before and hypothesis-after JSON, intervention snapshots, intervention history, support-usage summaries, and session events for the audit trail.
 
 ## Step 7 services
 
 Hypothesis generation is no longer a demo-only stub. `/hypotheses` runs candidate retrieval, ranking, policy, and audit persistence. `/verification` creates one curated question for the current hypothesis state. `/verification/submit` evaluates the learner response and advances to `intervention_ready` or one additional bounded verification check.
+
+## Step 8 services
+
+`/interventions` runs intervention selection after verification has resolved the learning need. `/interventions/more-help` records a learner-requested escalation and returns the next allowed support level. `/interventions/acknowledge` marks the support as seen and unlocks retry submission.
 
 ## Deterministic services
 
@@ -67,4 +71,4 @@ Without `--execute`, cleanup is a dry run. No cleanup runs during normal request
 - In-memory fallback is process-local and not durable.
 - Database-backed repository operations are scaffolded through Prisma schema, migration, and seed scripts; this workspace validation did not have a live PostgreSQL URL.
 - Sessions are anonymous.
-- No authentication, production analytics, or automated cleanup exists yet.
+- No authentication, production analytics, retry analysis, transfer expansion, or automated cleanup exists yet.

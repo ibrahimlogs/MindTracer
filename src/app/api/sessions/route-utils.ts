@@ -3,6 +3,7 @@ import { ZodError, type ZodType } from "zod";
 
 import { apiError, apiSuccess } from "@/lib/api/response";
 import { AiReasoningError } from "@/lib/ai/reasoning";
+import { InterventionEngineError } from "@/lib/intervention-engine";
 import { MisconceptionEngineError } from "@/lib/misconception-engine";
 import {
   idempotencyKeySchema,
@@ -46,6 +47,16 @@ export function handleRouteError(error: unknown, requestId?: string) {
     return apiError(
       "INTERNAL_ERROR",
       "Misconception verification is temporarily unavailable.",
+      500,
+      { code: error.code, ...error.details },
+      { requestId },
+    );
+  }
+
+  if (error instanceof InterventionEngineError) {
+    return apiError(
+      "INTERNAL_ERROR",
+      "Intervention selection is temporarily unavailable.",
       500,
       { code: error.code, ...error.details },
       { requestId },

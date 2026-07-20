@@ -13,6 +13,7 @@ import { EquationBridge } from "./equation-bridge";
 import { HypothesisBranch } from "./hypothesis-branch";
 import { MultiplicationContrast } from "./multiplication-contrast";
 import { TransferVisualizer } from "./transfer-visualizer";
+import { InterventionCanvas } from "./interventions";
 
 interface ReasoningWorkspaceCanvasProps {
   learner: DemoLearner;
@@ -20,6 +21,7 @@ interface ReasoningWorkspaceCanvasProps {
   analysis: SessionSnapshot["analysis"];
   hypotheses: SessionSnapshot["hypotheses"];
   verification: SessionSnapshot["verification"];
+  intervention: SessionSnapshot["intervention"];
 }
 
 export function ReasoningWorkspaceCanvas({
@@ -28,6 +30,7 @@ export function ReasoningWorkspaceCanvas({
   analysis,
   hypotheses,
   verification,
+  intervention,
 }: ReasoningWorkspaceCanvasProps) {
   const index = getStageIndex(stage);
 
@@ -121,7 +124,9 @@ export function ReasoningWorkspaceCanvas({
         </div>
       ) : null}
       {stage === "intervention_shown" || stage === "retry_required" ? (
-        learner.id === "learner-a" ? (
+        intervention ? (
+          <InterventionCanvas intervention={intervention} />
+        ) : learner.id === "learner-a" ? (
           <DifferenceVisualizer />
         ) : (
           <MultiplicationContrast />

@@ -7,8 +7,8 @@
 - [x] **Step 5 - Persistent Session Engine, Database Schema and API Contracts:** PostgreSQL schema and migration, dataset seed script, anonymous session APIs, server lifecycle guards, idempotency, refresh/resume hydration, fallback mode, cleanup script, and documentation.
 - [x] **Step 6 - OpenAI Structured Reasoning Extraction:** Analyzer interface, deterministic/OpenAI/fallback implementations, Responses API Structured Outputs, prompt versioning, safety validation, evaluation harness, smoke-test command, safe UI summary, and session integration.
 - [x] **Step 7 - Misconception Hypothesis Ranking and Verification Engine:** Candidate retrieval, hypothesis ranking, verification policy, question selection, response evaluation, audit snapshots, learner-safe UI, and prototype verification evaluation.
-- [ ] **Step 8 - Adaptive Intervention Engine and Animated Reasoning Visualizers:** Deliver bounded hints tied to a verified misconception and animate the smallest useful support.
-- [ ] **Step 9 - Reasoning Delta transfer expansion:** Measure independent application and explain observations separately from inference.
+- [x] **Step 8 - Adaptive Intervention Engine and Animated Reasoning Visualizers:** Deliver bounded hints tied to a verified misconception and animate the smallest useful support.
+- [ ] **Step 9 - Retry Analysis, Reasoning Delta and Transfer Evaluation:** Measure independent application and explain observations separately from inference.
 - [ ] **Step 10 - Competition hardening:** Add evaluation datasets, observability, safety controls, accessibility review, and deployment checks.
 
 ## Step 2 verification record
@@ -71,5 +71,18 @@
 - Live OpenAI ranking smoke test was skipped because no API key is configured. Live OpenAI verification smoke test was skipped because no API key is configured.
 - Pending verification: Run migration, seed and persistence smoke tests against live PostgreSQL before final submission.
 - Known limitations: the deterministic ranker is prototype-scale, evaluation cases remain handcrafted and not externally benchmarked, OpenAI ranker quality is not claimed without live reviewed outputs, and Step 8 intervention delivery/animation is intentionally not implemented.
+
+## Step 8 verification record
+
+- `src/lib/intervention-engine` now implements deterministic family resolution, starting-level policy, ordered escalation, learner-requested more-help handling, server-only lazy OpenAI adapter boundary, safety validation, rendering config, and telemetry.
+- `/api/sessions/[sessionId]/interventions`, `/interventions/more-help`, and `/interventions/acknowledge` select, escalate, acknowledge, and audit bounded support through the session service.
+- Session snapshots now include the active intervention, intervention history, and support-usage summary without requiring a database connection in fallback mode.
+- The Learning Workspace renders server-selected intervention content and learner-safe policy details, while local static demo restart paths still render fallback intervention visuals.
+- Animated intervention visualizers now cover consecutive differences, additive/multiplicative contrast, slope/intercept bridging, variable-role checks, arithmetic checks, and conservative evidence comparison.
+- `pnpm evaluate:intervention -- --mode=deterministic` ran over 30 prototype cases and wrote `artifacts/intervention-evaluation/latest.json`.
+- Deterministic evaluation results: intervention-family agreement `0.7667`, starting-level agreement `1`, visualizer-type agreement `0.7667`, answer-leakage rate `0`, forbidden-level rate `0`, unknown-record rate `0`, preserved-understanding validity `1`, escalation-policy agreement `1`, prohibited-output rate `0`, fallback rate `0`, average latency `0ms`.
+- Live OpenAI intervention smoke test was skipped because no API key is configured.
+- Pending verification: Run migration, seed, persistence smoke tests, and optional live OpenAI intervention review against configured services before final submission.
+- Known limitations: intervention selection remains prototype-scale and deterministic by default, evaluation cases remain handcrafted and not externally benchmarked, OpenAI intervention quality is not claimed without live reviewed outputs, and Step 9 retry analysis/reasoning-delta/transfer evaluation is intentionally not implemented.
 
 Only a step that is implemented and passes its defined checks should be marked complete.

@@ -35,7 +35,15 @@ async function progressToInterventionShown(sessionId: string) {
     { response: "The change is +2.", submissionKey: "verify-key-0001" },
     "idem-verify-0001",
   );
-  return sessionEngine.acknowledgeIntervention(sessionId, "idem-ack-0001");
+  await sessionEngine.selectIntervention(sessionId, "idem-intervention-0001");
+  return sessionEngine.acknowledgeIntervention(
+    sessionId,
+    {
+      interactionType: "let_me_try_again",
+      submissionKey: "ack-key-0001",
+    },
+    "idem-ack-0001",
+  );
 }
 
 describe("session engine", () => {

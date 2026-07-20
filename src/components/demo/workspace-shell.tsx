@@ -52,6 +52,9 @@ export function WorkspaceShell({ mode, sessionId }: WorkspaceShellProps) {
   const verificationQuestion = useLearningSessionStore(
     (state) => state.verificationQuestion,
   );
+  const interventionSummary = useLearningSessionStore(
+    (state) => state.interventionSummary,
+  );
   const selectLearner = useLearningSessionStore((state) => state.selectLearner);
   const setDemoMode = useLearningSessionStore((state) => state.setDemoMode);
   const loadSession = useLearningSessionStore((state) => state.loadSession);
@@ -68,6 +71,12 @@ export function WorkspaceShell({ mode, sessionId }: WorkspaceShellProps) {
   );
   const submitVerification = useLearningSessionStore(
     (state) => state.submitVerification,
+  );
+  const showIntervention = useLearningSessionStore(
+    (state) => state.showIntervention,
+  );
+  const requestMoreHelp = useLearningSessionStore(
+    (state) => state.requestMoreHelp,
   );
   const acknowledgeIntervention = useLearningSessionStore(
     (state) => state.acknowledgeIntervention,
@@ -177,9 +186,23 @@ export function WorkspaceShell({ mode, sessionId }: WorkspaceShellProps) {
                 />
               ) : null}
               {currentStage === "intervention_ready" ? (
-                <Button type="button" onClick={acknowledgeIntervention}>
+                <Button type="button" onClick={showIntervention}>
                   Show smallest useful intervention
                 </Button>
+              ) : null}
+              {currentStage === "intervention_shown" ? (
+                <div className="flex flex-wrap gap-2">
+                  <Button type="button" onClick={acknowledgeIntervention}>
+                    Let me try again
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={requestMoreHelp}
+                  >
+                    I need another hint
+                  </Button>
+                </div>
               ) : null}
               {currentStage === "retry_required" ? (
                 <RetryForm learner={learner} onSubmit={submitRetry} />
@@ -213,6 +236,7 @@ export function WorkspaceShell({ mode, sessionId }: WorkspaceShellProps) {
                 analysis={analysisSummary}
                 hypotheses={hypothesesSummary}
                 verification={verificationQuestion}
+                intervention={interventionSummary}
               />
             </div>
           </ElevatedSurface>
@@ -224,6 +248,7 @@ export function WorkspaceShell({ mode, sessionId }: WorkspaceShellProps) {
               analysis={analysisSummary}
               hypotheses={hypothesesSummary}
               verification={verificationQuestion}
+              intervention={interventionSummary}
               mode={mode}
             />
           </ElevatedSurface>

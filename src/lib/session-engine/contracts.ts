@@ -34,6 +34,16 @@ export const verificationSubmitSchema = z.object({
 
 export const interventionAcknowledgeSchema = z.object({
   submissionKey: submissionKeySchema,
+  interactionType: z
+    .enum(["i_see_pattern", "let_me_try_again", "replay_visual"])
+    .default("let_me_try_again"),
+});
+
+export const interventionMoreHelpSchema = z.object({
+  submissionKey: submissionKeySchema,
+  reason: z
+    .enum(["more_help", "worked_example", "full_answer_request"])
+    .default("more_help"),
 });
 
 export const transferSubmitSchema = z.object({
@@ -52,5 +62,8 @@ export type AttemptInput = z.infer<typeof attemptSchema>;
 export type VerificationSubmitInput = z.infer<typeof verificationSubmitSchema>;
 export type InterventionAcknowledgeInput = z.infer<
   typeof interventionAcknowledgeSchema
+>;
+export type InterventionMoreHelpInput = z.infer<
+  typeof interventionMoreHelpSchema
 >;
 export type TransferSubmitInput = z.infer<typeof transferSubmitSchema>;

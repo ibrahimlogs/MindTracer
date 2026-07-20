@@ -59,6 +59,8 @@ Interventions are ordered from light support to full reconstruction:
 
 Validation enforces reveal rules: early levels cannot reveal the full answer, level 1 cannot reveal partial or full answers, and full reconstruction is only level 8.
 
+Step 8 consumes these ladders through `src/lib/intervention-engine`. The deterministic selector can synthesize a bounded intermediate level when a curated ladder has a nearby reviewed record, but it still preserves the family, reveal policy, and answer-leakage guard.
+
 ## Rubrics
 
 The fixed rubrics cover constant difference, additive/multiplicative relationships, table-to-equation reasoning, and transfer reasoning. Dimensions use qualitative states such as `strong`, `developing`, `missing`, `incorrect`, and `insufficient_evidence`; the dataset does not create mastery percentages.
@@ -114,6 +116,6 @@ To review an evaluation case:
 
 - The dataset is prototype-scale and curated for product development, not a research benchmark.
 - Evaluation cases are handcrafted examples, not human-study results.
-- The demo still follows deterministic scripted learner paths.
+- The demo still follows deterministic scripted learner paths after intervention.
 - Step 5 adds a Prisma seed path for these records, but the dataset remains prototype-scale.
-- No OpenAI reasoning workflow or real misconception classifier is implemented yet.
+- OpenAI-backed ranking/adaptation boundaries are optional and not benchmark-validated in this workspace.

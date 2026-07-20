@@ -12,6 +12,7 @@ interface GuidePanelProps {
   analysis: SessionSnapshot["analysis"];
   hypotheses: SessionSnapshot["hypotheses"];
   verification: SessionSnapshot["verification"];
+  intervention: SessionSnapshot["intervention"];
   mode: DemoMode;
 }
 
@@ -40,6 +41,7 @@ export function GuidePanel({
   analysis,
   hypotheses,
   verification,
+  intervention,
   mode,
 }: GuidePanelProps) {
   const index = getStageIndex(stage);
@@ -204,7 +206,39 @@ export function GuidePanel({
       ) : null}
       {index >= getStageIndex("intervention_shown") ? (
         <GuideSection title="Smallest useful intervention">
-          {learner.intervention.summary}
+          {intervention ? (
+            <div className="space-y-3">
+              <p className="text-xs text-text-muted">
+                Support level: {intervention.supportLabel}
+              </p>
+              <p>{intervention.learnerFacingContent}</p>
+              {intervention.escalationAvailable ? (
+                <p className="text-xs text-text-muted">
+                  More help is available one step at a time.
+                </p>
+              ) : null}
+            </div>
+          ) : (
+            learner.intervention.summary
+          )}
+        </GuideSection>
+      ) : null}
+      {mode === "pipeline" && intervention ? (
+        <GuideSection title="Intervention policy">
+          <div className="space-y-2">
+            <p>Family: {intervention.family}</p>
+            <p>Level: {intervention.level}</p>
+            <p>Source: {intervention.selectionSource}</p>
+            <p>Visualizer: {intervention.visualizerType}</p>
+            <p>
+              Reveal: partial {intervention.revealsPartialAnswer ? "yes" : "no"}
+              , full {intervention.revealsFullAnswer ? "yes" : "no"}
+            </p>
+            <p>
+              Safety:{" "}
+              {intervention.safetyValidation.passed ? "passed" : "failed"}
+            </p>
+          </div>
         </GuideSection>
       ) : null}
       {index >= getStageIndex("retry_required") ? (

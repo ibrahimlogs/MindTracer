@@ -1,6 +1,6 @@
 # Planned architecture
 
-MindTrace is organized around a staged reasoning lifecycle while keeping model calls behind server boundaries. The current code establishes the technical, visual, dataset, anonymous session, and structured reasoning-extraction foundations.
+MindTrace is organized around a staged reasoning lifecycle while keeping model calls behind server boundaries. The current code establishes the technical, visual, dataset, anonymous session, structured reasoning-extraction, verification, and adaptive intervention foundations.
 
 ## Application layer
 
@@ -35,11 +35,15 @@ Step 5 adds Prisma product models and the initial migration for concepts, proble
 
 Step 7 adds `src/lib/misconception-engine`, the first real misconception-ranking boundary. It deterministically retrieves allowed candidates from the curated dataset, ranks no more than three, applies a verification policy, selects one approved verification template, evaluates the learner response, and records an audit trail. The engine can optionally use OpenAI for ranking, but only over deterministically retrieved candidate IDs.
 
+Step 8 adds `src/lib/intervention-engine`. It resolves a verified misconception to an intervention family, chooses a bounded support level, creates visualizer configuration, validates answer-leakage policy, records support usage, and exposes lazy deterministic/OpenAI adapter boundaries. Intervention visuals live under `src/components/visualization/interventions` and are driven by the server snapshot rather than client-side diagnosis logic.
+
 ## AI boundary
 
 `src/lib/ai/reasoning` owns Step 6 reasoning extraction. It defines a typed analyzer interface, deterministic analyzer, OpenAI Responses API analyzer, fallback factory, versioned prompt, Zod structured-output schema, safety validator, mapper, errors, and telemetry. The OpenAI analyzer uses Structured Outputs through `responses.parse`, requests `store: false`, validates output with Zod, and records only safe metadata.
 
 The Step 6 model extracts observable reasoning evidence only. Step 7 adds an optional OpenAI ranker for curated misconception candidates using prompt `misconception-ranker-v1`, Structured Outputs, and `store: false`. It may not create IDs, diagnose, teach, correct, reveal answers, or infer learner traits. Verification question selection and response evaluation currently run deterministic/fallback-safe paths.
+
+Step 8 adds a lazy server-only intervention adapter boundary. The deterministic selector is the default. Lower intervention levels must not reveal the final answer, and OpenAI adaptation is not initialized unless a server path explicitly requests it.
 
 ## State and validation
 
@@ -49,4 +53,4 @@ The server-side session engine defines the authoritative lifecycle transitions. 
 
 API handlers use consistent success/error envelopes with request metadata. The logger emits structured records behind a replaceable interface. Vitest covers isolated logic, fallback meaning, education dataset invariants, session transitions, idempotency, and guarded writes. Playwright uses the production server with bounded worker concurrency to verify routes, navigation, responsive layout, fallbacks, hydration behavior, API-created sessions, refresh/resume, reports, and the dataset explorer.
 
-Error reporting transport, analytics transport, rate limiting, production telemetry, durable learning sessions, live misconception logic, and real evaluation logic are planned but not implemented.
+Error reporting transport, analytics transport, rate limiting, production telemetry, durable learning sessions, retry analysis, transfer expansion, and real benchmark evaluation are planned but not implemented.

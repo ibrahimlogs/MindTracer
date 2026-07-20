@@ -1,6 +1,6 @@
 # Learning Workspace
 
-Step 3 implements a complete MindTrace learning journey with deterministic mocked data. Step 4 backs the shared educational content with a validated prototype dataset. Step 5 adds anonymous session APIs, generated session URLs, and refresh/resume hydration. Step 6 adds structured reasoning extraction. Step 7 adds misconception candidate retrieval, ranking, verification question selection, and verification response evaluation. The journey still runs without authentication, payments, full intervention delivery, or real benchmark calculations.
+Step 3 implements a complete MindTrace learning journey with deterministic mocked data. Step 4 backs the shared educational content with a validated prototype dataset. Step 5 adds anonymous session APIs, generated session URLs, and refresh/resume hydration. Step 6 adds structured reasoning extraction. Step 7 adds misconception candidate retrieval, ranking, verification question selection, and verification response evaluation. Step 8 adds bounded adaptive interventions and animated support visualizers. The journey still runs without authentication, payments, retry analysis, transfer expansion, or real benchmark calculations.
 
 ## Routes
 
@@ -46,7 +46,7 @@ Both paths share a transfer task: study hours and score follow `+3` per hour. Th
 
 ## Simulated features
 
-Reasoning analysis now uses the configured analyzer mode. Deterministic mode remains the default for ordinary development; OpenAI mode performs schema-constrained extraction only; fallback mode attempts OpenAI before deterministic extraction after retryable failure. Hypotheses, revised answers, transfer evidence, auto-play, and report remain deterministic prototype simulations. Verification questions, shared interventions, rubrics, misconception labels, and transfer problem metadata come from the prototype curated education dataset. Step 5 stores session snapshots in explicit in-memory fallback when no database is configured; with PostgreSQL configured, the Prisma schema and seed path are ready for durable session records. Future phases will add verified misconception ranking and model-backed verification behavior.
+Reasoning analysis now uses the configured analyzer mode. Deterministic mode remains the default for ordinary development; OpenAI mode performs schema-constrained extraction only; fallback mode attempts OpenAI before deterministic extraction after retryable failure. Hypotheses, verification, interventions, revised answers, transfer evidence, auto-play, and report remain deterministic prototype simulations unless a specific server adapter is configured. Verification questions, shared interventions, rubrics, misconception labels, and transfer problem metadata come from the prototype curated education dataset. Step 5 stores session snapshots in explicit in-memory fallback when no database is configured; with PostgreSQL configured, the Prisma schema and seed path are ready for durable session records.
 
 ## Analysis UI
 
@@ -57,4 +57,4 @@ During reasoning analysis, the workspace shows an intentional extraction sequenc
 - Separating observations from assumptions
 - Preparing the next reasoning check
 
-After analysis, the guide shows preserved understanding, what remains unclear, and the next system action. At the hypothesis stage it shows possible explanations rather than diagnosis labels. At verification it shows one small check, the expected response type, and why the check helps choose support. Pipeline mode also shows safe observed/inferred/unclear structured evidence, retrieved candidate IDs, matched signals, ranker source, confidence bands, and policy decisions without raw prompt text or hidden reasoning.
+After analysis, the guide shows preserved understanding, what remains unclear, and the next system action. At the hypothesis stage it shows possible explanations rather than diagnosis labels. At verification it shows one small check, the expected response type, and why the check helps choose support. During intervention, the guide shows the support label, preserved understanding, escalation availability, reveal flags, and safety status. Pipeline mode also shows safe observed/inferred/unclear structured evidence, retrieved candidate IDs, matched signals, ranker source, confidence bands, and policy decisions without raw prompt text or hidden reasoning.

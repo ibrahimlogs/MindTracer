@@ -60,3 +60,9 @@ Use `REASONING_ANALYZER_MODE=fallback` to keep sessions functional when retryabl
 If `MISCONCEPTION_RANKER_MODE=openai`, only a bounded ranking payload is sent: session public ID, problem ID, concept IDs, learner attempt summary, structured reasoning analysis, retrieved curated candidates, allowed candidate IDs, verification history, and prompt version. The ranker may only rank supplied candidate IDs and must not create diagnoses, verification questions, teaching content, or learner trait claims.
 
 `VERIFICATION_ADAPTER_MODE` and `VERIFICATION_EVALUATOR_MODE` are configured now, but Step 7 uses deterministic template adaptation and deterministic response evaluation in ordinary operation. Live verification smoke testing is opt-in and skipped without `OPENAI_API_KEY`.
+
+## Step 8 intervention selection
+
+`INTERVENTION_SELECTOR_MODE=deterministic` and `INTERVENTION_ADAPTER_MODE=deterministic` avoid OpenAI calls entirely.
+
+The intervention adapter boundary is server-only and lazy. If a future live adapter is enabled, it must receive only the verified state, curated intervention record, bounded support level, learner-safe preserved-understanding summary, and prompt version. It must not receive API keys client-side, raw hidden reasoning, authentication identifiers, or unrelated session history.
