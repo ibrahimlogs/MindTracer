@@ -1,6 +1,6 @@
 # Learning Workspace
 
-Step 3 implements a complete MindTrace learning journey with deterministic mocked data. Step 4 backs the shared educational content with a validated prototype dataset. Step 5 adds anonymous session APIs, generated session URLs, and refresh/resume hydration. Step 6 adds structured reasoning extraction. The journey still runs without authentication, payments, live misconception ranking, AI-generated verification, or real benchmark calculations.
+Step 3 implements a complete MindTrace learning journey with deterministic mocked data. Step 4 backs the shared educational content with a validated prototype dataset. Step 5 adds anonymous session APIs, generated session URLs, and refresh/resume hydration. Step 6 adds structured reasoning extraction. Step 7 adds misconception candidate retrieval, ranking, verification question selection, and verification response evaluation. The journey still runs without authentication, payments, full intervention delivery, or real benchmark calculations.
 
 ## Routes
 
@@ -57,4 +57,4 @@ During reasoning analysis, the workspace shows an intentional extraction sequenc
 - Separating observations from assumptions
 - Preparing the next reasoning check
 
-After analysis, the guide shows preserved understanding, what remains unclear, and the next system action. Pipeline mode also shows safe observed/inferred/unclear structured evidence without raw prompt text or hidden reasoning.
+After analysis, the guide shows preserved understanding, what remains unclear, and the next system action. At the hypothesis stage it shows possible explanations rather than diagnosis labels. At verification it shows one small check, the expected response type, and why the check helps choose support. Pipeline mode also shows safe observed/inferred/unclear structured evidence, retrieved candidate IDs, matched signals, ranker source, confidence bands, and policy decisions without raw prompt text or hidden reasoning.

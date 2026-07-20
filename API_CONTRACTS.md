@@ -100,9 +100,15 @@ Payloads are validated with Zod. Replaying the same key and same payload returns
 - `DATABASE_UNAVAILABLE`
 - `INTERNAL_ERROR`
 
-## Deterministic Step 5 behavior
+## Step 7 hypothesis and verification behavior
 
-Hypotheses, verification, interventions, reasoning delta, and transfer evaluation are deterministic and dataset-backed.
+`POST /api/sessions/[sessionId]/hypotheses` retrieves allowed misconception candidates, ranks up to three hypotheses, applies the verification policy, stores the hypothesis snapshot, records a `SessionEvent`, and advances to `verification_required` or `intervention_ready`.
+
+`POST /api/sessions/[sessionId]/verification` creates one pending verification interaction for the current hypothesis state. It does not duplicate an existing pending question for the same ranked hypotheses.
+
+`POST /api/sessions/[sessionId]/verification/submit` evaluates the learner response, saves before/after hypothesis JSON in the session snapshot, records supported/weakened/rejected hypotheses, and advances to `intervention_ready` unless one more bounded verification check is genuinely required.
+
+Learner-facing responses do not expose internal misconception IDs as labels, model confidence numbers, raw prompts, raw OpenAI payloads, or hidden database identifiers. Pipeline mode can show developer-safe candidate IDs, matched signals, ranker source, and policy decisions.
 
 ## Step 6 analysis response
 

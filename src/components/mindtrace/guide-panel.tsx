@@ -10,6 +10,8 @@ interface GuidePanelProps {
   learner: DemoLearner;
   stage: LearningStage;
   analysis: SessionSnapshot["analysis"];
+  hypotheses: SessionSnapshot["hypotheses"];
+  verification: SessionSnapshot["verification"];
   mode: DemoMode;
 }
 
@@ -36,6 +38,8 @@ export function GuidePanel({
   learner,
   stage,
   analysis,
+  hypotheses,
+  verification,
   mode,
 }: GuidePanelProps) {
   const index = getStageIndex(stage);
@@ -115,24 +119,87 @@ export function GuidePanel({
           </div>
         </GuideSection>
       ) : null}
+      {mode === "pipeline" && hypotheses ? (
+        <GuideSection title="Retrieval and ranking">
+          <div className="space-y-3">
+            <p>Ranker source: {hypotheses.ranking.rankerSource}</p>
+            <p>
+              Policy: {hypotheses.verificationDecision.reasonCode} (
+              {hypotheses.verificationDecision.riskIfSkipped} risk)
+            </p>
+            <div>
+              <p className="text-xs text-text-muted">Retrieved candidates</p>
+              <ul className="mt-1 space-y-1">
+                {hypotheses.retrievedCandidates.map((candidate) => (
+                  <li key={candidate.candidateId}>
+                    {candidate.candidateId}: {candidate.retrievalScoreBand}
+                    {candidate.matchedSignals.length
+                      ? ` — ${candidate.matchedSignals[0]}`
+                      : ""}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </GuideSection>
+      ) : null}
       {index >= getStageIndex("hypothesis_ready") ? (
         <GuideSection title="Possible explanations">
-          <p>There are two possible ideas behind this answer.</p>
+          <p>
+            {hypotheses?.ranking.safeLearnerMessage ??
+              "There are two possible ideas behind this answer."}
+          </p>
           <ul className="mt-2 space-y-2">
-            {learner.hypotheses.map((hypothesis) => (
-              <li key={hypothesis.id}>{hypothesis.label}</li>
-            ))}
+            {hypotheses
+              ? hypotheses.ranking.hypotheses.map((hypothesis) => (
+                  <li key={hypothesis.misconceptionId}>
+                    Possible explanation {hypothesis.rank}:{" "}
+                    {hypothesis.supportingEvidence[0] ??
+                      "MindTrace found partial evidence."}
+                    {hypothesis.conflictingEvidence[0] ? (
+                      <span className="block text-text-muted">
+                        Still checking: {hypothesis.conflictingEvidence[0]}
+                      </span>
+                    ) : null}
+                  </li>
+                ))
+              : learner.hypotheses.map((hypothesis) => (
+                  <li key={hypothesis.id}>{hypothesis.label}</li>
+                ))}
           </ul>
         </GuideSection>
       ) : null}
       {index >= getStageIndex("verification_required") ? (
         <GuideSection title="Verification">
-          {learner.verification.question}
+          <div className="space-y-2">
+            <p className="text-text-primary">One small check</p>
+            <p>{verification?.question ?? learner.verification.question}</p>
+            <p className="text-xs text-text-muted">
+              This helps MindTrace choose the right kind of support.
+            </p>
+          </div>
         </GuideSection>
       ) : null}
       {index >= getStageIndex("verification_submitted") ? (
         <GuideSection title="Confirmed learning need">
-          {learner.confirmedLearningNeed}
+          {verification?.hypothesisAfter ? (
+            <div className="space-y-2">
+              <p>
+                {
+                  verification.hypothesisAfter.safeLearnerSummary
+                    .verifiedLearningNeed
+                }
+              </p>
+              <p>
+                {
+                  verification.hypothesisAfter.safeLearnerSummary
+                    .nextSystemAction
+                }
+              </p>
+            </div>
+          ) : (
+            learner.confirmedLearningNeed
+          )}
         </GuideSection>
       ) : null}
       {index >= getStageIndex("intervention_shown") ? (

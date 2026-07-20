@@ -33,13 +33,13 @@ Step 3 deterministic learner scripts still live under `src/data/demo`, but share
 
 Step 5 adds Prisma product models and the initial migration for concepts, problems, misconceptions, anonymous sessions, attempts, deterministic analysis records, hypotheses, verification, interventions, transfers, reports, lifecycle events, and idempotency records. The seed script reads the validated Step 4 dataset and upserts educational records when a PostgreSQL URL is configured.
 
-Domain services are planned under `src/lib/misconception`, `intervention`, and `analytics`.
+Step 7 adds `src/lib/misconception-engine`, the first real misconception-ranking boundary. It deterministically retrieves allowed candidates from the curated dataset, ranks no more than three, applies a verification policy, selects one approved verification template, evaluates the learner response, and records an audit trail. The engine can optionally use OpenAI for ranking, but only over deterministically retrieved candidate IDs.
 
 ## AI boundary
 
 `src/lib/ai/reasoning` owns Step 6 reasoning extraction. It defines a typed analyzer interface, deterministic analyzer, OpenAI Responses API analyzer, fallback factory, versioned prompt, Zod structured-output schema, safety validator, mapper, errors, and telemetry. The OpenAI analyzer uses Structured Outputs through `responses.parse`, requests `store: false`, validates output with Zod, and records only safe metadata.
 
-The model extracts observable reasoning evidence only. Hypothesis ranking, verification question selection, intervention selection, delta evaluation, and transfer evaluation remain deterministic until later phases.
+The Step 6 model extracts observable reasoning evidence only. Step 7 adds an optional OpenAI ranker for curated misconception candidates using prompt `misconception-ranker-v1`, Structured Outputs, and `store: false`. It may not create IDs, diagnose, teach, correct, reveal answers, or infer learner traits. Verification question selection and response evaluation currently run deterministic/fallback-safe paths.
 
 ## State and validation
 

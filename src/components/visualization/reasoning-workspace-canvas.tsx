@@ -18,12 +18,16 @@ interface ReasoningWorkspaceCanvasProps {
   learner: DemoLearner;
   stage: LearningStage;
   analysis: SessionSnapshot["analysis"];
+  hypotheses: SessionSnapshot["hypotheses"];
+  verification: SessionSnapshot["verification"];
 }
 
 export function ReasoningWorkspaceCanvas({
   learner,
   stage,
   analysis,
+  hypotheses,
+  verification,
 }: ReasoningWorkspaceCanvasProps) {
   const index = getStageIndex(stage);
 
@@ -65,12 +69,55 @@ export function ReasoningWorkspaceCanvas({
           </div>
         </div>
       ) : null}
-      {stage === "hypothesis_ready" || stage === "verification_required" ? (
-        <HypothesisBranch learner={learner} />
+      {stage === "hypothesis_ready" ? (
+        hypotheses ? (
+          <div className="grid gap-3">
+            {hypotheses.ranking.hypotheses.map((hypothesis) => (
+              <div
+                key={hypothesis.misconceptionId}
+                className="rounded-lg border border-border bg-surface-inset p-4"
+              >
+                <p className="text-xs font-medium tracking-[0.14em] text-text-muted uppercase">
+                  Possible explanation {hypothesis.rank}
+                </p>
+                <p className="mt-2 text-sm text-text-primary">
+                  {hypothesis.supportingEvidence[0] ??
+                    "Partial evidence from the explanation."}
+                </p>
+                {hypothesis.conflictingEvidence[0] ? (
+                  <p className="mt-2 text-sm text-attention">
+                    Checking against: {hypothesis.conflictingEvidence[0]}
+                  </p>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <HypothesisBranch learner={learner} />
+        )
+      ) : null}
+      {stage === "verification_required" ? (
+        <div className="space-y-4">
+          <HypothesisBranch learner={learner} />
+          <div className="rounded-lg border border-reasoning/40 bg-reasoning/10 p-4 text-sm text-text-primary">
+            {verification?.question ?? learner.verification.focus}
+          </div>
+          {verification?.questionTemplateId ===
+          "vq_direction_without_rate_1" ? (
+            <AnimatedDataTable highlights={[0, 1]} />
+          ) : null}
+          {verification?.questionTemplateId ===
+          "vq_additive_as_multiplicative_1" ? (
+            <div className="rounded-lg border border-border bg-surface-inset p-4 text-sm text-text-secondary">
+              Claimed prediction at advertising = 2: 4. Observed table value: 5.
+            </div>
+          ) : null}
+        </div>
       ) : null}
       {stage === "verification_submitted" || stage === "intervention_ready" ? (
         <div className="rounded-lg border border-border bg-surface-inset p-4 text-sm text-text-primary">
-          {learner.verification.focus}
+          {verification?.hypothesisAfter?.safeLearnerSummary
+            .verifiedLearningNeed ?? learner.verification.focus}
         </div>
       ) : null}
       {stage === "intervention_shown" || stage === "retry_required" ? (

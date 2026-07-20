@@ -42,6 +42,8 @@ Misconception records describe observable reasoning patterns, not learner abilit
 
 Verification templates are controlled question patterns used to gather evidence for or against a misconception hypothesis. They include a goal, prompt template, expected and disconfirming evidence, answer format, difficulty, reveal policy, and reuse flag.
 
+Step 7 now selects from these templates before any optional wording adaptation. Learner A and Learner B both answer `10` on `ads_sales_001`, but their different reasoning evidence selects different verification questions from the same curated library.
+
 ## Intervention ladders
 
 Interventions are ordered from light support to full reconstruction:

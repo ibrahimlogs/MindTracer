@@ -14,11 +14,15 @@ import { FieldErrorText, inputClassName, labelClassName } from "./field-parts";
 
 interface VerificationResponseFormProps {
   learner: DemoLearner;
+  question?: string;
+  expectedResponseType?: string;
   onSubmit: (response: string) => void;
 }
 
 export function VerificationResponseForm({
   learner,
+  question,
+  expectedResponseType,
   onSubmit,
 }: VerificationResponseFormProps) {
   const form = useForm<ShortResponseValues>({
@@ -32,7 +36,14 @@ export function VerificationResponseForm({
       onSubmit={form.handleSubmit((values) => onSubmit(values.response))}
     >
       <label className="block">
-        <span className={labelClassName}>{learner.verification.question}</span>
+        <span className={labelClassName}>
+          {question ?? learner.verification.question}
+        </span>
+        {expectedResponseType ? (
+          <span className="mt-1 block text-xs text-text-muted">
+            Expected response: {expectedResponseType.replaceAll("_", " ")}
+          </span>
+        ) : null}
         <textarea
           className={`${inputClassName} min-h-20`}
           {...form.register("response")}

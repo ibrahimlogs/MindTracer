@@ -46,6 +46,12 @@ export function WorkspaceShell({ mode, sessionId }: WorkspaceShellProps) {
   const analysisSummary = useLearningSessionStore(
     (state) => state.analysisSummary,
   );
+  const hypothesesSummary = useLearningSessionStore(
+    (state) => state.hypothesesSummary,
+  );
+  const verificationQuestion = useLearningSessionStore(
+    (state) => state.verificationQuestion,
+  );
   const selectLearner = useLearningSessionStore((state) => state.selectLearner);
   const setDemoMode = useLearningSessionStore((state) => state.setDemoMode);
   const loadSession = useLearningSessionStore((state) => state.loadSession);
@@ -165,6 +171,8 @@ export function WorkspaceShell({ mode, sessionId }: WorkspaceShellProps) {
               {currentStage === "verification_required" ? (
                 <VerificationResponseForm
                   learner={learner}
+                  question={verificationQuestion?.question}
+                  expectedResponseType={verificationQuestion?.answerFormat}
                   onSubmit={submitVerification}
                 />
               ) : null}
@@ -203,6 +211,8 @@ export function WorkspaceShell({ mode, sessionId }: WorkspaceShellProps) {
                 learner={learner}
                 stage={currentStage}
                 analysis={analysisSummary}
+                hypotheses={hypothesesSummary}
+                verification={verificationQuestion}
               />
             </div>
           </ElevatedSurface>
@@ -212,6 +222,8 @@ export function WorkspaceShell({ mode, sessionId }: WorkspaceShellProps) {
               learner={learner}
               stage={currentStage}
               analysis={analysisSummary}
+              hypotheses={hypothesesSummary}
+              verification={verificationQuestion}
               mode={mode}
             />
           </ElevatedSurface>

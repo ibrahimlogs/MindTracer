@@ -6,11 +6,10 @@
 - [x] **Step 4 - Structured Educational Dataset and Misconception Library:** Prototype curated dataset, misconception taxonomy, validation command, typed loaders, dataset explorer, and Step 3 demo integration.
 - [x] **Step 5 - Persistent Session Engine, Database Schema and API Contracts:** PostgreSQL schema and migration, dataset seed script, anonymous session APIs, server lifecycle guards, idempotency, refresh/resume hydration, fallback mode, cleanup script, and documentation.
 - [x] **Step 6 - OpenAI Structured Reasoning Extraction:** Analyzer interface, deterministic/OpenAI/fallback implementations, Responses API Structured Outputs, prompt versioning, safety validation, evaluation harness, smoke-test command, safe UI summary, and session integration.
-- [ ] **Step 7 - Misconception Hypothesis Ranking and Verification Engine:** Rank misconception hypotheses and select verification checks from structured evidence.
-- [ ] **Step 8 - Targeted verification:** Implement discriminating questions and evidence updates.
-- [ ] **Step 9 - Minimal intervention:** Deliver bounded hints tied to a verified misconception.
-- [ ] **Step 10 - Transfer evaluation and evidence report:** Measure independent application and explain observations separately from inference.
-- [ ] **Step 11 - Competition hardening:** Add evaluation datasets, observability, safety controls, accessibility review, and deployment checks.
+- [x] **Step 7 - Misconception Hypothesis Ranking and Verification Engine:** Candidate retrieval, hypothesis ranking, verification policy, question selection, response evaluation, audit snapshots, learner-safe UI, and prototype verification evaluation.
+- [ ] **Step 8 - Adaptive Intervention Engine and Animated Reasoning Visualizers:** Deliver bounded hints tied to a verified misconception and animate the smallest useful support.
+- [ ] **Step 9 - Reasoning Delta transfer expansion:** Measure independent application and explain observations separately from inference.
+- [ ] **Step 10 - Competition hardening:** Add evaluation datasets, observability, safety controls, accessibility review, and deployment checks.
 
 ## Step 2 verification record
 
@@ -59,5 +58,18 @@
 - Implementation verified with deterministic tests and mocked/no-key OpenAI failure paths. Live OpenAI smoke test was not performed because no API key is configured.
 - Pending verification: Run migration, seed and persistence smoke tests against live PostgreSQL before final submission.
 - Known limitations: misconception ranking remains deterministic/future work, OpenAI quality is not claimed without live reviewed outputs, and database-backed ReasoningAnalysis persistence was not verified against live PostgreSQL in this workspace.
+
+## Step 7 verification record
+
+- `src/lib/misconception-engine` implements deterministic candidate retrieval, deterministic ranking, OpenAI/fallback ranker boundaries, verification policy, curated question selection/adaptation, response evaluation, safety validators, telemetry, and typed schemas.
+- `/api/sessions/[sessionId]/hypotheses`, `/verification`, and `/verification/submit` are split so route handlers remain thin and educational logic stays in services.
+- Learner A and Learner B both answer `10`, but deterministic ranking selects different primary verification questions: consecutive-change support for Learner A and double-rule table testing for Learner B.
+- Verification responses update supported/weakened/rejected hypotheses, preserve uncertainty, recommend an intervention family, and cap automatic verification at two questions.
+- The Learning Workspace shows possible explanations, one small check, post-verification safe summaries, and pipeline-safe retrieval/ranking/policy details without diagnosis labels or model confidence numbers.
+- `pnpm evaluate:verification -- --mode=deterministic` ran over 30 prototype cases and wrote `artifacts/verification-evaluation/latest.json`.
+- Deterministic evaluation results: candidate recall `0.60`, top-1 agreement `0.2667`, top-2 recall `0.5333`, post-verification family/status agreement `0.6333`, false confident diagnosis rate `0`, unknown-ID rate `0`, prohibited-output rate `0`, fallback rate `0`.
+- Live OpenAI ranking smoke test was skipped because no API key is configured. Live OpenAI verification smoke test was skipped because no API key is configured.
+- Pending verification: Run migration, seed and persistence smoke tests against live PostgreSQL before final submission.
+- Known limitations: the deterministic ranker is prototype-scale, evaluation cases remain handcrafted and not externally benchmarked, OpenAI ranker quality is not claimed without live reviewed outputs, and Step 8 intervention delivery/animation is intentionally not implemented.
 
 Only a step that is implemented and passes its defined checks should be marked complete.

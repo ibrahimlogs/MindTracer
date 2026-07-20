@@ -18,7 +18,7 @@ export async function POST(request: NextRequest, { params }: RouteProps) {
     const path = sessionPathSchema.parse(await params);
     const idempotencyKey = parseIdempotencyKey(request);
     return sessionSuccess(
-      sessionEngine.generateHypotheses(path.sessionId, idempotencyKey),
+      await sessionEngine.generateHypotheses(path.sessionId, idempotencyKey),
       201,
       requestId,
     );
