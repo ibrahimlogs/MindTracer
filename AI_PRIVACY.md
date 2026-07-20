@@ -52,3 +52,11 @@ Default telemetry logs model/source/latency/retry metadata and does not log the 
 Use `REASONING_ANALYZER_MODE=deterministic` to avoid OpenAI calls entirely.
 
 Use `REASONING_ANALYZER_MODE=fallback` to keep sessions functional when retryable OpenAI failures occur.
+
+## Step 7 misconception ranking
+
+`MISCONCEPTION_RANKER_MODE=deterministic` avoids OpenAI calls entirely.
+
+If `MISCONCEPTION_RANKER_MODE=openai`, only a bounded ranking payload is sent: session public ID, problem ID, concept IDs, learner attempt summary, structured reasoning analysis, retrieved curated candidates, allowed candidate IDs, verification history, and prompt version. The ranker may only rank supplied candidate IDs and must not create diagnoses, verification questions, teaching content, or learner trait claims.
+
+`VERIFICATION_ADAPTER_MODE` and `VERIFICATION_EVALUATOR_MODE` are configured now, but Step 7 uses deterministic template adaptation and deterministic response evaluation in ordinary operation. Live verification smoke testing is opt-in and skipped without `OPENAI_API_KEY`.

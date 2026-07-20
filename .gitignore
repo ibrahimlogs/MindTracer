@@ -8,6 +8,7 @@
 /playwright-report
 /test-results
 /artifacts/reasoning-evaluation
+/artifacts/verification-evaluation
 
 # next.js
 /.next

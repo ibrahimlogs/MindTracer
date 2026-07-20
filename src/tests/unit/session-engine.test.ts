@@ -28,13 +28,13 @@ function createSession(learnerKey: "learner-a" | "learner-b" = "learner-a") {
 async function progressToInterventionShown(sessionId: string) {
   sessionEngine.submitInitialAttempt(sessionId, attempt, "idem-initial-0001");
   await sessionEngine.generateAnalysis(sessionId, "idem-analysis-0001");
-  sessionEngine.generateHypotheses(sessionId, "idem-hypotheses-0001");
+  await sessionEngine.generateHypotheses(sessionId, "idem-hypotheses-0001");
+  sessionEngine.createVerificationQuestion(sessionId, "idem-question-0001");
   sessionEngine.submitVerification(
     sessionId,
     { response: "The change is +2.", submissionKey: "verify-key-0001" },
     "idem-verify-0001",
   );
-  sessionEngine.selectIntervention(sessionId, "idem-intervention-0001");
   return sessionEngine.acknowledgeIntervention(sessionId, "idem-ack-0001");
 }
 

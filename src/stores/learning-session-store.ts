@@ -49,6 +49,8 @@ interface LearningSessionState {
   completedStages: LearningStage[];
   serverSessionId: string | null;
   analysisSummary: SessionSnapshot["analysis"];
+  hypothesesSummary: SessionSnapshot["hypotheses"];
+  verificationQuestion: SessionSnapshot["verification"];
   pendingAction: string | null;
   error: string | null;
   hydrateFromServer: (snapshot: SessionSnapshot) => void;
@@ -88,6 +90,8 @@ const initialState = {
   completedStages: [] as LearningStage[],
   serverSessionId: null,
   analysisSummary: null,
+  hypothesesSummary: null,
+  verificationQuestion: null,
   pendingAction: null,
   error: null,
 };
@@ -173,8 +177,20 @@ function stateFromSnapshot(
     transferExplanation: snapshot.transfer?.explanation ?? "",
     transferCorrect: snapshot.transfer?.success ?? null,
     analysisSummary: snapshot.analysis,
+    hypothesesSummary: snapshot.hypotheses,
+    verificationQuestion: snapshot.verification,
     error: null,
   };
+}
+
+async function ensureVerificationQuestion(snapshot: SessionSnapshot) {
+  if (
+    snapshot.currentStage !== "verification_required" ||
+    snapshot.verification
+  ) {
+    return snapshot;
+  }
+  return postSessionAction(snapshot.publicId, "/verification");
 }
 
 export const useLearningSessionStore = create<LearningSessionState>((set) => ({
@@ -211,6 +227,9 @@ export const useLearningSessionStore = create<LearningSessionState>((set) => ({
   setDemoMode: (demoMode) => set({ demoMode }),
   nextStage: () =>
     set((state) => {
+      if (state.currentStage === "intervention_ready") {
+        return {};
+      }
       const sessionId = state.serverSessionId;
       if (sessionId) {
         const actionByStage: Partial<Record<LearningStage, string>> = {
@@ -223,6 +242,7 @@ export const useLearningSessionStore = create<LearningSessionState>((set) => ({
         const action = actionByStage[state.currentStage];
         if (action) {
           void postSessionAction(sessionId, action)
+            .then((snapshot) => ensureVerificationQuestion(snapshot))
             .then((snapshot) => set(stateFromSnapshot(snapshot)))
             .catch((caught: unknown) =>
               set({
@@ -310,7 +330,8 @@ export const useLearningSessionStore = create<LearningSessionState>((set) => ({
             submissionKey: createSubmissionKey("verification"),
           },
         );
-        useLearningSessionStore.setState(stateFromSnapshot(snapshot));
+        const nextSnapshot = await ensureVerificationQuestion(snapshot);
+        useLearningSessionStore.setState(stateFromSnapshot(nextSnapshot));
       } catch (caught) {
         useLearningSessionStore.setState({
           error:

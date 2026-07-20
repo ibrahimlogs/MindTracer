@@ -3,6 +3,7 @@ import { ZodError, type ZodType } from "zod";
 
 import { apiError, apiSuccess } from "@/lib/api/response";
 import { AiReasoningError } from "@/lib/ai/reasoning";
+import { MisconceptionEngineError } from "@/lib/misconception-engine";
 import {
   idempotencyKeySchema,
   SessionEngineError,
@@ -37,6 +38,16 @@ export function handleRouteError(error: unknown, requestId?: string) {
         : "Reasoning analysis is temporarily unavailable.",
       error.retryable ? 503 : 500,
       { category: error.category, retryable: error.retryable },
+      { requestId },
+    );
+  }
+
+  if (error instanceof MisconceptionEngineError) {
+    return apiError(
+      "INTERNAL_ERROR",
+      "Misconception verification is temporarily unavailable.",
+      500,
+      { code: error.code, ...error.details },
       { requestId },
     );
   }

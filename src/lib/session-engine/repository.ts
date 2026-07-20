@@ -7,6 +7,13 @@ import type {
   SafeLearnerSummary,
 } from "@/lib/ai/reasoning";
 import type {
+  HypothesisRankingOutput,
+  RetrievedCandidate,
+  VerificationDecision,
+  VerificationEvaluationOutput,
+  VerificationQuestionOutput,
+} from "@/lib/misconception-engine";
+import type {
   AttemptInput,
   CreateSessionInput,
   TransferSubmitInput,
@@ -49,6 +56,15 @@ export interface VerificationSnapshot {
   question: string;
   response: string | null;
   status: "pending" | "answered" | "skipped";
+  answerFormat: VerificationQuestionOutput["answerFormat"];
+  verificationGoal: string;
+  targetHypothesisIds: readonly string[];
+  expectedEvidence: string;
+  disconfirmingEvidence: string;
+  hypothesisBefore: HypothesisRankingOutput | null;
+  hypothesisAfter: VerificationEvaluationOutput | null;
+  createdAt: string;
+  answeredAt: string | null;
 }
 
 export interface InterventionSnapshot {
@@ -76,6 +92,15 @@ export interface ReasoningAnalysisSnapshot {
   createdAt: string;
 }
 
+export interface HypothesisSnapshot {
+  id: string;
+  attemptId: string;
+  retrievedCandidates: readonly RetrievedCandidate[];
+  ranking: HypothesisRankingOutput;
+  verificationDecision: VerificationDecision;
+  createdAt: string;
+}
+
 export interface SessionSnapshot {
   sessionId: string;
   publicId: string;
@@ -93,6 +118,7 @@ export interface SessionSnapshot {
   completedStages: readonly SessionStage[];
   attempts: readonly PersistedAttempt[];
   analysis: ReasoningAnalysisSnapshot | null;
+  hypotheses: HypothesisSnapshot | null;
   verification: VerificationSnapshot | null;
   intervention: InterventionSnapshot | null;
   transfer: {
@@ -111,6 +137,7 @@ interface MutableSession
     | "completedStages"
     | "attempts"
     | "analysis"
+    | "hypotheses"
     | "events"
     | "verification"
     | "intervention"
@@ -120,6 +147,7 @@ interface MutableSession
   completedStages: SessionStage[];
   attempts: PersistedAttempt[];
   analysis: ReasoningAnalysisSnapshot | null;
+  hypotheses: HypothesisSnapshot | null;
   verification: VerificationSnapshot | null;
   intervention: InterventionSnapshot | null;
   transfer: SessionSnapshot["transfer"];
@@ -167,6 +195,21 @@ function cloneSession(session: MutableSession): SessionSnapshot {
           },
         }
       : null,
+    hypotheses: session.hypotheses
+      ? {
+          ...session.hypotheses,
+          retrievedCandidates: session.hypotheses.retrievedCandidates.map(
+            (candidate) => ({ ...candidate }),
+          ),
+          ranking: structuredClone(session.hypotheses.ranking),
+          verificationDecision: {
+            ...session.hypotheses.verificationDecision,
+            targetHypothesisIds: [
+              ...session.hypotheses.verificationDecision.targetHypothesisIds,
+            ],
+          },
+        }
+      : null,
     verification: session.verification ? { ...session.verification } : null,
     intervention: session.intervention ? { ...session.intervention } : null,
     transfer: session.transfer ? { ...session.transfer } : null,
@@ -209,6 +252,7 @@ export class InMemorySessionRepository {
       completedStages: [],
       attempts: [],
       analysis: null,
+      hypotheses: null,
       verification: null,
       intervention: null,
       transfer: null,
@@ -371,6 +415,70 @@ export class InMemorySessionRepository {
     };
   }
 
+  setHypotheses(
+    session: MutableSession,
+    snapshot: Omit<HypothesisSnapshot, "id" | "createdAt">,
+  ) {
+    session.hypotheses = {
+      id: crypto.randomUUID(),
+      createdAt: nowIso(),
+      ...snapshot,
+    };
+  }
+
+  setVerification(
+    session: MutableSession,
+    question: VerificationQuestionOutput,
+    expectedEvidence: string,
+    disconfirmingEvidence: string,
+  ) {
+    if (
+      session.verification?.status === "pending" &&
+      session.verification.targetHypothesisIds.join("|") ===
+        question.targetHypothesisIds.join("|")
+    ) {
+      return;
+    }
+
+    session.verification = {
+      id: crypto.randomUUID(),
+      questionTemplateId: question.templateId,
+      question: question.question,
+      response: null,
+      status: "pending",
+      answerFormat: question.answerFormat,
+      verificationGoal: question.verificationGoal,
+      targetHypothesisIds: [...question.targetHypothesisIds],
+      expectedEvidence,
+      disconfirmingEvidence,
+      hypothesisBefore: session.hypotheses?.ranking ?? null,
+      hypothesisAfter: null,
+      createdAt: nowIso(),
+      answeredAt: null,
+    };
+  }
+
+  answerVerification(
+    session: MutableSession,
+    response: string,
+    result: VerificationEvaluationOutput,
+  ) {
+    if (!session.verification || session.verification.status !== "pending") {
+      throw new SessionEngineError(
+        "VERIFICATION_NOT_PENDING",
+        "There is no pending verification question for this session.",
+      );
+    }
+
+    session.verification = {
+      ...session.verification,
+      response,
+      status: "answered",
+      hypothesisAfter: result,
+      answeredAt: nowIso(),
+    };
+  }
+
   transition(
     session: MutableSession,
     toStage: SessionStage,
@@ -387,6 +495,20 @@ export class InMemorySessionRepository {
       session.completedAt = nowIso();
     }
     this.recordEvent(session, eventType, fromStage, toStage, payload);
+  }
+
+  recordAuditEvent(
+    session: MutableSession,
+    eventType: string,
+    payload: Record<string, unknown> = {},
+  ) {
+    this.recordEvent(
+      session,
+      eventType,
+      session.currentStage,
+      session.currentStage,
+      payload,
+    );
   }
 
   restart(sessionId: string) {

@@ -104,6 +104,7 @@ async function main() {
       completedStages: ["problem_presented", "initial_attempt"],
       attempts: [attempt],
       analysis: null,
+      hypotheses: null,
       verification: null,
       intervention: null,
       transfer: null,

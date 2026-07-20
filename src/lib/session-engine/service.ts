@@ -7,6 +7,16 @@ import {
   logReasoningAnalysis,
   reasoningPromptVersion,
 } from "@/lib/ai/reasoning";
+import {
+  buildCandidateRetrievalInput,
+  buildHypothesisRankingInput,
+  createMisconceptionRanker,
+  DeterministicCandidateRetriever,
+  DeterministicVerificationPolicy,
+  DeterministicVerificationQuestionSelector,
+  DeterministicVerificationResponseEvaluator,
+  logMisconceptionEngineEvent,
+} from "@/lib/misconception-engine";
 import type {
   AttemptInput,
   CreateSessionInput,
@@ -220,26 +230,159 @@ export class SessionEngineService {
     );
   }
 
-  generateHypotheses(sessionId: string, idempotencyKey: string) {
-    return inMemorySessionRepository.mutate(
+  async generateHypotheses(sessionId: string, idempotencyKey: string) {
+    return inMemorySessionRepository.mutateAsync(
       sessionId,
       idempotencyKey,
       hashPayload({ action: "hypotheses" }),
-      (session) => {
-        assertTransition(session.currentStage, "verification_required");
-        const verification = deterministic.create(session);
-        session.verification = {
-          id: crypto.randomUUID(),
-          questionTemplateId: verification.templateId,
-          question: verification.question,
-          response: null,
-          status: "pending",
-        };
+      async (session) => {
+        if (!session.analysis) {
+          throw new SessionEngineError(
+            "INVALID_STATE_TRANSITION",
+            "Hypothesis ranking requires structured reasoning analysis.",
+          );
+        }
+
+        const snapshot = inMemorySessionRepository.get(session.publicId);
+        const initialAttempt = snapshot.attempts.find(
+          (attempt) => attempt.attemptType === "initial",
+        );
+        if (!initialAttempt) {
+          throw new SessionEngineError(
+            "INVALID_STATE_TRANSITION",
+            "Hypothesis ranking requires an initial learner attempt.",
+          );
+        }
+
+        const retrievalInput = buildCandidateRetrievalInput(
+          snapshot,
+          session.analysis.result,
+        );
+        const retriever = new DeterministicCandidateRetriever();
+        const retrievedCandidates = retriever.retrieve(retrievalInput);
+        const rankingInput = buildHypothesisRankingInput(
+          retrievalInput,
+          retrievedCandidates,
+          snapshot,
+        );
+        const ranking = await createMisconceptionRanker().rank(rankingInput);
+        const policy = new DeterministicVerificationPolicy();
+        const verificationDecision = policy.decide({
+          ranking,
+          answerReasoningAlignment:
+            session.analysis.result.answerReasoningAlignment,
+          explanationQuality: session.analysis.result.explanationQuality,
+          needsClarification: session.analysis.result.needsClarification,
+          verificationHistoryCount: snapshot.verification ? 1 : 0,
+        });
+        inMemorySessionRepository.setHypotheses(session, {
+          attemptId: initialAttempt.id,
+          retrievedCandidates,
+          ranking,
+          verificationDecision,
+        });
+
+        const nextStage = verificationDecision.required
+          ? "verification_required"
+          : "intervention_ready";
+        assertTransition(session.currentStage, nextStage);
         inMemorySessionRepository.transition(
           session,
-          "verification_required",
+          nextStage,
           "hypotheses.generated",
-          deterministic.generate(session),
+          {
+            retrievedCandidateIds: retrievedCandidates.map(
+              (candidate) => candidate.candidateId,
+            ),
+            rankedHypothesisIds: ranking.hypotheses.map(
+              (hypothesis) => hypothesis.misconceptionId,
+            ),
+            rankerSource: ranking.rankerSource,
+            verificationDecision,
+          },
+        );
+        logMisconceptionEngineEvent({
+          sessionPublicId: session.publicId,
+          eventType: "hypotheses.generated",
+          source: ranking.rankerSource,
+          detail: {
+            candidateCount: retrievedCandidates.length,
+            hypothesisCount: ranking.hypotheses.length,
+            verificationRequired: verificationDecision.required,
+          },
+        });
+      },
+    );
+  }
+
+  createVerificationQuestion(sessionId: string, idempotencyKey: string) {
+    return inMemorySessionRepository.mutate(
+      sessionId,
+      idempotencyKey,
+      hashPayload({ action: "verification.create" }),
+      (session) => {
+        if (!session.hypotheses) {
+          throw new SessionEngineError(
+            "INVALID_STATE_TRANSITION",
+            "Verification requires ranked hypotheses.",
+          );
+        }
+        if (!session.hypotheses.verificationDecision.required) {
+          throw new SessionEngineError(
+            "INVALID_STATE_TRANSITION",
+            "Verification is not required for this hypothesis state.",
+          );
+        }
+        if (
+          session.verification?.status === "pending" &&
+          session.verification.hypothesisBefore?.hypotheses
+            .map((hypothesis) => hypothesis.misconceptionId)
+            .join("|") ===
+            session.hypotheses.ranking.hypotheses
+              .map((hypothesis) => hypothesis.misconceptionId)
+              .join("|")
+        ) {
+          return;
+        }
+
+        const snapshot = inMemorySessionRepository.get(session.publicId);
+        if (!session.analysis) {
+          throw new SessionEngineError(
+            "INVALID_STATE_TRANSITION",
+            "Verification requires analysis evidence.",
+          );
+        }
+        const retrievalInput = buildCandidateRetrievalInput(
+          snapshot,
+          session.analysis.result,
+        );
+        const selector = new DeterministicVerificationQuestionSelector();
+        const question = selector.select({
+          problem: retrievalInput.problem,
+          ranking: session.hypotheses.ranking,
+          decision: session.hypotheses.verificationDecision,
+          candidateRecords: retrievalInput.candidateRecords,
+          verificationHistoryCount: session.verification ? 1 : 0,
+        });
+        const template = retrievalInput.candidateRecords
+          .flatMap((record) => record.verificationQuestionTemplates)
+          .find((candidate) => candidate.templateId === question.templateId);
+        inMemorySessionRepository.setVerification(
+          session,
+          question,
+          template?.expectedEvidence ??
+            "Learner cites relevant table evidence.",
+          template?.disconfirmingEvidence ??
+            "Learner does not cite relevant table evidence.",
+        );
+        inMemorySessionRepository.recordAuditEvent(
+          session,
+          "verification.created",
+          {
+            templateId: question.templateId,
+            targetHypothesisIds: question.targetHypothesisIds,
+            adaptationSource: question.adaptationSource,
+          },
         );
       },
     );
@@ -265,15 +408,67 @@ export class SessionEngineService {
           );
         }
         assertTransition(session.currentStage, "verification_submitted");
-        session.verification = {
-          ...session.verification,
-          response: input.response,
-          status: "answered",
-        };
+        if (!session.analysis || !session.hypotheses) {
+          throw new SessionEngineError(
+            "INVALID_STATE_TRANSITION",
+            "Verification submission requires analysis and hypotheses.",
+          );
+        }
+        const snapshot = inMemorySessionRepository.get(session.publicId);
+        const retrievalInput = buildCandidateRetrievalInput(
+          snapshot,
+          session.analysis.result,
+        );
+        const evaluator = new DeterministicVerificationResponseEvaluator();
+        const result = evaluator.evaluate({
+          verificationInteractionId: session.verification.id,
+          question: session.verification.question,
+          verificationGoal: session.verification.verificationGoal,
+          targetHypothesisIds: session.verification.targetHypothesisIds,
+          expectedEvidence: session.verification.expectedEvidence,
+          disconfirmingEvidence: session.verification.disconfirmingEvidence,
+          learnerResponse: input.response,
+          originalReasoningAnalysis: session.analysis.result,
+          rankedHypotheses: session.hypotheses.ranking.hypotheses,
+          problem: retrievalInput.problem,
+          answerFormat: session.verification.answerFormat,
+          verificationHistoryCount:
+            snapshot.events.filter(
+              (event) => event.eventType === "verification.answered",
+            ).length + 1,
+        });
+        inMemorySessionRepository.answerVerification(
+          session,
+          input.response,
+          result,
+        );
         inMemorySessionRepository.transition(
           session,
           "verification_submitted",
           "verification.answered",
+          {
+            status: result.status,
+            resolution: result.resolution,
+            supportedHypothesisIds: result.supportedHypothesisIds,
+            weakenedHypothesisIds: result.weakenedHypothesisIds,
+            recommendedInterventionFamily: result.recommendedInterventionFamily,
+            recommendedStartingLevel: result.recommendedStartingLevel,
+          },
+        );
+        const nextStage = result.requiresAdditionalVerification
+          ? "verification_required"
+          : "intervention_ready";
+        assertTransition(session.currentStage, nextStage);
+        inMemorySessionRepository.transition(
+          session,
+          nextStage,
+          result.requiresAdditionalVerification
+            ? "verification.additional_required"
+            : "verification.resolved",
+          {
+            status: result.status,
+            resolution: result.resolution,
+          },
         );
       },
     );
@@ -307,6 +502,25 @@ export class SessionEngineService {
       idempotencyKey,
       hashPayload({ action: "acknowledge" }),
       (session) => {
+        if (
+          !session.intervention &&
+          session.currentStage === "intervention_ready"
+        ) {
+          const intervention = deterministic.select(session);
+          session.intervention = {
+            id: crypto.randomUUID(),
+            ...intervention,
+            acknowledgedAt: null,
+          };
+          inMemorySessionRepository.recordAuditEvent(
+            session,
+            "intervention.selected",
+            {
+              source: "step-07-placeholder",
+              note: "Step 8 will replace this with the adaptive intervention engine.",
+            },
+          );
+        }
         if (!session.intervention) {
           throw new SessionEngineError(
             "INTERVENTION_NOT_READY",

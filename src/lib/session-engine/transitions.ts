@@ -6,7 +6,7 @@ export const allowedTransitions = {
   reasoning_analysis: ["hypothesis_ready"],
   hypothesis_ready: ["verification_required", "intervention_ready"],
   verification_required: ["verification_submitted"],
-  verification_submitted: ["intervention_ready"],
+  verification_submitted: ["verification_required", "intervention_ready"],
   intervention_ready: ["intervention_shown"],
   intervention_shown: ["retry_required"],
   retry_required: ["retry_submitted"],
