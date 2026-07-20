@@ -1,10 +1,10 @@
 # Planned architecture
 
-MindTrace is organized around a staged reasoning lifecycle while keeping model calls behind server boundaries. The current code establishes the technical and visual foundations; it does not claim that the learning workflow exists.
+MindTrace is organized around a staged reasoning lifecycle while keeping model calls behind server boundaries. The current code establishes the technical, visual, dataset, and anonymous session foundations while keeping reasoning behavior deterministic.
 
 ## Application layer
 
-`src/app` uses the Next.js App Router. Public product positioning lives at `/`, `/demo`, and `/technology`. The static Learning Workspace lives at `/demo/session/[sessionId]`, the mocked Reasoning Delta report lives at `/report/[sessionId]`, and the development dataset explorer lives at `/technology/dataset`. Route loading states, a recoverable error boundary, and the `/api/health` response envelope remain intact.
+`src/app` uses the Next.js App Router. Public product positioning lives at `/`, `/demo`, and `/technology`. The Learning Workspace lives at `/demo/session/[sessionId]`, the Reasoning Delta report lives at `/report/[sessionId]`, and the development dataset explorer lives at `/technology/dataset`. Session APIs live under `/api/sessions`. Route loading states, a recoverable error boundary, and the `/api/health` response envelope remain intact.
 
 The landing and positioning pages are server components by default. Client components are limited to behavior that requires them: the animated headline, reasoning-delta explanation, and optional 3D enhancement. Mobile navigation uses a native disclosure and does not require hydration.
 
@@ -31,18 +31,20 @@ Step 4 adds a prototype curated education dataset under `src/data/education`. It
 
 Step 3 deterministic learner scripts still live under `src/data/demo`, but shared educational content now resolves from the Step 4 dataset. Learner A and Learner B share the same wrong answer while following different mocked reasoning paths, verification questions, interventions, and Reasoning Delta reports.
 
-Domain services are planned under `src/lib/misconception`, `intervention`, and `analytics`. Prisma is configured for PostgreSQL, but no product models exist yet.
+Step 5 adds Prisma product models and the initial migration for concepts, problems, misconceptions, anonymous sessions, attempts, deterministic analysis records, hypotheses, verification, interventions, transfers, reports, lifecycle events, and idempotency records. The seed script reads the validated Step 4 dataset and upserts educational records when a PostgreSQL URL is configured.
+
+Domain services are planned under `src/lib/misconception`, `intervention`, and `analytics`.
 
 ## AI boundary
 
-`src/lib/ai` exposes a lazy, server-only OpenAI client placeholder. Future model calls must return schema-validated structured output behind server boundaries. Hypotheses must remain labeled as inference, while observations and learner-provided evidence remain distinct. No prompt or reasoning workflow exists yet.
+`src/lib/ai` exposes a lazy, server-only OpenAI client placeholder. Future model calls must return schema-validated structured output behind server boundaries. Hypotheses must remain labeled as inference, while observations and learner-provided evidence remain distinct. Step 5 route handlers use deterministic service interfaces and do not call OpenAI.
 
 ## State and validation
 
-Zustand manages the mocked learning-session state machine for Step 3. Durable session state will eventually belong in PostgreSQL. React Hook Form coordinates workspace forms with shared Zod schemas. Environment variables, education records, and future request payloads are validated at their boundary.
+The server-side session engine defines the authoritative lifecycle transitions. Zustand now acts as a client adapter for the latest server snapshot, pending UI actions, deterministic controls, and fallback-safe hydration. React Hook Form coordinates workspace forms with shared Zod schemas. Environment variables, education records, session requests, path params, and API bodies are validated at their boundary.
 
 ## Operational foundation
 
-API handlers use consistent success/error envelopes. The logger emits structured records behind a replaceable interface. Vitest covers isolated logic, fallback meaning, and education dataset invariants. Playwright uses the production server with bounded worker concurrency to verify routes, navigation, responsive layout, fallbacks, hydration behavior, the static workspace, reports, and the dataset explorer.
+API handlers use consistent success/error envelopes with request metadata. The logger emits structured records behind a replaceable interface. Vitest covers isolated logic, fallback meaning, education dataset invariants, session transitions, idempotency, and guarded writes. Playwright uses the production server with bounded worker concurrency to verify routes, navigation, responsive layout, fallbacks, hydration behavior, API-created sessions, refresh/resume, reports, and the dataset explorer.
 
 Error reporting transport, analytics transport, rate limiting, production telemetry, durable learning sessions, live misconception logic, and real evaluation logic are planned but not implemented.

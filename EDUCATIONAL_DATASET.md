@@ -113,4 +113,5 @@ To review an evaluation case:
 - The dataset is prototype-scale and curated for product development, not a research benchmark.
 - Evaluation cases are handcrafted examples, not human-study results.
 - The demo still follows deterministic scripted learner paths.
-- No database persistence, seeding pipeline, OpenAI reasoning workflow, or real misconception classifier is implemented in Step 4.
+- Step 5 adds a Prisma seed path for these records, but the dataset remains prototype-scale.
+- No OpenAI reasoning workflow or real misconception classifier is implemented yet.

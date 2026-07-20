@@ -8,8 +8,14 @@ import { getServerEnv } from "@/lib/validation/env";
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 function createPrismaClient() {
+  const databaseUrl = getServerEnv().DATABASE_URL;
+
+  if (!databaseUrl) {
+    throw new Error("DATABASE_UNAVAILABLE");
+  }
+
   const adapter = new PrismaPg({
-    connectionString: getServerEnv().DATABASE_URL,
+    connectionString: databaseUrl,
   });
   return new PrismaClient({ adapter });
 }
@@ -22,4 +28,8 @@ export function getDatabase() {
   }
 
   return prisma;
+}
+
+export function hasDatabaseUrl() {
+  return Boolean(getServerEnv().DATABASE_URL);
 }

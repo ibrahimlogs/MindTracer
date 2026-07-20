@@ -1,8 +1,8 @@
-import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { StartSessionButton } from "@/components/demo/start-session-button";
 import { ElevatedSurface } from "@/components/ui/surface";
+import type { DemoMode, LearnerId } from "@/types/demo-learning";
 
 interface DemoEntryCardProps {
   title: string;
@@ -11,6 +11,8 @@ interface DemoEntryCardProps {
   cta: string;
   status: string;
   icon: LucideIcon;
+  mode: DemoMode;
+  learnerKey?: LearnerId;
   featured?: boolean;
 }
 
@@ -21,6 +23,8 @@ export function DemoEntryCard({
   cta,
   status,
   icon: Icon,
+  mode,
+  learnerKey,
   featured = false,
 }: DemoEntryCardProps) {
   return (
@@ -42,13 +46,14 @@ export function DemoEntryCard({
       <div className="mt-5 rounded-lg border border-border bg-surface-inset p-4 text-xs leading-5 text-text-muted">
         Preview: same answer, different reasoning evidence and support path.
       </div>
-      <Button
-        asChild
-        className="mt-5 w-full"
-        variant={featured ? "default" : "outline"}
+      <StartSessionButton
+        mode={mode}
+        learnerKey={learnerKey}
+        featured={featured}
       >
-        <Link href={href}>{cta}</Link>
-      </Button>
+        {cta}
+      </StartSessionButton>
+      <p className="sr-only">Compatibility route: {href}</p>
     </ElevatedSurface>
   );
 }

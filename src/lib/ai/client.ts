@@ -8,7 +8,13 @@ let client: OpenAI | undefined;
 
 export function getOpenAIClient() {
   if (!client) {
-    client = new OpenAI({ apiKey: getServerEnv().OPENAI_API_KEY });
+    const apiKey = getServerEnv().OPENAI_API_KEY;
+
+    if (!apiKey) {
+      throw new Error("OPENAI_API_KEY is required before using OpenAI.");
+    }
+
+    client = new OpenAI({ apiKey });
   }
 
   return client;

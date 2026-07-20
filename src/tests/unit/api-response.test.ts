@@ -7,9 +7,11 @@ describe("API response helpers", () => {
     const response = apiSuccess({ id: "session-1" });
 
     expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
+      success: true,
       data: { id: "session-1" },
       error: null,
+      meta: { requestId: expect.any(String), timestamp: expect.any(String) },
     });
   });
 
@@ -17,9 +19,11 @@ describe("API response helpers", () => {
     const response = apiError("INVALID_INPUT", "The input was invalid", 422);
 
     expect(response.status).toBe(422);
-    await expect(response.json()).resolves.toEqual({
+    await expect(response.json()).resolves.toMatchObject({
+      success: false,
       data: null,
       error: { code: "INVALID_INPUT", message: "The input was invalid" },
+      meta: { requestId: expect.any(String), timestamp: expect.any(String) },
     });
   });
 });

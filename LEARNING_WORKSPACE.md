@@ -1,18 +1,19 @@
 # Learning Workspace
 
-Step 3 implements a complete static MindTrace learning journey with deterministic mocked data. Step 4 now backs the shared educational content with a validated prototype dataset. The journey still demonstrates intended product behavior without OpenAI calls, persistence, authentication, payments, live misconception classification, or real benchmark calculations.
+Step 3 implements a complete MindTrace learning journey with deterministic mocked data. Step 4 backs the shared educational content with a validated prototype dataset. Step 5 adds anonymous session APIs, generated session URLs, and refresh/resume hydration. The journey still runs without OpenAI calls, authentication, payments, live misconception classification, or real benchmark calculations.
 
 ## Routes
 
-- `/demo` presents the premium demo chooser.
+- `/demo` presents the premium demo chooser and starts anonymous sessions through the API.
 - `/demo/session/demo-session?mode=compare` runs the guided two-learner comparison.
 - `/demo/session/demo-session?mode=learner` allows typed prototype interaction mapped to mocked paths.
 - `/demo/session/demo-session?mode=pipeline` exposes stage jumping for judges and technical review.
+- `/demo/session/[generatedPublicId]?mode=compare` is the new generated-session URL shape.
 - `/report/demo-session` shows the static Reasoning Delta report.
 
 ## Workspace architecture
 
-The workspace is driven by typed learner scripts under `src/data/demo`, shared educational records under `src/data/education`, a Zustand store in `src/stores/learning-session-store.ts`, and reusable panels under `src/components/problem`, `src/components/visualization`, `src/components/mindtrace`, `src/components/reasoning`, and `src/components/demo`.
+The workspace is driven by typed learner scripts under `src/data/demo`, shared educational records under `src/data/education`, session APIs under `src/app/api/sessions`, a Zustand client adapter in `src/stores/learning-session-store.ts`, and reusable panels under `src/components/problem`, `src/components/visualization`, `src/components/mindtrace`, `src/components/reasoning`, and `src/components/demo`.
 
 Desktop uses a three-panel layout: problem workspace, visual reasoning canvas, and structured MindTrace guide. Tablet and mobile collapse into a sequential flow with a compact stage indicator and no horizontal overflow.
 
@@ -22,7 +23,7 @@ The mocked session uses the `LearningStage` union:
 
 `problem_presented`, `initial_attempt`, `reasoning_analysis`, `hypothesis_ready`, `verification_required`, `verification_submitted`, `intervention_ready`, `intervention_shown`, `retry_required`, `retry_submitted`, `reasoning_delta`, `transfer_presented`, `transfer_submitted`, `session_complete`.
 
-Adjacent transitions are validated for Previous and Next controls. Form submissions move to the next meaningful stage, pause auto-play, and preserve completed-stage evidence.
+Server transitions are defined in `src/lib/session-engine/transitions.ts`. Form submissions call API endpoints when a generated session exists, then hydrate from the returned snapshot. Previous, pipeline jumps, and auto-play remain client demo controls and do not create new server facts by themselves.
 
 ## Mock data structure
 
@@ -45,4 +46,4 @@ Both paths share a transfer task: study hours and score follow `+3` per hour. Th
 
 ## Simulated features
 
-The reasoning analysis, hypotheses, revised answers, transfer evidence, auto-play, and report are deterministic prototype simulations. Verification questions, shared interventions, rubrics, misconception labels, and transfer problem metadata now come from the prototype curated education dataset. Future phases will add durable sessions, database-backed contracts, verified misconception logic, targeted intervention selection, and model-backed structured outputs.
+The reasoning analysis, hypotheses, revised answers, transfer evidence, auto-play, and report remain deterministic prototype simulations. Verification questions, shared interventions, rubrics, misconception labels, and transfer problem metadata come from the prototype curated education dataset. Step 5 stores session snapshots in explicit in-memory fallback when no database is configured; with PostgreSQL configured, the Prisma schema and seed path are ready for durable session records. Future phases will add OpenAI structured reasoning extraction, verified misconception logic, and model-backed structured outputs.
