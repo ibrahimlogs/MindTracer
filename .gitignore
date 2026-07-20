@@ -9,6 +9,7 @@
 /test-results
 /artifacts/reasoning-evaluation
 /artifacts/verification-evaluation
+/artifacts/intervention-evaluation
 
 # next.js
 /.next

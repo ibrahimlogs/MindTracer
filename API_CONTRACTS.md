@@ -42,6 +42,7 @@ Failures return:
 - `POST /api/sessions/[sessionId]/verification`
 - `POST /api/sessions/[sessionId]/verification/submit`
 - `POST /api/sessions/[sessionId]/interventions`
+- `POST /api/sessions/[sessionId]/interventions/more-help`
 - `POST /api/sessions/[sessionId]/interventions/acknowledge`
 - `POST /api/sessions/[sessionId]/retry`
 - `POST /api/sessions/[sessionId]/delta`
@@ -109,6 +110,16 @@ Payloads are validated with Zod. Replaying the same key and same payload returns
 `POST /api/sessions/[sessionId]/verification/submit` evaluates the learner response, saves before/after hypothesis JSON in the session snapshot, records supported/weakened/rejected hypotheses, and advances to `intervention_ready` unless one more bounded verification check is genuinely required.
 
 Learner-facing responses do not expose internal misconception IDs as labels, model confidence numbers, raw prompts, raw OpenAI payloads, or hidden database identifiers. Pipeline mode can show developer-safe candidate IDs, matched signals, ranker source, and policy decisions.
+
+## Step 8 intervention behavior
+
+`POST /api/sessions/[sessionId]/interventions` selects and stores the smallest useful bounded support for the verified state, then advances the session to `intervention_shown`.
+
+`POST /api/sessions/[sessionId]/interventions/more-help` requires an existing intervention and records learner-requested escalation before selecting the next allowed support level.
+
+`POST /api/sessions/[sessionId]/interventions/acknowledge` records the learner interaction, updates support usage, and advances to `retry_required`.
+
+Intervention responses are hydrated through the session snapshot. Learner-facing content must preserve prior understanding, avoid diagnosis labels, and avoid final-answer leakage below the full-reconstruction level.
 
 ## Step 6 analysis response
 

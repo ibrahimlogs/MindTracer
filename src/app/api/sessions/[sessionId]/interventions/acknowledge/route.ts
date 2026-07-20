@@ -3,9 +3,14 @@ import type { NextRequest } from "next/server";
 import {
   handleRouteError,
   parseIdempotencyKey,
+  parseJson,
   sessionSuccess,
 } from "@/app/api/sessions/route-utils";
-import { sessionEngine, sessionPathSchema } from "@/lib/session-engine";
+import {
+  interventionAcknowledgeSchema,
+  sessionEngine,
+  sessionPathSchema,
+} from "@/lib/session-engine";
 
 interface RouteProps {
   params: Promise<{ sessionId: string }>;
@@ -16,9 +21,14 @@ export async function POST(request: NextRequest, { params }: RouteProps) {
 
   try {
     const path = sessionPathSchema.parse(await params);
+    const input = await parseJson(request, interventionAcknowledgeSchema);
     const idempotencyKey = parseIdempotencyKey(request);
     return sessionSuccess(
-      sessionEngine.acknowledgeIntervention(path.sessionId, idempotencyKey),
+      sessionEngine.acknowledgeIntervention(
+        path.sessionId,
+        input,
+        idempotencyKey,
+      ),
       201,
       requestId,
     );

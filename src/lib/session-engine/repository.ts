@@ -14,6 +14,10 @@ import type {
   VerificationQuestionOutput,
 } from "@/lib/misconception-engine";
 import type {
+  InterventionSelection,
+  SupportUsageSummary,
+} from "@/lib/intervention-engine";
+import type {
   AttemptInput,
   CreateSessionInput,
   TransferSubmitInput,
@@ -71,9 +75,27 @@ export interface InterventionSnapshot {
   id: string;
   misconceptionId: string;
   interventionRecordId: string;
-  level: number;
+  family: InterventionSelection["family"];
+  level: InterventionSelection["level"];
+  type: string;
   title: string;
+  instructionalGoal: string;
+  preservedUnderstanding: readonly string[];
+  learnerFacingContent: string;
+  visualizerType: InterventionSelection["visualizerType"];
+  visualizerConfig: InterventionSelection["visualizerConfig"];
+  revealsPartialAnswer: boolean;
+  revealsFullAnswer: boolean;
+  escalationAvailable: boolean;
+  nextAllowedLevel: InterventionSelection["nextAllowedLevel"];
+  selectionSource: InterventionSelection["selectionSource"];
+  selectionReason: string;
+  supportLabel: string;
+  safetyValidation: InterventionSelection["safetyValidation"];
+  replayCount: number;
+  interactions: readonly string[];
   acknowledgedAt: string | null;
+  createdAt: string;
 }
 
 export interface ReasoningDeltaSnapshot {
@@ -121,6 +143,8 @@ export interface SessionSnapshot {
   hypotheses: HypothesisSnapshot | null;
   verification: VerificationSnapshot | null;
   intervention: InterventionSnapshot | null;
+  interventionHistory: readonly InterventionSnapshot[];
+  supportUsage: SupportUsageSummary;
   transfer: {
     problemId: string;
     answer: string;
@@ -141,6 +165,8 @@ interface MutableSession
     | "events"
     | "verification"
     | "intervention"
+    | "interventionHistory"
+    | "supportUsage"
     | "transfer"
     | "report"
   > {
@@ -150,6 +176,8 @@ interface MutableSession
   hypotheses: HypothesisSnapshot | null;
   verification: VerificationSnapshot | null;
   intervention: InterventionSnapshot | null;
+  interventionHistory: InterventionSnapshot[];
+  supportUsage: SupportUsageSummary;
   transfer: SessionSnapshot["transfer"];
   report: ReasoningDeltaSnapshot | null;
   events: SessionEventRecord[];
@@ -164,6 +192,50 @@ function nowIso() {
 
 function createPublicId() {
   return `mt_${crypto.randomUUID().replaceAll("-", "").slice(0, 20)}`;
+}
+
+function emptySupportUsage(): SupportUsageSummary {
+  return {
+    interventionCount: 0,
+    highestLevelUsed: 0,
+    familiesUsed: [],
+    visualizerTypesUsed: [],
+    learnerRequestedHelpCount: 0,
+    systemEscalationCount: 0,
+    replayCount: 0,
+    partialAnswerRevealed: false,
+    fullAnswerRevealed: false,
+  };
+}
+
+function summarizeInterventionUsage(
+  interventions: readonly InterventionSnapshot[],
+): SupportUsageSummary {
+  return {
+    interventionCount: interventions.length,
+    highestLevelUsed: interventions.reduce(
+      (highest, item) => Math.max(highest, item.level),
+      0,
+    ),
+    familiesUsed: [...new Set(interventions.map((item) => item.family))],
+    visualizerTypesUsed: [
+      ...new Set(interventions.map((item) => item.visualizerType)),
+    ],
+    learnerRequestedHelpCount: interventions.filter((item) =>
+      item.selectionReason.includes("LEARNER_REQUESTED_MORE_HELP"),
+    ).length,
+    systemEscalationCount: interventions.filter((item) =>
+      item.selectionReason.includes("RETRY_UNSUCCESSFUL"),
+    ).length,
+    replayCount: interventions.reduce(
+      (count, item) => count + item.replayCount,
+      0,
+    ),
+    partialAnswerRevealed: interventions.some(
+      (item) => item.revealsPartialAnswer,
+    ),
+    fullAnswerRevealed: interventions.some((item) => item.revealsFullAnswer),
+  };
 }
 
 function cloneSession(session: MutableSession): SessionSnapshot {
@@ -211,7 +283,13 @@ function cloneSession(session: MutableSession): SessionSnapshot {
         }
       : null,
     verification: session.verification ? { ...session.verification } : null,
-    intervention: session.intervention ? { ...session.intervention } : null,
+    intervention: session.intervention
+      ? structuredClone(session.intervention)
+      : null,
+    interventionHistory: session.interventionHistory.map((item) =>
+      structuredClone(item),
+    ),
+    supportUsage: structuredClone(session.supportUsage),
     transfer: session.transfer ? { ...session.transfer } : null,
     report: session.report
       ? {
@@ -255,6 +333,8 @@ export class InMemorySessionRepository {
       hypotheses: null,
       verification: null,
       intervention: null,
+      interventionHistory: [],
+      supportUsage: emptySupportUsage(),
       transfer: null,
       report: null,
       events: [],
@@ -456,6 +536,65 @@ export class InMemorySessionRepository {
       createdAt: nowIso(),
       answeredAt: null,
     };
+  }
+
+  setIntervention(
+    session: MutableSession,
+    selection: InterventionSelection,
+    misconceptionId: string,
+  ) {
+    const snapshot: InterventionSnapshot = {
+      id: crypto.randomUUID(),
+      misconceptionId,
+      interventionRecordId: selection.interventionRecordId,
+      family: selection.family,
+      level: selection.level,
+      type: selection.type,
+      title: selection.title,
+      instructionalGoal: selection.instructionalGoal,
+      preservedUnderstanding: [...selection.preservedUnderstanding],
+      learnerFacingContent: selection.learnerFacingContent,
+      visualizerType: selection.visualizerType,
+      visualizerConfig: structuredClone(selection.visualizerConfig),
+      revealsPartialAnswer: selection.revealsPartialAnswer,
+      revealsFullAnswer: selection.revealsFullAnswer,
+      escalationAvailable: selection.escalationAvailable,
+      nextAllowedLevel: selection.nextAllowedLevel,
+      selectionSource: selection.selectionSource,
+      selectionReason: selection.selectionReason,
+      supportLabel: selection.supportLabel,
+      safetyValidation: structuredClone(selection.safetyValidation),
+      replayCount: 0,
+      interactions: [],
+      acknowledgedAt: null,
+      createdAt: nowIso(),
+    };
+    session.intervention = snapshot;
+    session.interventionHistory.push(snapshot);
+    session.supportUsage = summarizeInterventionUsage(
+      session.interventionHistory,
+    );
+  }
+
+  acknowledgeIntervention(session: MutableSession, interactionType: string) {
+    if (!session.intervention) {
+      throw new SessionEngineError(
+        "INTERVENTION_NOT_READY",
+        "No intervention is ready for this session.",
+      );
+    }
+    const acknowledged = {
+      ...session.intervention,
+      interactions: [...session.intervention.interactions, interactionType],
+      acknowledgedAt: nowIso(),
+    };
+    session.intervention = acknowledged;
+    session.interventionHistory = session.interventionHistory.map((item) =>
+      item.id === acknowledged.id ? acknowledged : item,
+    );
+    session.supportUsage = summarizeInterventionUsage(
+      session.interventionHistory,
+    );
   }
 
   answerVerification(

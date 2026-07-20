@@ -51,6 +51,8 @@ interface LearningSessionState {
   analysisSummary: SessionSnapshot["analysis"];
   hypothesesSummary: SessionSnapshot["hypotheses"];
   verificationQuestion: SessionSnapshot["verification"];
+  interventionSummary: SessionSnapshot["intervention"];
+  supportUsage: SessionSnapshot["supportUsage"];
   pendingAction: string | null;
   error: string | null;
   hydrateFromServer: (snapshot: SessionSnapshot) => void;
@@ -66,6 +68,8 @@ interface LearningSessionState {
   setDemoSpeed: (speed: DemoSpeed) => void;
   submitInitialAttempt: (payload: AttemptPayload) => void;
   submitVerification: (response: string) => void;
+  showIntervention: () => void;
+  requestMoreHelp: () => void;
   acknowledgeIntervention: () => void;
   submitRetry: (payload: RetryPayload) => void;
   submitTransfer: (payload: RetryPayload) => void;
@@ -92,6 +96,18 @@ const initialState = {
   analysisSummary: null,
   hypothesesSummary: null,
   verificationQuestion: null,
+  interventionSummary: null,
+  supportUsage: {
+    interventionCount: 0,
+    highestLevelUsed: 0,
+    familiesUsed: [],
+    visualizerTypesUsed: [],
+    learnerRequestedHelpCount: 0,
+    systemEscalationCount: 0,
+    replayCount: 0,
+    partialAnswerRevealed: false,
+    fullAnswerRevealed: false,
+  },
   pendingAction: null,
   error: null,
 };
@@ -179,6 +195,8 @@ function stateFromSnapshot(
     analysisSummary: snapshot.analysis,
     hypothesesSummary: snapshot.hypotheses,
     verificationQuestion: snapshot.verification,
+    interventionSummary: snapshot.intervention,
+    supportUsage: snapshot.supportUsage,
     error: null,
   };
 }
@@ -236,12 +254,20 @@ export const useLearningSessionStore = create<LearningSessionState>((set) => ({
           reasoning_analysis: "/analysis",
           hypothesis_ready: "/hypotheses",
           verification_submitted: "/interventions",
+          intervention_shown: "/interventions/acknowledge",
           retry_submitted: "/delta",
           reasoning_delta: "/transfer/start",
         };
         const action = actionByStage[state.currentStage];
         if (action) {
-          void postSessionAction(sessionId, action)
+          const body =
+            action === "/interventions/acknowledge"
+              ? {
+                  interactionType: "let_me_try_again",
+                  submissionKey: createSubmissionKey("acknowledge"),
+                }
+              : undefined;
+          void postSessionAction(sessionId, action, body)
             .then((snapshot) => ensureVerificationQuestion(snapshot))
             .then((snapshot) => set(stateFromSnapshot(snapshot)))
             .catch((caught: unknown) =>
@@ -342,11 +368,65 @@ export const useLearningSessionStore = create<LearningSessionState>((set) => ({
       }
     })();
   },
+  showIntervention: () => {
+    set((state) =>
+      state.serverSessionId
+        ? { autoPlay: false }
+        : {
+            autoPlay: false,
+            ...advanceFrom(state, "intervention_shown"),
+          },
+    );
+    void (async () => {
+      const sessionId = useLearningSessionStore.getState().serverSessionId;
+      if (!sessionId) return;
+      try {
+        const snapshot = await postSessionAction(sessionId, "/interventions");
+        useLearningSessionStore.setState(stateFromSnapshot(snapshot));
+      } catch (caught) {
+        useLearningSessionStore.setState({
+          error:
+            caught instanceof Error
+              ? caught.message
+              : "Unable to select intervention.",
+        });
+      }
+    })();
+  },
+  requestMoreHelp: () => {
+    set({ autoPlay: false });
+    void (async () => {
+      const sessionId = useLearningSessionStore.getState().serverSessionId;
+      if (!sessionId) return;
+      try {
+        const snapshot = await postSessionAction(
+          sessionId,
+          "/interventions/more-help",
+          {
+            reason: "more_help",
+            submissionKey: createSubmissionKey("more-help"),
+          },
+        );
+        useLearningSessionStore.setState(stateFromSnapshot(snapshot));
+      } catch (caught) {
+        useLearningSessionStore.setState({
+          error:
+            caught instanceof Error
+              ? caught.message
+              : "Unable to request more help.",
+        });
+      }
+    })();
+  },
   acknowledgeIntervention: () => {
-    set((state) => ({
-      autoPlay: false,
-      ...advanceFrom(state, "intervention_shown"),
-    }));
+    set((state) =>
+      state.serverSessionId
+        ? { autoPlay: false }
+        : {
+            autoPlay: false,
+            ...advanceFrom(state, "retry_required"),
+          },
+    );
     void (async () => {
       const sessionId = useLearningSessionStore.getState().serverSessionId;
       if (!sessionId) return;
@@ -354,6 +434,10 @@ export const useLearningSessionStore = create<LearningSessionState>((set) => ({
         const snapshot = await postSessionAction(
           sessionId,
           "/interventions/acknowledge",
+          {
+            interactionType: "let_me_try_again",
+            submissionKey: createSubmissionKey("acknowledge"),
+          },
         );
         useLearningSessionStore.setState(stateFromSnapshot(snapshot));
       } catch (caught) {

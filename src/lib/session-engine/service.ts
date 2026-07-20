@@ -8,6 +8,11 @@ import {
   reasoningPromptVersion,
 } from "@/lib/ai/reasoning";
 import {
+  buildInterventionEngineInput,
+  createInterventionSelector,
+  logInterventionEngineEvent,
+} from "@/lib/intervention-engine";
+import {
   buildCandidateRetrievalInput,
   buildHypothesisRankingInput,
   createMisconceptionRanker,
@@ -20,6 +25,8 @@ import {
 import type {
   AttemptInput,
   CreateSessionInput,
+  InterventionAcknowledgeInput,
+  InterventionMoreHelpInput,
   TransferSubmitInput,
   VerificationSubmitInput,
 } from "@/lib/session-engine/contracts";
@@ -474,65 +481,133 @@ export class SessionEngineService {
     );
   }
 
-  selectIntervention(sessionId: string, idempotencyKey: string) {
-    return inMemorySessionRepository.mutate(
+  async selectIntervention(sessionId: string, idempotencyKey: string) {
+    return inMemorySessionRepository.mutateAsync(
       sessionId,
       idempotencyKey,
       hashPayload({ action: "intervention" }),
-      (session) => {
-        assertTransition(session.currentStage, "intervention_ready");
-        const intervention = deterministic.select(session);
-        session.intervention = {
-          id: crypto.randomUUID(),
-          ...intervention,
-          acknowledgedAt: null,
-        };
+      async (session) => {
+        if (session.currentStage !== "intervention_ready") {
+          throw new SessionEngineError(
+            "INVALID_STATE_TRANSITION",
+            `Intervention selection requires intervention_ready, received ${session.currentStage}.`,
+            409,
+          );
+        }
+        if (session.intervention) return;
+        const snapshot = inMemorySessionRepository.get(session.publicId);
+        const input = buildInterventionEngineInput(
+          snapshot,
+          snapshot.interventionHistory,
+        );
+        const selection = await createInterventionSelector().select(input);
+        inMemorySessionRepository.setIntervention(
+          session,
+          selection,
+          input.verifiedState?.confirmedMisconceptionId ??
+            input.misconceptionRecord?.misconceptionId ??
+            "arithmetic_only_error",
+        );
         inMemorySessionRepository.transition(
           session,
-          "intervention_ready",
+          "intervention_shown",
           "intervention.selected",
+          {
+            family: selection.family,
+            level: selection.level,
+            interventionRecordId: selection.interventionRecordId,
+            visualizerType: selection.visualizerType,
+            revealsPartialAnswer: selection.revealsPartialAnswer,
+            revealsFullAnswer: selection.revealsFullAnswer,
+          },
+        );
+        logInterventionEngineEvent({
+          sessionPublicId: session.publicId,
+          eventType: "intervention.selected",
+          detail: {
+            family: selection.family,
+            level: selection.level,
+            source: selection.selectionSource,
+          },
+        });
+      },
+    );
+  }
+
+  async requestMoreHelp(
+    sessionId: string,
+    input: InterventionMoreHelpInput,
+    idempotencyKey: string,
+  ) {
+    return inMemorySessionRepository.mutateAsync(
+      sessionId,
+      idempotencyKey,
+      hashPayload(input),
+      async (session) => {
+        if (!session.intervention) {
+          throw new SessionEngineError(
+            "INTERVENTION_NOT_READY",
+            "More help requires an existing intervention.",
+          );
+        }
+        const snapshot = inMemorySessionRepository.get(session.publicId);
+        const engineInput = buildInterventionEngineInput(
+          snapshot,
+          snapshot.interventionHistory,
+          true,
+        );
+        const selection =
+          await createInterventionSelector().select(engineInput);
+        inMemorySessionRepository.setIntervention(
+          session,
+          selection,
+          engineInput.verifiedState?.confirmedMisconceptionId ??
+            engineInput.misconceptionRecord?.misconceptionId ??
+            session.intervention.misconceptionId,
+        );
+        inMemorySessionRepository.recordAuditEvent(
+          session,
+          "intervention.more_help",
+          {
+            reason: input.reason,
+            fromLevel: snapshot.intervention?.level,
+            toLevel: selection.level,
+            interventionRecordId: selection.interventionRecordId,
+          },
         );
       },
     );
   }
 
-  acknowledgeIntervention(sessionId: string, idempotencyKey: string) {
+  acknowledgeIntervention(
+    sessionId: string,
+    input: InterventionAcknowledgeInput,
+    idempotencyKey: string,
+  ) {
     return inMemorySessionRepository.mutate(
       sessionId,
       idempotencyKey,
-      hashPayload({ action: "acknowledge" }),
+      hashPayload(input),
       (session) => {
-        if (
-          !session.intervention &&
-          session.currentStage === "intervention_ready"
-        ) {
-          const intervention = deterministic.select(session);
-          session.intervention = {
-            id: crypto.randomUUID(),
-            ...intervention,
-            acknowledgedAt: null,
-          };
-          inMemorySessionRepository.recordAuditEvent(
-            session,
-            "intervention.selected",
-            {
-              source: "step-07-placeholder",
-              note: "Step 8 will replace this with the adaptive intervention engine.",
-            },
-          );
-        }
         if (!session.intervention) {
           throw new SessionEngineError(
             "INTERVENTION_NOT_READY",
             "No intervention is ready for this session.",
           );
         }
-        assertTransition(session.currentStage, "intervention_shown");
-        session.intervention.acknowledgedAt = new Date().toISOString();
+        assertTransition(session.currentStage, "retry_required");
+        inMemorySessionRepository.acknowledgeIntervention(
+          session,
+          input.interactionType,
+        );
         inMemorySessionRepository.transition(
           session,
-          "intervention_shown",
+          "retry_required",
           "intervention.acknowledged",
+          {
+            interactionType: input.interactionType,
+            supportUsage: session.supportUsage,
+          },
         );
       },
     );
@@ -550,7 +625,13 @@ export class SessionEngineService {
             "A retry cannot be saved before an intervention exists.",
           );
         }
-        assertTransition(session.currentStage, "retry_required");
+        if (session.currentStage !== "retry_required") {
+          throw new SessionEngineError(
+            "INVALID_STATE_TRANSITION",
+            `Retry submission requires retry_required, received ${session.currentStage}.`,
+            409,
+          );
+        }
         inMemorySessionRepository.transition(
           session,
           "retry_required",

@@ -3,6 +3,7 @@ export {
   createSessionSchema,
   idempotencyKeySchema,
   interventionAcknowledgeSchema,
+  interventionMoreHelpSchema,
   sessionPathSchema,
   transferSubmitSchema,
   verificationSubmitSchema,
@@ -10,6 +11,8 @@ export {
 export type {
   AttemptInput,
   CreateSessionInput,
+  InterventionAcknowledgeInput,
+  InterventionMoreHelpInput,
   TransferSubmitInput,
   VerificationSubmitInput,
 } from "./contracts";
