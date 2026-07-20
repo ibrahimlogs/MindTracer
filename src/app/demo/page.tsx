@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
-import { GitCompare, Route, UserRound } from "lucide-react";
+import Link from "next/link";
+import { Crown, GitCompare, Route, UserRound } from "lucide-react";
 
 import { DemoEntryCard } from "@/components/demo";
 import { PageShell, SectionContainer } from "@/components/layout/primitives";
 import { PageHeader } from "@/components/layout/section-header";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { Button } from "@/components/ui/button";
 import { StatusPill } from "@/components/ui/status-pill";
+import { ElevatedSurface } from "@/components/ui/surface";
 
 export const metadata: Metadata = {
   title: "Demo",
@@ -23,7 +26,6 @@ const demoOptions = [
     status: "Fully available",
     mode: "compare",
     icon: GitCompare,
-    featured: true,
   },
   {
     title: "Try as a Learner",
@@ -59,7 +61,28 @@ export default function DemoPage() {
             description="Choose a deterministic demo path through MindTrace's learning workspace. Sessions are API-created and resumable; when no database is configured, development fallback mode is clearly used."
             className="mt-8 max-w-4xl"
           />
-          <div className="mt-10 grid gap-5 lg:grid-cols-3">
+          <ElevatedSurface className="mt-10 border-reasoning/60 bg-reasoning/10 p-6">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <div className="flex items-center gap-3">
+                  <Crown className="size-5 text-reasoning" aria-hidden="true" />
+                  <span className="rounded-full border border-success/30 bg-success/10 px-3 py-1 text-xs text-success">
+                    Recommended for judges
+                  </span>
+                </div>
+                <h2 className="mt-4 text-2xl font-semibold">Judge Mode</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-text-secondary">
+                  Start the competition-grade two-minute path: two learners,
+                  same wrong answer, different reasoning evidence, verification,
+                  intervention, transfer, and report.
+                </p>
+              </div>
+              <Button asChild size="lg">
+                <Link href="/demo/judge">Start the two-minute demo</Link>
+              </Button>
+            </div>
+          </ElevatedSurface>
+          <div className="mt-6 grid gap-5 lg:grid-cols-3">
             {demoOptions.map((option) => (
               <DemoEntryCard key={option.title} {...option} />
             ))}

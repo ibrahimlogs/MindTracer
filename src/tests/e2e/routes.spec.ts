@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 const routes = [
   { path: "/", heading: "Same answer." },
   { path: "/demo", heading: "Same answer. Different reasoning journey." },
+  { path: "/demo/judge", heading: "Same answer." },
   {
     path: "/demo/session/example-session",
     heading: "If advertising cost becomes 5",
@@ -10,6 +11,10 @@ const routes = [
   { path: "/report/example-session", heading: "Evidence, not just a score." },
   { path: "/technology", heading: "Adaptation proposed by AI." },
   { path: "/technology/dataset", heading: "Curated records" },
+  {
+    path: "/technology/evaluation",
+    heading: "Prototype system-behavior evaluation",
+  },
 ] as const;
 
 for (const route of routes) {
@@ -147,6 +152,66 @@ test("health API returns a success envelope", async ({ request }) => {
     data: { status: "ok" },
     error: null,
   });
+});
+
+test("readiness API returns safe configuration status", async ({ request }) => {
+  const response = await request.get("/api/readiness");
+
+  expect(response.ok()).toBe(true);
+  await expect(response.json()).resolves.toMatchObject({
+    data: {
+      version: "1.0.0-build-week",
+      databaseConfigured: expect.any(Boolean),
+      openAIConfigured: expect.any(Boolean),
+    },
+    error: null,
+  });
+});
+
+test("judge mode starts, pauses, resumes, and reaches transfer", async ({
+  page,
+}) => {
+  await page.goto("/demo/judge");
+  await page.getByRole("button", { name: "Start the two-minute demo" }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "Same answer.",
+  );
+
+  await page.getByRole("button", { name: "Pause" }).click();
+  await page.getByRole("button", { name: "Play" }).click();
+  await page.getByRole("button", { name: "Skip animation" }).click();
+  await expect(page.getByText("Learner A: approximate growth")).toBeVisible();
+  await page.getByRole("button", { name: "Next scene" }).click();
+  await expect(page.getByText("Learner A verification")).toBeVisible();
+
+  for (let index = 0; index < 5; index += 1) {
+    await page.getByRole("button", { name: "Next scene" }).click();
+  }
+
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Transfer challenge" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Restart" }).click();
+  await expect(page.getByText("Scene 1 of")).toBeVisible();
+});
+
+test("judge mode supports interactive label and mobile layout", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/demo/judge");
+  await page.getByRole("button", { name: "Explore manually" }).click();
+
+  await expect(
+    page.getByText("Interactive Mode is prototype-labeled"),
+  ).toBeVisible();
+  const hasOverflow = await page.evaluate(
+    () =>
+      document.documentElement.scrollWidth >
+      document.documentElement.clientWidth,
+  );
+  expect(hasOverflow).toBe(false);
 });
 
 test("dataset explorer route loads and opens concept detail", async ({

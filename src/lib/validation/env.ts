@@ -16,6 +16,7 @@ export const publicEnvSchema = z.object({
 });
 
 export const serverEnvSchema = publicEnvSchema.extend({
+  APP_ENV: z.enum(["development", "test", "production"]).default("development"),
   DATABASE_URL: z
     .url({ protocol: /^postgres(ql)?$/ })
     .optional()
@@ -54,6 +55,8 @@ export const serverEnvSchema = publicEnvSchema.extend({
     .enum(["openai", "deterministic", "fallback"])
     .default("deterministic"),
   DEMO_MODE: booleanString.default(true),
+  JUDGE_MODE: booleanString.default(true),
+  ALLOW_CACHED_JUDGE_FALLBACK: booleanString.default(true),
   ALLOW_IN_MEMORY_SESSION_FALLBACK: booleanString.default(true),
 });
 
@@ -66,6 +69,7 @@ export const publicEnv = publicEnvSchema.parse({
 export function getServerEnv(): ServerEnv {
   const result = serverEnvSchema.safeParse({
     DATABASE_URL: process.env.DATABASE_URL,
+    APP_ENV: process.env.APP_ENV,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     OPENAI_REASONING_MODEL: process.env.OPENAI_REASONING_MODEL,
     OPENAI_REASONING_TIMEOUT_MS: process.env.OPENAI_REASONING_TIMEOUT_MS,
@@ -81,6 +85,8 @@ export function getServerEnv(): ServerEnv {
     TRANSFER_EVALUATOR_MODE: process.env.TRANSFER_EVALUATOR_MODE,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     DEMO_MODE: process.env.DEMO_MODE,
+    JUDGE_MODE: process.env.JUDGE_MODE,
+    ALLOW_CACHED_JUDGE_FALLBACK: process.env.ALLOW_CACHED_JUDGE_FALLBACK,
     ALLOW_IN_MEMORY_SESSION_FALLBACK:
       process.env.ALLOW_IN_MEMORY_SESSION_FALLBACK,
   });

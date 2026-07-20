@@ -56,3 +56,20 @@ The server-side session engine defines the authoritative lifecycle transitions. 
 API handlers use consistent success/error envelopes with request metadata. The logger emits structured records behind a replaceable interface. Vitest covers isolated logic, fallback meaning, education dataset invariants, session transitions, idempotency, and guarded writes. Playwright uses the production server with bounded worker concurrency to verify routes, navigation, responsive layout, fallbacks, hydration behavior, API-created sessions, refresh/resume, reports, and the dataset explorer.
 
 Error reporting transport, analytics transport, rate limiting, production telemetry, durable learning sessions, judge-mode polish, and real benchmark evaluation are planned but not implemented.
+
+## Step 10 judge and submission layer
+
+Judge Mode lives at `/demo/judge` and uses a deterministic scene system in
+`src/lib/judge-demo`. It is intentionally separate from the persisted
+educational session stages so the competition demo can remain reliable when
+OpenAI, PostgreSQL, WebGL, or animation timing are unavailable.
+
+Each judge scene records its execution source: `live_openai`, `deterministic`,
+`cached_demo`, or `fallback`. Cached reviewed responses are labeled as cached
+and are used only for guided/fallback demonstration paths. They do not overwrite
+real session evidence.
+
+The readiness endpoint reports safe configuration status without exposing
+secrets. The final submission documentation explains which integrations are
+implemented, which are deterministic/mock verified, and which require live
+credentials.

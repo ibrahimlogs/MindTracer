@@ -1,5 +1,9 @@
 import { apiSuccess } from "@/lib/api/response";
 
 export function GET() {
-  return apiSuccess({ status: "ok", service: "mindtrace-web" });
+  return apiSuccess({
+    status: "ok",
+    service: "mindtrace-web",
+    version: "1.0.0-build-week",
+  });
 }
