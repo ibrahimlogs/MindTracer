@@ -120,14 +120,12 @@ export function WorkspaceShell({ mode, sessionId }: WorkspaceShellProps) {
             <Link href="/" className="font-semibold tracking-tight">
               MindTrace
             </Link>
-            <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-text-muted">
-              <span>Guided Demo</span>
+            <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-text-muted">
+              <span>Interactive learning demo</span>
               <span aria-hidden="true">/</span>
               <span>{learner.name}</span>
               <span aria-hidden="true">/</span>
               <span aria-live="polite">{stageLabels[currentStage]}</span>
-              <span aria-hidden="true">/</span>
-              <span>Fallback-safe session</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -156,21 +154,34 @@ export function WorkspaceShell({ mode, sessionId }: WorkspaceShellProps) {
         </div>
       </div>
 
-      <div className="mx-auto grid max-w-[96rem] gap-4 px-4 py-4 sm:px-6">
-        <div className="rounded-lg border border-border bg-surface-elevated p-3 text-sm md:hidden">
-          Stage: {stageLabels[currentStage]}
+      <div className="mx-auto grid max-w-[96rem] gap-5 px-4 py-5 sm:px-6">
+        <div className="rounded-[1.25rem] bg-white p-4 text-sm font-semibold text-text-secondary md:hidden">
+          Step: {stageLabels[currentStage]}
         </div>
         {error ? (
-          <div className="rounded-lg border border-error/40 bg-error/10 p-3 text-sm text-error">
-            {error}
+          <div className="rounded-[1.25rem] bg-error-soft p-4 text-base text-error">
+            {error} You can restart the demo or continue with the reviewed path.
           </div>
         ) : null}
         <h1 className="sr-only">
           If advertising cost becomes 5, what sales value would follow the
           pattern?
         </h1>
-        <div className="grid gap-4 lg:grid-cols-[34fr_38fr_28fr]">
-          <ElevatedSurface className="p-5">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,68fr)_minmax(22rem,32fr)]">
+          <ElevatedSurface className="p-6 sm:p-8">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-reasoning">
+                  Constant Difference
+                </p>
+                <h1 className="mt-1 text-2xl font-semibold">
+                  {stageLabels[currentStage]}
+                </h1>
+              </div>
+              <span className="rounded-full bg-surface-soft px-4 py-2 text-sm font-semibold text-text-muted">
+                Step {Math.min(completedStages.length + 1, 7)} of 7
+              </span>
+            </div>
             <ProblemContext />
             <div className="mt-6 border-t border-border pt-5">
               {currentStage === "initial_attempt" ||
@@ -227,14 +238,27 @@ export function WorkspaceShell({ mode, sessionId }: WorkspaceShellProps) {
                 </div>
               ) : null}
             </div>
+            <div className="mt-8 rounded-[1.5rem] bg-surface-soft p-4">
+              <p className="text-sm font-semibold text-text-muted">
+                Visual explanation
+              </p>
+              <div className="mt-4">
+                <ReasoningWorkspaceCanvas
+                  learner={learner}
+                  stage={currentStage}
+                  analysis={analysisSummary}
+                  hypotheses={hypothesesSummary}
+                  verification={verificationQuestion}
+                  intervention={interventionSummary}
+                  report={report}
+                />
+              </div>
+            </div>
           </ElevatedSurface>
 
-          <ElevatedSurface className="min-h-[28rem] p-5">
-            <p className="text-xs font-medium tracking-[0.14em] text-text-muted uppercase">
-              Visual reasoning canvas
-            </p>
-            <div className="mt-5">
-              <ReasoningWorkspaceCanvas
+          <aside className="lg:sticky lg:top-24 lg:self-start">
+            <ElevatedSurface className="p-5">
+              <GuidePanel
                 learner={learner}
                 stage={currentStage}
                 analysis={analysisSummary}
@@ -242,22 +266,10 @@ export function WorkspaceShell({ mode, sessionId }: WorkspaceShellProps) {
                 verification={verificationQuestion}
                 intervention={interventionSummary}
                 report={report}
+                mode={mode}
               />
-            </div>
-          </ElevatedSurface>
-
-          <ElevatedSurface className="p-5">
-            <GuidePanel
-              learner={learner}
-              stage={currentStage}
-              analysis={analysisSummary}
-              hypotheses={hypothesesSummary}
-              verification={verificationQuestion}
-              intervention={interventionSummary}
-              report={report}
-              mode={mode}
-            />
-          </ElevatedSurface>
+            </ElevatedSurface>
+          </aside>
         </div>
 
         <ReasoningTimeline

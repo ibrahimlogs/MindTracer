@@ -21,9 +21,9 @@ export function ReasoningTimeline({
   return (
     <nav
       aria-label="Reasoning trace timeline"
-      className="rounded-xl border border-border bg-surface-elevated p-3"
+      className="soft-shadow rounded-[1.4rem] bg-white p-3"
     >
-      <ol className="grid gap-2 sm:grid-cols-7">
+      <ol className="grid gap-2 sm:grid-cols-4 lg:grid-cols-8">
         {timelineStages.map((stage) => {
           const stageIndex = getStageIndex(stage.key);
           const complete =
@@ -36,7 +36,7 @@ export function ReasoningTimeline({
                 type="button"
                 disabled={!onJump}
                 onClick={() => onJump?.(stage.key)}
-                className="flex w-full items-center gap-2 rounded-md border border-border/70 bg-surface-inset px-3 py-2 text-left text-xs text-text-muted transition-colors hover:border-border-strong disabled:cursor-default aria-current:border-reasoning aria-current:text-text-primary"
+                className="flex min-h-11 w-full items-center gap-2 rounded-full bg-surface-soft px-3 py-2 text-left text-sm text-text-muted transition-colors disabled:cursor-default aria-current:bg-reasoning-soft aria-current:text-reasoning"
                 aria-current={active ? "step" : undefined}
               >
                 <span className="flex size-5 shrink-0 items-center justify-center rounded-full border border-border text-[0.65rem]">

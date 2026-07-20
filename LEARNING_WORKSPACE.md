@@ -15,7 +15,7 @@ Step 3 implements a complete MindTrace learning journey with deterministic mocke
 
 The workspace is driven by typed learner scripts under `src/data/demo`, shared educational records under `src/data/education`, session APIs under `src/app/api/sessions`, a Zustand client adapter in `src/stores/learning-session-store.ts`, and reusable panels under `src/components/problem`, `src/components/visualization`, `src/components/mindtrace`, `src/components/reasoning`, and `src/components/demo`.
 
-Desktop uses a three-panel layout: problem workspace, visual reasoning canvas, and structured MindTrace guide. Tablet and mobile collapse into a sequential flow with a compact stage indicator and no horizontal overflow.
+Desktop now uses a learner-first layout: the main lesson surface contains the problem, current action, and visual explanation, while a secondary MindTrace coach panel summarizes guidance. Tablet and mobile collapse into a sequential flow with a compact learner-language stage indicator and no horizontal overflow.
 
 ## State machine
 

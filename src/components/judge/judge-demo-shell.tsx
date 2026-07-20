@@ -138,7 +138,7 @@ export function JudgeDemoShell() {
   }
 
   return (
-    <SectionContainer className="py-8 sm:py-12">
+    <SectionContainer className="py-6 sm:py-10">
       <div className="grid gap-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -152,11 +152,11 @@ export function JudgeDemoShell() {
             </h1>
             <p className="mt-4 max-w-3xl text-text-secondary">
               {snapshot.mode === "guided"
-                ? "Guided Mode uses scripted learner responses and reviewed fallback data."
-                : "Interactive Mode is prototype-labeled and restricted to curated problems."}
+                ? "A guided learning story using reviewed learner responses."
+                : "Interactive mode is a prototype path for curated problems."}
             </p>
           </div>
-          <div className="rounded-2xl border border-border bg-surface-elevated p-4 font-mono text-xs text-text-muted">
+          <div className="rounded-full bg-surface-soft px-4 py-2 text-sm font-semibold text-text-muted">
             Focus: {snapshot.focus.replace("-", " ")}
           </div>
         </div>
@@ -170,7 +170,7 @@ export function JudgeDemoShell() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35 }}
           aria-live="polite"
-          className="min-h-[24rem] rounded-[2rem] border border-border bg-surface-elevated p-5 sm:p-7"
+          className="lesson-shadow min-h-[24rem] rounded-[2rem] bg-white p-5 sm:p-8"
         >
           {renderScene(scene)}
         </motion.section>
@@ -217,8 +217,12 @@ export function JudgeDemoShell() {
           }
         />
 
-        <ArchitectureSummary />
-        <EvaluationSummary />
+        {scene.kind === "closing" ? (
+          <div className="grid gap-5">
+            <ArchitectureSummary />
+            <EvaluationSummary />
+          </div>
+        ) : null}
       </div>
     </SectionContainer>
   );
@@ -226,12 +230,10 @@ export function JudgeDemoShell() {
 
 function ProblemCard() {
   return (
-    <section className="rounded-[2rem] border border-border bg-surface-inset p-5">
-      <p className="font-mono text-xs tracking-[0.2em] text-text-muted uppercase">
-        Same problem
-      </p>
+    <section className="rounded-[2rem] bg-surface-soft p-5">
+      <p className="text-sm font-semibold text-text-muted">Same problem</p>
       <div className="mt-4 grid gap-5 lg:grid-cols-[0.55fr_1fr]">
-        <table className="w-full text-left text-sm">
+        <table className="w-full text-left text-base">
           <thead className="text-text-muted">
             <tr>
               <th className="py-2">Advertising Cost</th>
@@ -248,8 +250,10 @@ function ProblemCard() {
           </tbody>
         </table>
         <div>
-          <h2 className="text-xl font-medium">{judgeDemoProblem.question}</h2>
-          <p className="mt-3 text-sm text-text-muted">
+          <h2 className="text-2xl leading-tight font-semibold">
+            {judgeDemoProblem.question}
+          </h2>
+          <p className="mt-3 text-base text-text-muted">
             Both learners answer 10. MindTrace delays the correct answer until
             the intervention stage to avoid answer leakage.
           </p>

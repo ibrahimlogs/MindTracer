@@ -5,19 +5,20 @@ import { PrimaryButton } from "@/components/ui/actions";
 
 const navigation = [
   { href: "/#how-it-works", label: "How it works" },
-  { href: "/#reasoning-system", label: "Reasoning system" },
+  { href: "/#reasoning-system", label: "Learning system" },
   { href: "/technology", label: "Technology" },
+  { href: "/demo", label: "Demo" },
 ] as const;
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/88 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/86 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-[90rem] items-center justify-between px-5 sm:px-8 lg:px-12">
         <Link
           href="/"
-          className="flex items-center gap-2.5 rounded-md text-sm font-medium tracking-tight"
+          className="flex items-center gap-2.5 rounded-md text-base font-semibold tracking-tight"
         >
-          <span className="grid size-8 place-items-center rounded-lg border border-reasoning/20 bg-reasoning/8 text-reasoning">
+          <span className="grid size-9 place-items-center rounded-xl bg-reasoning-soft text-reasoning">
             <BrainCircuit className="size-4" aria-hidden="true" />
           </span>
           <span>MindTrace</span>
@@ -42,19 +43,19 @@ export function SiteHeader() {
             ))}
           </nav>
           <PrimaryButton asChild size="sm">
-            <Link href="/demo">Demo</Link>
+            <Link href="/demo">Try the demo</Link>
           </PrimaryButton>
         </div>
 
         <details className="group md:hidden">
           <summary
-            className="grid size-10 cursor-pointer list-none place-items-center rounded-md text-text-secondary hover:bg-surface-soft hover:text-text-primary [&::-webkit-details-marker]:hidden"
+            className="grid size-11 cursor-pointer list-none place-items-center rounded-full text-text-secondary hover:bg-surface-soft hover:text-text-primary [&::-webkit-details-marker]:hidden"
             aria-label="Toggle navigation menu"
           >
             <Menu className="size-5 group-open:hidden" aria-hidden="true" />
             <X className="hidden size-5 group-open:block" aria-hidden="true" />
           </summary>
-          <div className="absolute inset-x-0 top-16 border-b border-border bg-background px-5">
+          <div className="absolute inset-x-0 top-16 border-b border-border bg-background px-5 shadow-xl">
             <nav
               aria-label="Mobile navigation"
               className="mx-auto flex max-w-[90rem] flex-col py-4"

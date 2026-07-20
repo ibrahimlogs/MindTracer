@@ -7,10 +7,7 @@ type SurfaceProps = React.HTMLAttributes<HTMLDivElement>;
 export function Surface({ className, ...props }: SurfaceProps) {
   return (
     <div
-      className={cn(
-        "rounded-2xl border border-border bg-surface-soft",
-        className,
-      )}
+      className={cn("rounded-[1.4rem] bg-surface-soft", className)}
       {...props}
     />
   );
@@ -20,7 +17,7 @@ export function ElevatedSurface({ className, ...props }: SurfaceProps) {
   return (
     <div
       className={cn(
-        "rounded-2xl border border-border bg-surface-elevated",
+        "lesson-shadow rounded-[1.6rem] bg-surface-elevated",
         className,
       )}
       {...props}
@@ -31,10 +28,7 @@ export function ElevatedSurface({ className, ...props }: SurfaceProps) {
 export function InsetSurface({ className, ...props }: SurfaceProps) {
   return (
     <div
-      className={cn(
-        "rounded-xl border border-border/80 bg-surface-inset",
-        className,
-      )}
+      className={cn("rounded-[1.15rem] bg-surface-inset", className)}
       {...props}
     />
   );

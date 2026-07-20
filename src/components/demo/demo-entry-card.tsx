@@ -28,22 +28,20 @@ export function DemoEntryCard({
   featured = false,
 }: DemoEntryCardProps) {
   return (
-    <ElevatedSurface
-      className={`p-5 ${featured ? "border-reasoning/60 bg-reasoning/10" : ""}`}
-    >
+    <ElevatedSurface className={`p-5 ${featured ? "bg-reasoning-soft" : ""}`}>
       <div className="flex items-start justify-between gap-4">
-        <div className="rounded-lg border border-border bg-surface-inset p-3">
+        <div className="rounded-2xl bg-reasoning-soft p-3">
           <Icon className="size-5 text-reasoning" aria-hidden="true" />
         </div>
-        <span className="rounded-full border border-success/30 bg-success/10 px-3 py-1 text-xs text-success">
+        <span className="rounded-full bg-success-soft px-3 py-1 text-xs font-semibold text-success">
           {status}
         </span>
       </div>
       <h2 className="mt-5 text-xl font-semibold text-text-primary">{title}</h2>
-      <p className="mt-3 text-sm leading-6 text-text-secondary">
+      <p className="mt-3 text-base leading-7 text-text-secondary">
         {description}
       </p>
-      <div className="mt-5 rounded-lg border border-border bg-surface-inset p-4 text-xs leading-5 text-text-muted">
+      <div className="mt-5 rounded-2xl bg-surface-soft p-4 text-sm leading-6 text-text-muted">
         Preview: same answer, different reasoning evidence and support path.
       </div>
       <StartSessionButton

@@ -4,21 +4,42 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #070809;
-  --surface-elevated: #101214;
-  --surface-soft: #171a1d;
-  --surface-inset: #0b0d0f;
-  --text-primary: #f5f7f8;
-  --text-secondary: #a7afb7;
-  --text-muted: #6f7881;
-  --reasoning: #8da8ff;
-  --success: #71d6a0;
-  --attention: #f1c875;
-  --error: #f17d7d;
-  --border: #25292d;
-  --border-strong: #343a40;
-  --ring: #8da8ff;
-  --radius: 0.75rem;
+  --background: #f6f7f9;
+  --surface-elevated: #ffffff;
+  --surface-soft: #f0f3f7;
+  --surface-inset: #e8edf3;
+  --text-primary: #172033;
+  --text-secondary: #526072;
+  --text-muted: #7b8797;
+  --reasoning: #5b6fef;
+  --reasoning-hover: #4659d8;
+  --reasoning-soft: #eef0ff;
+  --success: #2e9c6a;
+  --success-soft: #eaf7f1;
+  --attention: #c88719;
+  --attention-soft: #fff5df;
+  --error: #d65b5b;
+  --error-soft: #fff0f0;
+  --learner-a: #4f7df3;
+  --learner-a-soft: #edf4ff;
+  --learner-b: #8b5cf6;
+  --learner-b-soft: #f4efff;
+  --border: #d9e0e9;
+  --border-strong: #bdc8d7;
+  --ring: #5b6fef;
+  --radius: 1.15rem;
+}
+
+.dark {
+  --background: #101722;
+  --surface-elevated: #172131;
+  --surface-soft: #1f2b3d;
+  --surface-inset: #111a27;
+  --text-primary: #f5f7fb;
+  --text-secondary: #c5cfdb;
+  --text-muted: #8d9aae;
+  --border: #2f3d52;
+  --border-strong: #465670;
 }
 
 @theme inline {
@@ -30,9 +51,18 @@
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
   --color-reasoning: var(--reasoning);
+  --color-reasoning-hover: var(--reasoning-hover);
+  --color-reasoning-soft: var(--reasoning-soft);
   --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
   --color-attention: var(--attention);
+  --color-attention-soft: var(--attention-soft);
   --color-error: var(--error);
+  --color-error-soft: var(--error-soft);
+  --color-learner-a: var(--learner-a);
+  --color-learner-a-soft: var(--learner-a-soft);
+  --color-learner-b: var(--learner-b);
+  --color-learner-b-soft: var(--learner-b-soft);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
   --color-ring: var(--ring);
@@ -54,7 +84,7 @@
 
 html {
   background: var(--background);
-  color-scheme: dark;
+  color-scheme: light;
   scroll-behavior: smooth;
   scroll-padding-top: 5rem;
 }
@@ -63,13 +93,15 @@ body {
   min-height: 100vh;
   background:
     radial-gradient(
-      circle at 50% -20%,
-      rgb(141 168 255 / 12%),
-      transparent 42rem
+      circle at 8% -10%,
+      rgb(91 111 239 / 16%),
+      transparent 34rem
     ),
+    radial-gradient(circle at 92% 0%, rgb(46 156 106 / 10%), transparent 30rem),
     var(--background);
   color: var(--text-primary);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 16px;
   text-rendering: optimizeLegibility;
 }
 
@@ -109,6 +141,14 @@ body {
 
 .animate-trace-flow {
   animation: trace-flow 1.8s linear infinite;
+}
+
+.lesson-shadow {
+  box-shadow: 0 20px 60px rgb(23 32 51 / 10%);
+}
+
+.soft-shadow {
+  box-shadow: 0 10px 30px rgb(23 32 51 / 8%);
 }
 
 @media (prefers-reduced-motion: reduce) {

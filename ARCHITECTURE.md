@@ -19,6 +19,8 @@ Reusable primitives are grouped by responsibility:
 
 Design tokens live in `src/app/globals.css`. Components consume semantic Tailwind names or CSS variables rather than duplicating color constants. Motion timing and reduced-motion behavior are also centralized there.
 
+The learner-facing default is now a warm light interface. The main lesson surface, support/evidence surfaces, feedback surfaces, and technical surfaces use distinct roles so the app no longer depends on repeated dark cards and thin borders for hierarchy.
+
 ## 3D enhancement boundary
 
 The hero's essential meaning is server-rendered as an HTML reasoning path. A small client enhancement checks viewport visibility, viewport width, reduced-motion preference, page visibility, and WebGL support. Only then does it dynamically import the React Three Fiber canvas.

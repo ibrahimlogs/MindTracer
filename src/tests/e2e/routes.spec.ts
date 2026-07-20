@@ -2,14 +2,18 @@ import { expect, test } from "@playwright/test";
 
 const routes = [
   { path: "/", heading: "Same answer." },
-  { path: "/demo", heading: "Same answer. Different reasoning journey." },
+  {
+    path: "/demo",
+    heading:
+      "See why two identical answers can need completely different support.",
+  },
   { path: "/demo/judge", heading: "Same answer." },
   {
     path: "/demo/session/example-session",
     heading: "If advertising cost becomes 5",
   },
-  { path: "/report/example-session", heading: "Evidence, not just a score." },
-  { path: "/technology", heading: "Adaptation proposed by AI." },
+  { path: "/report/example-session", heading: "Your reasoning changed." },
+  { path: "/technology", heading: "The AI proposes and adapts." },
   { path: "/technology/dataset", heading: "Curated records" },
   {
     path: "/technology/evaluation",
@@ -20,9 +24,11 @@ const routes = [
 for (const route of routes) {
   test(`${route.path} renders`, async ({ page }) => {
     await page.goto(route.path);
-    await expect(page.getByRole("heading", { level: 1 })).toContainText(
-      route.heading,
-    );
+    await expect(
+      page
+        .getByRole("heading", { level: 1 })
+        .filter({ hasText: route.heading }),
+    ).toBeVisible();
   });
 }
 
@@ -30,7 +36,7 @@ test("landing page renders its primary product sections", async ({ page }) => {
   await page.goto("/");
 
   await expect(
-    page.getByRole("heading", { name: /The answer is identical/i }),
+    page.getByRole("heading", { name: /Same answer/i }),
   ).toBeVisible();
   await expect(page.locator("#how-it-works")).toBeVisible();
   await expect(
@@ -50,18 +56,18 @@ test("landing calls to action point to demo and technology", async ({
   await page.goto("/");
 
   await expect(
-    page.getByRole("link", { name: "Experience the reasoning demo" }),
-  ).toHaveAttribute("href", "/demo");
+    page.getByRole("link", { name: "Watch the two-minute demo" }),
+  ).toHaveAttribute("href", "/demo/judge");
   await expect(
-    page.getByRole("link", { name: "Explore the architecture" }),
-  ).toHaveAttribute("href", "/technology");
+    page.getByRole("link", { name: "Try as a learner" }),
+  ).toHaveAttribute("href", "/demo");
 });
 
 test("how-it-works anchor navigates to the connected journey", async ({
   page,
 }) => {
   await page.goto("/");
-  await page.getByRole("link", { name: "See how it works" }).click();
+  await page.getByRole("link", { name: "How it works" }).click();
 
   await expect(page).toHaveURL(/#how-it-works$/);
   await expect(page.locator("#how-it-works")).toBeInViewport();
@@ -87,7 +93,7 @@ test("mobile menu opens, exposes navigation, and closes", async ({ page }) => {
   ).not.toBeVisible();
 });
 
-test("essential reasoning meaning exists when WebGL is unavailable", async ({
+test("essential reasoning proof exists when WebGL is unavailable", async ({
   page,
 }) => {
   await page.addInitScript(() => {
@@ -98,19 +104,20 @@ test("essential reasoning meaning exists when WebGL is unavailable", async ({
   });
   await page.goto("/");
 
-  await expect(page.getByTestId("reasoning-static-fallback")).toBeVisible();
   await expect(
-    page.getByText("Independent transfer", { exact: true }),
+    page.getByText("Same answer: 10", { exact: true }),
   ).toBeVisible();
 });
 
-test("reduced-motion preference receives the static reasoning fallback", async ({
+test("reduced-motion preference keeps the learner comparison readable", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
 
-  await expect(page.getByTestId("reasoning-static-fallback")).toBeVisible();
+  await expect(
+    page.getByText("Different support", { exact: true }),
+  ).toBeVisible();
 });
 
 test("landing hydration produces no warnings", async ({ page }) => {
@@ -172,7 +179,7 @@ test("judge mode starts, pauses, resumes, and reaches transfer", async ({
   page,
 }) => {
   await page.goto("/demo/judge");
-  await page.getByRole("button", { name: "Start the two-minute demo" }).click();
+  await page.getByRole("button", { name: "Begin" }).click();
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
     "Same answer.",
   );
@@ -204,7 +211,7 @@ test("judge mode supports interactive label and mobile layout", async ({
   await page.getByRole("button", { name: "Explore manually" }).click();
 
   await expect(
-    page.getByText("Interactive Mode is prototype-labeled"),
+    page.getByText("Interactive mode is a prototype path"),
   ).toBeVisible();
   const hasOverflow = await page.evaluate(
     () =>
@@ -269,7 +276,7 @@ test("guided comparison shows different learner paths", async ({ page }) => {
   await expect(page).toHaveURL(/\/demo\/session\/mt_[a-z0-9]+\?mode=compare/);
 
   await page.getByRole("button", { name: "Load learner response" }).click();
-  await page.getByRole("button", { name: "Submit initial reasoning" }).click();
+  await page.getByRole("button", { name: "Submit my reasoning" }).click();
   await page.getByText("Demo controls").click();
   await page.getByRole("button", { name: "Next" }).click();
   await page.getByRole("button", { name: "Next" }).click();
@@ -288,7 +295,7 @@ test("guided comparison shows different learner paths", async ({ page }) => {
   await page.getByRole("button", { name: "Restart" }).first().click();
   await page.getByRole("tab", { name: "Learner B" }).click();
   await page.getByRole("button", { name: "Load learner response" }).click();
-  await page.getByRole("button", { name: "Submit initial reasoning" }).click();
+  await page.getByRole("button", { name: "Submit my reasoning" }).click();
   await page.getByRole("button", { name: "Next" }).click();
   await page.getByRole("button", { name: "Next" }).click();
   await expect(page.getByText("Starting offset ignored").first()).toBeVisible();
@@ -314,21 +321,21 @@ test("generated session refresh resumes the persisted stage", async ({
   await expect(page).toHaveURL(/\/demo\/session\/mt_[a-z0-9]+\?mode=compare/);
 
   await page.getByRole("button", { name: "Load learner response" }).click();
-  await page.getByRole("button", { name: "Submit initial reasoning" }).click();
+  await page.getByRole("button", { name: "Submit my reasoning" }).click();
   await expect(
-    page.getByText("Analysis", { exact: true }).first(),
+    page.getByText("MindTrace is noticing patterns", { exact: true }).first(),
   ).toBeVisible();
 
   await page.reload();
   await expect(
-    page.getByText("Analysis", { exact: true }).first(),
+    page.getByText("MindTrace is noticing patterns", { exact: true }).first(),
   ).toBeVisible();
 });
 
 test("can complete retry, transfer, and open report", async ({ page }) => {
   await page.goto("/demo/session/demo-session?mode=compare");
   await page.getByRole("button", { name: "Load learner response" }).click();
-  await page.getByRole("button", { name: "Submit initial reasoning" }).click();
+  await page.getByRole("button", { name: "Submit my reasoning" }).click();
   await page.getByText("Demo controls").click();
 
   for (let index = 0; index < 2; index += 1) {
@@ -349,10 +356,13 @@ test("can complete retry, transfer, and open report", async ({ page }) => {
   await page.getByRole("button", { name: "Load transfer response" }).click();
   await page.getByRole("button", { name: "Submit transfer" }).click();
   await page.getByRole("link", { name: "Open Reasoning Delta report" }).click();
+  await page.waitForURL(/\/report\//);
 
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Evidence, not just a score.",
-  );
+  await expect(
+    page
+      .getByRole("heading", { level: 1 })
+      .filter({ hasText: "Your reasoning changed." }),
+  ).toBeVisible();
 });
 
 test("workspace has no mobile horizontal overflow with reduced motion", async ({
@@ -368,5 +378,5 @@ test("workspace has no mobile horizontal overflow with reduced motion", async ({
       document.documentElement.clientWidth,
   );
   expect(hasOverflow).toBe(false);
-  await expect(page.getByText("Stage: Problem")).toBeVisible();
+  await expect(page.getByText("Step: Understand the problem")).toBeVisible();
 });

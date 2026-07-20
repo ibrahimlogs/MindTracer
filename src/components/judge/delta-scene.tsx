@@ -8,13 +8,8 @@ export function DeltaScene({ scene }: { scene: JudgeDemoScene }) {
         ["After", "Constant change and offset identified"],
         ["Transfer", "Successful without prior visual support"],
       ].map(([label, value]) => (
-        <div
-          key={label}
-          className="rounded-3xl border border-border bg-surface-soft p-6"
-        >
-          <p className="font-mono text-xs tracking-[0.2em] text-text-muted uppercase">
-            {label}
-          </p>
+        <div key={label} className="rounded-3xl bg-surface-soft p-6">
+          <p className="text-sm font-semibold text-text-muted">{label}</p>
           <p className="mt-5 text-xl leading-tight font-semibold">{value}</p>
         </div>
       ))}

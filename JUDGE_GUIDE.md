@@ -1,8 +1,8 @@
 # Judge Guide
 
-Fastest path: open `/demo/judge` and choose “Start the two-minute demo.”
+Fastest path: open `/demo/judge` and choose “Begin.”
 
-Guided Mode uses scripted learner responses and reviewed cached fallback so the demo remains reviewable without secrets. Interactive Mode is restricted to curated problems and clearly labeled as prototype behavior.
+Guided Mode uses scripted learner responses and reviewed cached fallback so the demo remains reviewable without secrets. Interactive Mode is restricted to curated problems and clearly labeled as prototype behavior. Public copy calls this the Guided Demo; internal docs may still refer to Judge Mode.
 
 Notice the sequence: same problem, same wrong answer, different reasoning evidence, different verification questions, different interventions, revised reasoning, transfer, and report.
 

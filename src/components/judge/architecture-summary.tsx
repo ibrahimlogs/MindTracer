@@ -12,14 +12,14 @@ const flow = [
 
 export function ArchitectureSummary() {
   return (
-    <section className="rounded-[2rem] border border-border bg-surface-elevated p-6">
-      <p className="font-mono text-xs tracking-[0.2em] text-reasoning uppercase">
+    <section className="rounded-[2rem] bg-white p-6">
+      <p className="text-sm font-semibold text-reasoning">
         Technical architecture summary
       </p>
       <div className="mt-5 flex flex-wrap gap-2 text-xs text-text-secondary">
         {flow.map((step, index) => (
           <span key={step} className="flex items-center gap-2">
-            <span className="rounded-full border border-border bg-surface-soft px-3 py-2">
+            <span className="rounded-full bg-surface-soft px-3 py-2">
               {step}
             </span>
             {index < flow.length - 1 ? <span aria-hidden="true">→</span> : null}
@@ -63,7 +63,7 @@ function BoundaryCard({
   items: readonly string[];
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-surface-inset p-5">
+    <div className="rounded-2xl bg-surface-soft p-5">
       <h3 className="font-medium">{title}</h3>
       <ul className="mt-3 space-y-2 text-sm text-text-secondary">
         {items.map((item) => (

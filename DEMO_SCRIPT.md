@@ -2,7 +2,7 @@
 
 ## 120-second version
 
-0–12s: Open `/demo/judge`, click “Start the two-minute demo,” and show the advertising/sales table. Narration: “Two learners both answer 10.”
+0–12s: Open `/demo/judge`, click “Begin,” and show the advertising/sales table. Narration: “Two learners both answer 10.”
 
 12–28s: Show Learner A. Narration: “Learner A notices upward movement but does not use the repeated change.”
 

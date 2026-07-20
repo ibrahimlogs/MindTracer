@@ -44,7 +44,9 @@ export function InitialAnswerForm({
   return (
     <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm font-medium text-text-primary">Initial answer</p>
+        <p className="text-xl font-semibold text-text-primary">
+          Share your first thought
+        </p>
         {mode === "compare" ? (
           <Button
             type="button"
@@ -67,13 +69,13 @@ export function InitialAnswerForm({
         ) : null}
       </div>
       {mode === "learner" ? (
-        <p className="rounded-md border border-attention/30 bg-attention/10 p-3 text-xs leading-5 text-text-secondary">
+        <p className="rounded-2xl bg-attention-soft p-4 text-sm leading-6 text-text-secondary">
           Prototype simulation: typed responses are mapped to one of the
           reviewed mocked paths. No live AI analysis is running.
         </p>
       ) : null}
       <label className="block">
-        <span className={labelClassName}>Numerical answer</span>
+        <span className={labelClassName}>Your answer</span>
         <input
           className={inputClassName}
           aria-invalid={Boolean(form.formState.errors.answer)}
@@ -86,7 +88,7 @@ export function InitialAnswerForm({
         />
       </label>
       <label className="block">
-        <span className={labelClassName}>Explanation</span>
+        <span className={labelClassName}>Explain your thinking</span>
         <textarea
           className={`${inputClassName} min-h-24 resize-y`}
           aria-invalid={Boolean(form.formState.errors.explanation)}
@@ -99,7 +101,7 @@ export function InitialAnswerForm({
         />
       </label>
       <label className="block">
-        <span className={labelClassName}>Approach</span>
+        <span className={labelClassName}>How did you approach it?</span>
         <select className={inputClassName} {...form.register("approach")}>
           <option value="">Choose an approach</option>
           {approachOptions.map((option) => (
@@ -112,7 +114,7 @@ export function InitialAnswerForm({
         />
       </label>
       <label className="block">
-        <span className={labelClassName}>Confidence</span>
+        <span className={labelClassName}>How confident are you?</span>
         <select className={inputClassName} {...form.register("confidence")}>
           <option value="">Choose confidence</option>
           {confidenceOptions.map((option) => (
@@ -125,7 +127,7 @@ export function InitialAnswerForm({
         />
       </label>
       <Button type="submit" className="w-full">
-        Submit initial reasoning
+        Submit my reasoning
       </Button>
     </form>
   );

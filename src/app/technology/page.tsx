@@ -18,8 +18,7 @@ import { ElevatedSurface, InsetSurface } from "@/components/ui/surface";
 
 export const metadata: Metadata = {
   title: "Technology",
-  description:
-    "The planned controlled AI architecture behind MindTrace Reasoning Lab.",
+  description: "The controlled AI architecture behind MindTrace Reasoning Lab.",
 };
 
 const architecture = [
@@ -65,10 +64,10 @@ export default function TechnologyPage() {
           <div className="flex flex-wrap items-start justify-between gap-6">
             <PageHeader
               eyebrow="Technology and learning safety"
-              title="Adaptation proposed by AI. Learning governed by evidence."
-              description="MindTrace is being designed as a controlled reasoning system—not an unconstrained answer generator. Model flexibility is reserved for interpretation and adaptation; verification and support policy remain explicit."
+              title="The AI proposes and adapts. The learning system verifies and governs."
+              description="MindTrace uses model flexibility for language interpretation and support wording while keeping concept IDs, verification, hint levels, state transitions, rubrics, and transfer checks controlled."
             />
-            <StatusPill tone="attention">Planned architecture</StatusPill>
+            <StatusPill tone="success">Implemented boundary</StatusPill>
           </div>
         </SectionContainer>
       </section>
@@ -114,8 +113,8 @@ export default function TechnologyPage() {
         <SectionContainer>
           <SectionHeader
             eyebrow="Controlled AI architecture"
-            title="A proposed sequence with explicit checkpoints."
-            description="This is the system being built. The curated dataset now defines concept records, misconception hypotheses, verification templates, ordered intervention ladders, fixed reasoning rubrics, and transfer mappings. The reasoning generation layer is not yet connected to OpenAI."
+            title="A controlled sequence with explicit checkpoints."
+            description="The curated dataset defines concept records, misconception hypotheses, verification templates, ordered intervention ladders, fixed reasoning rubrics, and transfer mappings. OpenAI adapters are server-only and optional; deterministic mode remains the reviewed default."
           />
           <ol className="mt-12 grid gap-3 lg:grid-cols-2">
             {architecture.map(([title, description], index) => (
@@ -148,8 +147,8 @@ export default function TechnologyPage() {
           <div className="grid gap-8 lg:grid-cols-[1fr_0.82fr]">
             <SectionHeader
               eyebrow="Current implementation status"
-              title="The foundation, dataset, session API, and reasoning extractor are real. Diagnosis remains bounded."
-              description="The PostgreSQL schema, seed path, anonymous session APIs, idempotency checks, refresh/resume fallback, and structured reasoning extraction are implemented. There is still no authentication, real misconception ranking, or AI-generated verification/intervention."
+              title="The learner flow is implemented. External live services remain optional."
+              description="The app includes the dataset, session engine, reasoning extraction boundary, verification, intervention, retry, Reasoning Delta, transfer, reports, Guided Demo, and readiness checks. Live OpenAI and PostgreSQL verification depend on configured credentials."
             />
             <ElevatedSurface className="p-6 sm:p-8">
               <div className="flex items-center gap-3">

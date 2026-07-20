@@ -6,7 +6,7 @@ import type { JudgeDemoScene } from "@/lib/judge-demo";
 
 export function ClosingScene({ scene }: { scene: JudgeDemoScene }) {
   return (
-    <div className="rounded-[2rem] border border-border bg-surface-elevated p-8">
+    <div className="rounded-[2rem] bg-reasoning-soft p-8">
       <h2 className="max-w-4xl text-4xl font-semibold tracking-[-0.04em]">
         MindTrace investigates why, verifies what support is needed, and checks
         transfer.

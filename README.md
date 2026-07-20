@@ -133,6 +133,7 @@ See `MISCONCEPTION_ENGINE.md`, `VERIFICATION_ENGINE.md`, and `VERIFICATION_EVALU
 See `INTERVENTION_ENGINE.md`, `VISUALIZATION_SYSTEM.md`, and `INTERVENTION_EVALUATION.md` for the Step 8 adaptive support boundary.
 See `REASONING_DELTA.md`, `TRANSFER_SYSTEM.md`, `REASONING_DELTA_EVALUATION.md`, and `TRANSFER_EVALUATION.md` for the Step 9 retry, delta, transfer, and reporting boundary.
 See `JUDGE_GUIDE.md`, `SUBMISSION.md`, `DEMO_SCRIPT.md`, `SECURITY_REVIEW.md`, `DEPLOYMENT.md`, and `KNOWN_LIMITATIONS.md` for the Step 10 submission package.
+See `VISUAL_REDESIGN.md` for the learner-first visual and UX refinement.
 
 ## Judge Mode
 

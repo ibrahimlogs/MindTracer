@@ -9,7 +9,7 @@ interface DemoProgressProps {
 export function DemoProgress({ sceneIndex }: DemoProgressProps) {
   return (
     <div aria-label="Judge demo progress" className="space-y-3">
-      <div className="flex items-center justify-between font-mono text-[0.68rem] tracking-[0.24em] text-text-muted uppercase">
+      <div className="flex items-center justify-between text-sm font-semibold text-text-muted">
         <span>
           Scene {sceneIndex + 1} of {judgeScenes.length}
         </span>
@@ -21,8 +21,8 @@ export function DemoProgress({ sceneIndex }: DemoProgressProps) {
             key={scene.id}
             className={
               index <= sceneIndex
-                ? "h-1.5 rounded-full bg-reasoning"
-                : "h-1.5 rounded-full bg-surface-soft"
+                ? "h-2 rounded-full bg-reasoning"
+                : "h-2 rounded-full bg-surface-inset"
             }
           />
         ))}

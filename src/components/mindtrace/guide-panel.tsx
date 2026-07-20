@@ -25,11 +25,9 @@ function GuideSection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-lg border border-border bg-surface-inset p-4">
-      <h3 className="text-xs font-medium tracking-[0.14em] text-text-muted uppercase">
-        {title}
-      </h3>
-      <div className="mt-3 text-sm leading-6 text-text-secondary">
+    <section className="rounded-[1.25rem] bg-surface-soft p-4">
+      <h3 className="text-sm font-semibold text-text-muted">{title}</h3>
+      <div className="mt-3 text-base leading-7 text-text-secondary">
         {children}
       </div>
     </section>
@@ -52,11 +50,9 @@ export function GuidePanel({
   return (
     <aside className="space-y-3" aria-label="MindTrace guide">
       <div>
-        <p className="text-xs font-medium tracking-[0.14em] text-reasoning uppercase">
-          MindTrace Guide
-        </p>
-        <h2 className="mt-2 text-xl font-semibold text-text-primary">
-          Checking the reasoning behind {learner.answer}
+        <p className="text-sm font-semibold text-reasoning">MindTrace coach</p>
+        <h2 className="mt-2 text-2xl font-semibold text-text-primary">
+          Checking the thinking behind {learner.answer}
         </h2>
       </div>
       <GuideSection title="What you already understand">
@@ -75,7 +71,9 @@ export function GuidePanel({
           {summary ? (
             <div className="space-y-3">
               <div>
-                <p className="text-xs text-text-muted">Still unclear</p>
+                <p className="text-sm font-semibold text-text-muted">
+                  Still unclear
+                </p>
                 <ul className="mt-1 space-y-2">
                   {summary.stillUnclear.map((item) => (
                     <li key={item}>{item}</li>
@@ -103,7 +101,7 @@ export function GuidePanel({
               {analysis.result.needsClarification ? "yes" : "no"}
             </p>
             <div>
-              <p className="text-xs text-text-muted">Observed</p>
+              <p className="text-sm font-semibold text-text-muted">Observed</p>
               <ul className="mt-1 space-y-1">
                 {analysis.result.observedClaims.slice(0, 3).map((claim) => (
                   <li key={claim.claim}>{claim.claim}</li>
@@ -111,7 +109,7 @@ export function GuidePanel({
               </ul>
             </div>
             <div>
-              <p className="text-xs text-text-muted">Inferred</p>
+              <p className="text-sm font-semibold text-text-muted">Inferred</p>
               <ul className="mt-1 space-y-1">
                 {analysis.result.inferredReasoningSteps
                   .slice(0, 3)
@@ -132,7 +130,9 @@ export function GuidePanel({
               {hypotheses.verificationDecision.riskIfSkipped} risk)
             </p>
             <div>
-              <p className="text-xs text-text-muted">Retrieved candidates</p>
+              <p className="text-sm font-semibold text-text-muted">
+                Retrieved candidates
+              </p>
               <ul className="mt-1 space-y-1">
                 {hypotheses.retrievedCandidates.map((candidate) => (
                   <li key={candidate.candidateId}>
@@ -178,7 +178,7 @@ export function GuidePanel({
           <div className="space-y-2">
             <p className="text-text-primary">One small check</p>
             <p>{verification?.question ?? learner.verification.question}</p>
-            <p className="text-xs text-text-muted">
+            <p className="text-sm text-text-muted">
               This helps MindTrace choose the right kind of support.
             </p>
           </div>
@@ -210,12 +210,12 @@ export function GuidePanel({
         <GuideSection title="Smallest useful intervention">
           {intervention ? (
             <div className="space-y-3">
-              <p className="text-xs text-text-muted">
-                Support level: {intervention.supportLabel}
+              <p className="text-sm font-semibold text-text-muted">
+                Visual clue: {intervention.supportLabel}
               </p>
               <p>{intervention.learnerFacingContent}</p>
               {intervention.escalationAvailable ? (
-                <p className="text-xs text-text-muted">
+                <p className="text-sm text-text-muted">
                   More help is available one step at a time.
                 </p>
               ) : null}
@@ -244,14 +244,14 @@ export function GuidePanel({
         </GuideSection>
       ) : null}
       {index >= getStageIndex("reasoning_delta") && report ? (
-        <section className="rounded-lg border border-border bg-surface-inset p-4">
-          <h3 className="text-xs font-medium tracking-[0.14em] text-text-muted uppercase">
+        <section className="rounded-[1.25rem] bg-surface-soft p-4">
+          <h3 className="text-sm font-semibold text-text-muted">
             Reasoning Delta
           </h3>
-          <p className="mt-2 text-sm leading-6 text-text-secondary">
+          <p className="mt-2 text-base leading-7 text-text-secondary">
             {report.learnerFacingSummary}
           </p>
-          <ul className="mt-3 space-y-2 text-sm text-text-secondary">
+          <ul className="mt-3 space-y-2 text-base text-text-secondary">
             {report.remainingGaps.map((gap) => (
               <li key={gap}>{gap}</li>
             ))}

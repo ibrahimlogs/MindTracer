@@ -40,7 +40,7 @@ export function DemoControls({
 }: DemoControlsProps) {
   return (
     <div
-      className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-surface-elevated/90 p-3 shadow-2xl shadow-black/20"
+      className="soft-shadow sticky bottom-4 z-20 flex flex-wrap items-center gap-2 rounded-[1.5rem] bg-white/95 p-2 backdrop-blur sm:rounded-full"
       aria-label="Judge demo controls"
     >
       <Button size="sm" onClick={onPlayPause}>
@@ -71,14 +71,14 @@ export function DemoControls({
         <FastForward className="size-4" aria-hidden="true" />
         {playback === "normal" ? "Normal speed" : "Fast playback"}
       </Button>
-      <div className="ml-auto flex rounded-xl border border-border bg-surface-inset p-1">
+      <div className="ml-auto flex rounded-full bg-surface-soft p-1">
         {(["guided", "interactive"] as const).map((option) => (
           <button
             key={option}
             className={
               mode === option
-                ? "rounded-lg bg-reasoning px-3 py-1.5 text-xs font-medium text-background"
-                : "rounded-lg px-3 py-1.5 text-xs text-text-secondary hover:text-text-primary"
+                ? "rounded-full bg-reasoning px-3 py-1.5 text-xs font-semibold text-white"
+                : "rounded-full px-3 py-1.5 text-xs text-text-secondary hover:text-text-primary"
             }
             type="button"
             onClick={() => onModeChange(option)}

@@ -10,6 +10,7 @@
 - [x] **Step 8 - Adaptive Intervention Engine and Animated Reasoning Visualizers:** Deliver bounded hints tied to a verified misconception and animate the smallest useful support.
 - [x] **Step 9 - Retry Analysis, Reasoning Delta and Transfer Evaluation:** Measure independent application and explain observations separately from inference.
 - [x] **Step 10 - Judge Mode, Reliability Hardening and Submission Package:** Judge Mode, fallback labeling, readiness checks, final evaluation presentation, submission documentation, and deterministic validation.
+- [x] **Visual redesign - Learner-first education experience:** Light-first design system, clearer demo hierarchy, story-style Guided Demo, learner-first workspace, reflection-style report, and calmer public copy.
 
 ## Step 2 verification record
 
@@ -115,3 +116,14 @@
 - Deployment pending. Demo video recording pending. Submission upload pending.
 
 Only a step that is implemented and passes its defined checks should be marked complete.
+
+## Visual redesign verification record
+
+- The default interface is now warm light instead of forced near-black.
+- Landing hero leads with concrete learner comparison proof.
+- `/demo` presents Guided Demo as the clear primary path.
+- `/demo/judge` uses story-first scenes and hides architecture/evaluation details until the close.
+- `/demo/session/[sessionId]` uses learner-language progress and a main lesson surface with a secondary MindTrace coach.
+- `/report/[sessionId]` uses reflection-oriented copy and avoids dashboard metrics.
+- Technology copy was updated to match the completed implementation.
+- See `VISUAL_REDESIGN.md` for the design rationale and remaining limitations.

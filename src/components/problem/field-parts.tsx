@@ -16,6 +16,6 @@ export function FieldErrorText({ error, id }: FieldErrorTextProps) {
 }
 
 export const inputClassName =
-  "mt-2 w-full rounded-md border border-border bg-surface-inset px-3 py-2 text-sm text-text-primary placeholder:text-text-muted";
+  "mt-2 w-full rounded-2xl border border-border bg-white px-4 py-3 text-base text-text-primary placeholder:text-text-muted focus:border-reasoning focus:outline-none focus:ring-4 focus:ring-reasoning/15";
 
-export const labelClassName = "text-sm font-medium text-text-primary";
+export const labelClassName = "text-base font-semibold text-text-primary";
