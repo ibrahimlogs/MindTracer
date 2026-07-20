@@ -1,9 +1,65 @@
+import { getMisconceptionById } from "@/data/education";
+import { demoProblem } from "@/data/demo/demo-problem";
 import type { DemoLearner } from "@/types/demo-learning";
+import type { MisconceptionRecord } from "@/types/misconception";
+
+function fillTemplate(
+  template: string,
+  values: Readonly<Record<string, string>>,
+) {
+  return template.replaceAll(
+    /\{(\w+)\}/g,
+    (match, key: string) => values[key] ?? match,
+  );
+}
+
+function hypothesisFromMisconception(misconception: MisconceptionRecord) {
+  return {
+    id: misconception.misconceptionId,
+    label: misconception.title,
+    description: misconception.shortDescription,
+  };
+}
+
+const directionWithoutRate = getMisconceptionById("direction_without_rate");
+const approximatePatternGuess = getMisconceptionById(
+  "approximate_pattern_guess",
+);
+const additiveAsMultiplicative = getMisconceptionById(
+  "additive_as_multiplicative",
+);
+const interceptIgnored = getMisconceptionById("intercept_ignored");
+
+const directionVerification =
+  directionWithoutRate.verificationQuestionTemplates[0];
+const multiplicationVerification =
+  additiveAsMultiplicative.verificationQuestionTemplates[0];
+const directionIntervention = directionWithoutRate.interventionLadder.find(
+  (intervention) => intervention.level === 3,
+);
+const multiplicationIntervention =
+  additiveAsMultiplicative.interventionLadder.find(
+    (intervention) => intervention.level === 3,
+  );
+
+if (
+  !directionVerification ||
+  !multiplicationVerification ||
+  !directionIntervention ||
+  !multiplicationIntervention
+) {
+  throw new Error("Demo learner path references incomplete education records.");
+}
 
 export const demoLearners: readonly [DemoLearner, DemoLearner] = [
   {
     id: "learner-a",
     name: "Learner A",
+    primaryMisconceptionIds: [
+      directionWithoutRate.misconceptionId,
+      approximatePatternGuess.misconceptionId,
+    ],
+    rubricId: demoProblem.rubricId,
     answer: "10",
     explanation:
       "The values keep increasing, so sales should probably reach around 10.",
@@ -19,29 +75,23 @@ export const demoLearners: readonly [DemoLearner, DemoLearner] = [
       ],
     },
     hypotheses: [
-      {
-        id: "direction_without_rate",
-        label: "Direction without rate",
-        description:
-          "The learner notices upward movement but may not be using the repeated change.",
-      },
-      {
-        id: "approximate_pattern_guess",
-        label: "Approximate pattern guess",
-        description:
-          "The learner may be extending the table by estimation instead of a rule.",
-      },
+      hypothesisFromMisconception(directionWithoutRate),
+      hypothesisFromMisconception(approximatePatternGuess),
     ],
     verification: {
-      question:
-        "When advertising increases from 1 to 2, how much does sales increase?",
+      question: fillTemplate(directionVerification.promptTemplate, {
+        inputColumn: "advertising",
+        inputA: "1",
+        inputB: "2",
+        outputColumn: "sales",
+      }),
       response: "Sales increases by 2.",
       focus: "Compare 1 -> 2 and 3 -> 5.",
     },
     confirmedLearningNeed:
       "The learner notices the direction of change but has not yet used the repeated rate.",
     intervention: {
-      title: "Highlight consecutive differences",
+      title: directionIntervention.title,
       summary:
         "Advertising changes by +1 each step while sales changes by +2 each step.",
       steps: [
@@ -71,6 +121,11 @@ export const demoLearners: readonly [DemoLearner, DemoLearner] = [
   {
     id: "learner-b",
     name: "Learner B",
+    primaryMisconceptionIds: [
+      additiveAsMultiplicative.misconceptionId,
+      interceptIgnored.misconceptionId,
+    ],
+    rubricId: demoProblem.rubricId,
     answer: "10",
     explanation:
       "Sales appears to be double the advertising cost, so 5 times 2 is 10.",
@@ -86,29 +141,22 @@ export const demoLearners: readonly [DemoLearner, DemoLearner] = [
       ],
     },
     hypotheses: [
-      {
-        id: "additive_as_multiplicative",
-        label: "Additive pattern as multiplication",
-        description:
-          "The learner sees a rate but may be treating the whole rule as y = 2x.",
-      },
-      {
-        id: "intercept_ignored",
-        label: "Starting offset ignored",
-        description:
-          "The learner may be missing the +1 that keeps each observed value above double.",
-      },
+      hypothesisFromMisconception(additiveAsMultiplicative),
+      hypothesisFromMisconception(interceptIgnored),
     ],
     verification: {
-      question:
-        "If sales were exactly double advertising, what should sales be when advertising is 2? Does that match the table?",
+      question: fillTemplate(multiplicationVerification.promptTemplate, {
+        inputColumn: "advertising",
+        outputColumn: "sales",
+        inputValue: "2",
+      }),
       response: "It would be 4, but the table shows 5.",
       focus: "Check Advertising = 2 against the observed Sales = 5.",
     },
     confirmedLearningNeed:
       "The learner sees the rate but is missing the starting offset.",
     intervention: {
-      title: "Contrast predicted and observed values",
+      title: multiplicationIntervention.title,
       summary:
         "The claim Sales = Advertising x 2 predicts 4 when advertising is 2, but the table shows 5.",
       steps: [

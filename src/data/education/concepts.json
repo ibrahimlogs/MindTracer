@@ -1,0 +1,118 @@
+[
+  {
+    "conceptId": "constant_difference",
+    "familyId": "constant_difference",
+    "title": "Constant Difference",
+    "shortDescription": "Recognize when values change by the same amount.",
+    "fullDescription": "A relationship has constant difference when consecutive outputs increase or decrease by a repeated amount for equal changes in input.",
+    "prerequisites": ["basic_subtraction", "reading_tables"],
+    "relatedConcepts": [
+      "additive_multiplicative_relationships",
+      "table_to_linear_equation"
+    ],
+    "careerConnections": ["data_analysis", "forecasting", "inventory_planning"],
+    "learningObjectives": [
+      "Compare consecutive values",
+      "Identify repeated change",
+      "Extend a pattern using the repeated difference"
+    ],
+    "intuitiveExplanation": "If each step adds the same amount, the next steps can be predicted by repeating that amount.",
+    "visualExplanation": "Draw arrows between neighboring values and label each arrow with the change.",
+    "verbalExplanation": "For every one-step increase in input, the output changes by the same amount.",
+    "formalExplanation": "For equal input intervals, y changes by a constant difference.",
+    "programmingConnection": "A loop can add the same increment each time to generate the next output.",
+    "commonMisconceptionIds": [
+      "total_vs_change",
+      "direction_without_rate",
+      "approximate_pattern_guess",
+      "arithmetic_only_error"
+    ],
+    "recommendedProblemIds": [
+      "ads_sales_001",
+      "study_score_001",
+      "weekly_savings_001",
+      "machine_output_001"
+    ],
+    "nextConceptIds": ["additive_multiplicative_relationships"],
+    "status": "active"
+  },
+  {
+    "conceptId": "additive_multiplicative_relationships",
+    "familyId": "additive_vs_multiplicative",
+    "title": "Additive vs Multiplicative Relationships",
+    "shortDescription": "Distinguish repeated addition from repeated multiplication and offsets.",
+    "fullDescription": "Some relationships grow by adding a constant amount, others by multiplying by a constant factor, and linear relationships may include a starting offset.",
+    "prerequisites": ["constant_difference", "basic_multiplication"],
+    "relatedConcepts": ["constant_difference", "table_to_linear_equation"],
+    "careerConnections": ["pricing", "subscription_growth", "budget_modeling"],
+    "learningObjectives": [
+      "Compare constant differences and ratios",
+      "Test a rule against more than one row",
+      "Identify a starting offset"
+    ],
+    "intuitiveExplanation": "Doubling may describe part of a pattern, but the table must confirm whether anything is added before or after doubling.",
+    "visualExplanation": "Contrast predicted values from a claim with observed values in the table.",
+    "verbalExplanation": "A rule should match every row, not only the row that first suggested it.",
+    "formalExplanation": "Linear rules can take the form y = mx + b, where m is rate and b is offset.",
+    "programmingConnection": "A program can test a candidate rule against all rows before accepting it.",
+    "commonMisconceptionIds": [
+      "additive_as_multiplicative",
+      "multiplicative_as_additive",
+      "intercept_ignored",
+      "ratio_difference_confusion",
+      "one_row_equation_guess"
+    ],
+    "recommendedProblemIds": [
+      "delivery_cost_001",
+      "taxi_fare_001",
+      "bottle_cost_001",
+      "subscribers_001"
+    ],
+    "nextConceptIds": ["table_to_linear_equation"],
+    "status": "active"
+  },
+  {
+    "conceptId": "table_to_linear_equation",
+    "familyId": "table_to_linear_equation",
+    "title": "Table to Linear Equation",
+    "shortDescription": "Connect a table pattern to a verbal and symbolic linear rule.",
+    "fullDescription": "A linear table can be represented with a rate, an intercept, and a symbolic equation that predicts outputs from inputs.",
+    "prerequisites": [
+      "constant_difference",
+      "additive_multiplicative_relationships"
+    ],
+    "relatedConcepts": [
+      "constant_difference",
+      "additive_multiplicative_relationships"
+    ],
+    "careerConnections": [
+      "linear_regression",
+      "software_modeling",
+      "unit_conversion"
+    ],
+    "learningObjectives": [
+      "Name input and output variables",
+      "Identify slope and intercept",
+      "Substitute a new input into an equation"
+    ],
+    "intuitiveExplanation": "The equation is a compact version of the table rule.",
+    "visualExplanation": "Bridge from table arrows to a verbal rule and then to y = mx + b.",
+    "verbalExplanation": "Multiply the input by the rate, then include the starting offset.",
+    "formalExplanation": "For a linear relation, y = mx + b where m is the constant rate of change and b is the output when x is zero.",
+    "programmingConnection": "A function can take x as an argument and return mx + b.",
+    "commonMisconceptionIds": [
+      "slope_found_intercept_missing",
+      "x_y_reversed",
+      "equation_memorized_without_meaning",
+      "one_row_equation_guess"
+    ],
+    "recommendedProblemIds": [
+      "temperature_conversion_001",
+      "storage_growth_001",
+      "product_quantity_001",
+      "app_users_001"
+    ],
+    "nextConceptIds": [],
+    "status": "active"
+  }
+]

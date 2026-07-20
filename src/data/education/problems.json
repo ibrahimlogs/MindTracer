@@ -1,0 +1,524 @@
+[
+  {
+    "problemId": "ads_sales_001",
+    "title": "Advertising and Sales",
+    "conceptFamilyId": "constant_difference",
+    "requiredConceptIds": [
+      "constant_difference",
+      "additive_multiplicative_relationships"
+    ],
+    "difficulty": "beginner",
+    "context": "A small business tracks advertising cost and sales.",
+    "dataRepresentation": {
+      "type": "table",
+      "columns": ["Advertising Cost", "Sales"],
+      "rows": [
+        { "input": 1, "output": 3 },
+        { "input": 2, "output": 5 },
+        { "input": 3, "output": 7 }
+      ]
+    },
+    "question": "If advertising cost becomes 5, what sales value follows the pattern?",
+    "answerType": "number",
+    "correctAnswer": "11",
+    "acceptedAnswerVariants": ["11", "sales 11"],
+    "solutionModel": "Sales increases by 2 for every 1 increase in advertising. From 3 to 5 is two more steps, so 7 + 2 + 2 = 11.",
+    "validApproaches": [
+      "consecutive_difference",
+      "pattern_extension",
+      "linear_equation"
+    ],
+    "reasoningPrompts": [
+      "What changes between consecutive advertising values?",
+      "What changes between consecutive sales values?",
+      "Does the rule match every row?"
+    ],
+    "targetMisconceptionIds": [
+      "direction_without_rate",
+      "approximate_pattern_guess",
+      "additive_as_multiplicative",
+      "intercept_ignored",
+      "arithmetic_only_error"
+    ],
+    "verificationContext": "Use the first two rows to check the repeated sales change and the second row to test the double claim.",
+    "interventionVisualizerConfig": {
+      "visualizerType": "consecutive_difference",
+      "focus": "Highlight +1 input and +2 output changes."
+    },
+    "transferProblemIds": ["study_score_001", "delivery_cost_001"],
+    "rubricId": "constant_difference_rubric",
+    "tags": ["demo", "table", "linear"],
+    "status": "active"
+  },
+  {
+    "problemId": "study_score_001",
+    "title": "Study Hours and Score",
+    "conceptFamilyId": "constant_difference",
+    "requiredConceptIds": ["constant_difference"],
+    "difficulty": "beginner",
+    "context": "A teacher compares study hours and scores.",
+    "dataRepresentation": {
+      "type": "table",
+      "columns": ["Study Hours", "Score"],
+      "rows": [
+        { "input": 1, "output": 52 },
+        { "input": 2, "output": 55 },
+        { "input": 3, "output": 58 }
+      ]
+    },
+    "question": "What score follows the pattern at 5 study hours?",
+    "answerType": "number",
+    "correctAnswer": "64",
+    "acceptedAnswerVariants": ["64", "score 64"],
+    "solutionModel": "The score rises by 3 for each extra study hour. From 3 to 5 hours is two steps, so 58 + 3 + 3 = 64.",
+    "validApproaches": ["consecutive_difference", "pattern_extension"],
+    "reasoningPrompts": [
+      "How much does score change for each hour?",
+      "How many steps are needed from 3 to 5?"
+    ],
+    "targetMisconceptionIds": [
+      "direction_without_rate",
+      "approximate_pattern_guess",
+      "arithmetic_only_error"
+    ],
+    "verificationContext": "Compare neighboring rows before extending to 5 hours.",
+    "interventionVisualizerConfig": {
+      "visualizerType": "consecutive_difference",
+      "focus": "Show +3 score changes."
+    },
+    "transferProblemIds": ["weekly_savings_001"],
+    "rubricId": "transfer_reasoning_rubric",
+    "tags": ["transfer", "table"],
+    "status": "active"
+  },
+  {
+    "problemId": "delivery_cost_001",
+    "title": "Delivery Distance and Cost",
+    "conceptFamilyId": "additive_vs_multiplicative",
+    "requiredConceptIds": [
+      "constant_difference",
+      "additive_multiplicative_relationships"
+    ],
+    "difficulty": "beginner",
+    "context": "A courier service charges a base fee plus a distance cost.",
+    "dataRepresentation": {
+      "type": "table",
+      "columns": ["Miles", "Cost"],
+      "rows": [
+        { "input": 1, "output": 7 },
+        { "input": 2, "output": 10 },
+        { "input": 3, "output": 13 }
+      ]
+    },
+    "question": "What cost follows the pattern for 5 miles?",
+    "answerType": "number",
+    "correctAnswer": "19",
+    "acceptedAnswerVariants": ["19", "$19"],
+    "solutionModel": "Cost increases by 3 each mile. From 3 to 5 miles is two steps, so 13 + 3 + 3 = 19.",
+    "validApproaches": ["consecutive_difference", "linear_equation"],
+    "reasoningPrompts": [
+      "What is the per-mile change?",
+      "Is there a starting fee?"
+    ],
+    "targetMisconceptionIds": [
+      "intercept_ignored",
+      "additive_as_multiplicative",
+      "slope_found_intercept_missing"
+    ],
+    "verificationContext": "Test a pure multiplication rule against mile 2.",
+    "interventionVisualizerConfig": {
+      "visualizerType": "slope_intercept_bridge",
+      "focus": "Show rate 3 and offset 4."
+    },
+    "transferProblemIds": ["taxi_fare_001"],
+    "rubricId": "additive_multiplicative_rubric",
+    "tags": ["transfer", "offset"],
+    "status": "active"
+  },
+  {
+    "problemId": "subscribers_001",
+    "title": "Subscribers Over Time",
+    "conceptFamilyId": "additive_vs_multiplicative",
+    "requiredConceptIds": ["additive_multiplicative_relationships"],
+    "difficulty": "intermediate",
+    "context": "A newsletter records subscribers by week.",
+    "dataRepresentation": {
+      "type": "table",
+      "columns": ["Week", "Subscribers"],
+      "rows": [
+        { "input": 1, "output": 100 },
+        { "input": 2, "output": 200 },
+        { "input": 3, "output": 400 }
+      ]
+    },
+    "question": "If the pattern continues, how many subscribers are there at week 5?",
+    "answerType": "number",
+    "correctAnswer": "1600",
+    "acceptedAnswerVariants": ["1600", "1,600"],
+    "solutionModel": "The subscribers double each week: 100, 200, 400, 800, 1600.",
+    "validApproaches": ["multiplication_rule", "ratio_check"],
+    "reasoningPrompts": [
+      "Does the difference stay constant?",
+      "Does the ratio stay constant?"
+    ],
+    "targetMisconceptionIds": [
+      "multiplicative_as_additive",
+      "ratio_difference_confusion",
+      "arithmetic_only_error"
+    ],
+    "verificationContext": "Compare ratios between consecutive outputs.",
+    "interventionVisualizerConfig": {
+      "visualizerType": "additive_multiplicative_contrast",
+      "focus": "Contrast +100/+200 with x2."
+    },
+    "transferProblemIds": ["app_users_001"],
+    "rubricId": "additive_multiplicative_rubric",
+    "tags": ["multiplicative", "table"],
+    "status": "active"
+  },
+  {
+    "problemId": "bottle_cost_001",
+    "title": "Water Bottles and Total Cost",
+    "conceptFamilyId": "additive_vs_multiplicative",
+    "requiredConceptIds": ["additive_multiplicative_relationships"],
+    "difficulty": "foundation",
+    "context": "A store sells packs of water bottles for the same unit price.",
+    "dataRepresentation": {
+      "type": "table",
+      "columns": ["Bottles", "Cost"],
+      "rows": [
+        { "input": 2, "output": 6 },
+        { "input": 4, "output": 12 },
+        { "input": 6, "output": 18 }
+      ]
+    },
+    "question": "What is the cost for 10 bottles?",
+    "answerType": "number",
+    "correctAnswer": "30",
+    "acceptedAnswerVariants": ["30", "$30"],
+    "solutionModel": "Each bottle costs 3, so 10 bottles cost 30.",
+    "validApproaches": ["multiplication_rule", "ratio_check"],
+    "reasoningPrompts": [
+      "What cost matches one bottle?",
+      "Does the ratio stay the same?"
+    ],
+    "targetMisconceptionIds": [
+      "multiplicative_as_additive",
+      "ratio_difference_confusion"
+    ],
+    "verificationContext": "Check whether cost per bottle is constant.",
+    "interventionVisualizerConfig": {
+      "visualizerType": "additive_multiplicative_contrast",
+      "focus": "Show cost per bottle."
+    },
+    "transferProblemIds": ["product_quantity_001"],
+    "rubricId": "additive_multiplicative_rubric",
+    "tags": ["ratio", "pricing"],
+    "status": "active"
+  },
+  {
+    "problemId": "taxi_fare_001",
+    "title": "Taxi Fare and Distance",
+    "conceptFamilyId": "table_to_linear_equation",
+    "requiredConceptIds": ["constant_difference", "table_to_linear_equation"],
+    "difficulty": "intermediate",
+    "context": "A taxi fare includes a pickup fee and a charge per mile.",
+    "dataRepresentation": {
+      "type": "table",
+      "columns": ["Miles", "Fare"],
+      "rows": [
+        { "input": 1, "output": 8 },
+        { "input": 2, "output": 11 },
+        { "input": 3, "output": 14 }
+      ]
+    },
+    "question": "Write a rule and find the fare for 6 miles.",
+    "answerType": "text",
+    "correctAnswer": "y = 3x + 5; 23",
+    "acceptedAnswerVariants": ["23", "y=3x+5"],
+    "solutionModel": "The fare rises by 3 per mile and has a 5 dollar pickup fee, so y = 3x + 5 and y = 23 when x = 6.",
+    "validApproaches": [
+      "consecutive_difference",
+      "linear_equation",
+      "substitution"
+    ],
+    "reasoningPrompts": [
+      "What is the slope?",
+      "What output would happen at 0 miles?",
+      "What happens when x = 6?"
+    ],
+    "targetMisconceptionIds": [
+      "slope_found_intercept_missing",
+      "intercept_ignored",
+      "x_y_reversed"
+    ],
+    "verificationContext": "Check the equation against each row.",
+    "interventionVisualizerConfig": {
+      "visualizerType": "slope_intercept_bridge",
+      "focus": "Bridge table to y = 3x + 5."
+    },
+    "transferProblemIds": ["storage_growth_001"],
+    "rubricId": "table_to_equation_rubric",
+    "tags": ["equation", "offset"],
+    "status": "active"
+  },
+  {
+    "problemId": "weekly_savings_001",
+    "title": "Weekly Savings",
+    "conceptFamilyId": "constant_difference",
+    "requiredConceptIds": ["constant_difference"],
+    "difficulty": "foundation",
+    "context": "A student records total savings each week.",
+    "dataRepresentation": {
+      "type": "sequence",
+      "label": "Savings",
+      "values": [12, 18, 24, 30]
+    },
+    "question": "What total comes next if the pattern continues?",
+    "answerType": "number",
+    "correctAnswer": "36",
+    "acceptedAnswerVariants": ["36", "$36"],
+    "solutionModel": "The savings increase by 6 each week, so the next value is 36.",
+    "validApproaches": ["consecutive_difference", "pattern_extension"],
+    "reasoningPrompts": [
+      "What is added each time?",
+      "Is that amount repeated?"
+    ],
+    "targetMisconceptionIds": [
+      "total_vs_change",
+      "direction_without_rate",
+      "arithmetic_only_error"
+    ],
+    "verificationContext": "Compare consecutive totals.",
+    "interventionVisualizerConfig": {
+      "visualizerType": "consecutive_difference",
+      "focus": "Label +6 arrows."
+    },
+    "transferProblemIds": ["machine_output_001"],
+    "rubricId": "constant_difference_rubric",
+    "tags": ["sequence", "saving"],
+    "status": "active"
+  },
+  {
+    "problemId": "machine_output_001",
+    "title": "Machine Output",
+    "conceptFamilyId": "constant_difference",
+    "requiredConceptIds": ["constant_difference"],
+    "difficulty": "beginner",
+    "context": "A machine output increases by a fixed amount for each setting.",
+    "dataRepresentation": {
+      "type": "table",
+      "columns": ["Setting", "Output"],
+      "rows": [
+        { "input": 1, "output": 9 },
+        { "input": 2, "output": 14 },
+        { "input": 3, "output": 19 }
+      ]
+    },
+    "question": "What output follows at setting 6?",
+    "answerType": "number",
+    "correctAnswer": "34",
+    "acceptedAnswerVariants": ["34"],
+    "solutionModel": "The output increases by 5 each setting. Three more settings after 3 gives 19 + 15 = 34.",
+    "validApproaches": [
+      "consecutive_difference",
+      "pattern_extension",
+      "linear_equation"
+    ],
+    "reasoningPrompts": [
+      "How many steps from 3 to 6?",
+      "What repeated change is used?"
+    ],
+    "targetMisconceptionIds": [
+      "approximate_pattern_guess",
+      "direction_without_rate",
+      "one_row_equation_guess"
+    ],
+    "verificationContext": "Check the repeated +5 change.",
+    "interventionVisualizerConfig": {
+      "visualizerType": "consecutive_difference",
+      "focus": "Show three +5 steps."
+    },
+    "transferProblemIds": ["ads_sales_001"],
+    "rubricId": "constant_difference_rubric",
+    "tags": ["machine", "table"],
+    "status": "active"
+  },
+  {
+    "problemId": "app_users_001",
+    "title": "App Users Over Time",
+    "conceptFamilyId": "additive_vs_multiplicative",
+    "requiredConceptIds": ["additive_multiplicative_relationships"],
+    "difficulty": "intermediate",
+    "context": "An app records users after each promotion cycle.",
+    "dataRepresentation": {
+      "type": "table",
+      "columns": ["Cycle", "Users"],
+      "rows": [
+        { "input": 1, "output": 50 },
+        { "input": 2, "output": 150 },
+        { "input": 3, "output": 450 }
+      ]
+    },
+    "question": "How many users follow at cycle 5?",
+    "answerType": "number",
+    "correctAnswer": "4050",
+    "acceptedAnswerVariants": ["4050", "4,050"],
+    "solutionModel": "The number of users is multiplied by 3 each cycle: 50, 150, 450, 1350, 4050.",
+    "validApproaches": ["multiplication_rule", "ratio_check"],
+    "reasoningPrompts": [
+      "What ratio connects consecutive outputs?",
+      "Would a constant difference work?"
+    ],
+    "targetMisconceptionIds": [
+      "multiplicative_as_additive",
+      "ratio_difference_confusion"
+    ],
+    "verificationContext": "Check ratios, not only differences.",
+    "interventionVisualizerConfig": {
+      "visualizerType": "additive_multiplicative_contrast",
+      "focus": "Compare growing differences with constant ratio."
+    },
+    "transferProblemIds": ["bottle_cost_001"],
+    "rubricId": "additive_multiplicative_rubric",
+    "tags": ["multiplicative", "growth"],
+    "status": "active"
+  },
+  {
+    "problemId": "product_quantity_001",
+    "title": "Product Price and Quantity",
+    "conceptFamilyId": "table_to_linear_equation",
+    "requiredConceptIds": [
+      "additive_multiplicative_relationships",
+      "table_to_linear_equation"
+    ],
+    "difficulty": "beginner",
+    "context": "A product has a setup charge and a per-item price.",
+    "dataRepresentation": {
+      "type": "table",
+      "columns": ["Quantity", "Price"],
+      "rows": [
+        { "input": 1, "output": 9 },
+        { "input": 2, "output": 14 },
+        { "input": 3, "output": 19 }
+      ]
+    },
+    "question": "What equation matches the table, and what is the price for 7 items?",
+    "answerType": "text",
+    "correctAnswer": "y = 5x + 4; 39",
+    "acceptedAnswerVariants": ["39", "y=5x+4"],
+    "solutionModel": "The price rises by 5 each item and starts 4 above zero, so y = 5x + 4 and y = 39 at x = 7.",
+    "validApproaches": [
+      "linear_equation",
+      "substitution",
+      "consecutive_difference"
+    ],
+    "reasoningPrompts": [
+      "What is the rate?",
+      "What is the offset?",
+      "Does the equation match row 2?"
+    ],
+    "targetMisconceptionIds": [
+      "slope_found_intercept_missing",
+      "intercept_ignored",
+      "equation_memorized_without_meaning"
+    ],
+    "verificationContext": "Test y = 5x before adding the offset.",
+    "interventionVisualizerConfig": {
+      "visualizerType": "slope_intercept_bridge",
+      "focus": "Show +4 offset."
+    },
+    "transferProblemIds": ["taxi_fare_001"],
+    "rubricId": "table_to_equation_rubric",
+    "tags": ["pricing", "equation"],
+    "status": "active"
+  },
+  {
+    "problemId": "temperature_conversion_001",
+    "title": "Temperature Conversion Pattern",
+    "conceptFamilyId": "table_to_linear_equation",
+    "requiredConceptIds": ["table_to_linear_equation"],
+    "difficulty": "intermediate",
+    "context": "A simplified temperature table compares Celsius and Fahrenheit.",
+    "dataRepresentation": {
+      "type": "table",
+      "columns": ["Celsius", "Fahrenheit"],
+      "rows": [
+        { "input": 0, "output": 32 },
+        { "input": 10, "output": 50 },
+        { "input": 20, "output": 68 }
+      ]
+    },
+    "question": "What equation matches the table, and what is Fahrenheit when Celsius is 30?",
+    "answerType": "text",
+    "correctAnswer": "y = 1.8x + 32; 86",
+    "acceptedAnswerVariants": ["86", "y=1.8x+32", "F=1.8C+32"],
+    "solutionModel": "Fahrenheit rises 18 for each 10 Celsius, so the rate is 1.8 and the intercept is 32. At 30 Celsius, Fahrenheit is 86.",
+    "validApproaches": ["linear_equation", "substitution"],
+    "reasoningPrompts": [
+      "Which value is the input?",
+      "What is the intercept?",
+      "How do you substitute 30?"
+    ],
+    "targetMisconceptionIds": [
+      "x_y_reversed",
+      "slope_found_intercept_missing",
+      "equation_memorized_without_meaning"
+    ],
+    "verificationContext": "Use the 0 Celsius row to identify the intercept.",
+    "interventionVisualizerConfig": {
+      "visualizerType": "variable_role_map",
+      "focus": "Map Celsius to x and Fahrenheit to y."
+    },
+    "transferProblemIds": ["storage_growth_001"],
+    "rubricId": "table_to_equation_rubric",
+    "tags": ["equation", "conversion"],
+    "status": "active"
+  },
+  {
+    "problemId": "storage_growth_001",
+    "title": "Data Storage Growth",
+    "conceptFamilyId": "table_to_linear_equation",
+    "requiredConceptIds": ["constant_difference", "table_to_linear_equation"],
+    "difficulty": "beginner",
+    "context": "A backup system uses a fixed setup amount and adds storage each day.",
+    "dataRepresentation": {
+      "type": "table",
+      "columns": ["Day", "Storage GB"],
+      "rows": [
+        { "input": 1, "output": 12 },
+        { "input": 2, "output": 20 },
+        { "input": 3, "output": 28 }
+      ]
+    },
+    "question": "Write a rule and find storage on day 6.",
+    "answerType": "text",
+    "correctAnswer": "y = 8x + 4; 52",
+    "acceptedAnswerVariants": ["52", "y=8x+4"],
+    "solutionModel": "Storage increases by 8 GB each day and has a 4 GB starting amount, so y = 8x + 4 and day 6 is 52.",
+    "validApproaches": [
+      "consecutive_difference",
+      "linear_equation",
+      "substitution"
+    ],
+    "reasoningPrompts": [
+      "What is added each day?",
+      "What is the starting amount?",
+      "What happens at x = 6?"
+    ],
+    "targetMisconceptionIds": [
+      "slope_found_intercept_missing",
+      "one_row_equation_guess",
+      "arithmetic_only_error"
+    ],
+    "verificationContext": "Test the equation against day 1 and day 2.",
+    "interventionVisualizerConfig": {
+      "visualizerType": "slope_intercept_bridge",
+      "focus": "Show rate 8 and offset 4."
+    },
+    "transferProblemIds": ["product_quantity_001"],
+    "rubricId": "table_to_equation_rubric",
+    "tags": ["storage", "equation"],
+    "status": "active"
+  }
+]

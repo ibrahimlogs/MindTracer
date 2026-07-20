@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import {
   ArrowDown,
+  ArrowRight,
   Beaker,
   CheckCircle2,
   GitBranch,
@@ -10,6 +12,7 @@ import {
 import { PageShell, SectionContainer } from "@/components/layout/primitives";
 import { PageHeader, SectionHeader } from "@/components/layout/section-header";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { SecondaryButton } from "@/components/ui/actions";
 import { StatusPill } from "@/components/ui/status-pill";
 import { ElevatedSurface, InsetSurface } from "@/components/ui/surface";
 
@@ -112,7 +115,7 @@ export default function TechnologyPage() {
           <SectionHeader
             eyebrow="Controlled AI architecture"
             title="A proposed sequence with explicit checkpoints."
-            description="This is the system being built. The visual product phase establishes its public explanation; it does not implement the workflow."
+            description="This is the system being built. The curated dataset now defines concept records, misconception hypotheses, verification templates, ordered intervention ladders, fixed reasoning rubrics, and transfer mappings. The reasoning generation layer is not yet connected to OpenAI."
           />
           <ol className="mt-12 grid gap-3 lg:grid-cols-2">
             {architecture.map(([title, description], index) => (
@@ -145,8 +148,8 @@ export default function TechnologyPage() {
           <div className="grid gap-8 lg:grid-cols-[1fr_0.82fr]">
             <SectionHeader
               eyebrow="Current implementation status"
-              title="The foundation and visual explanation are real. The learning workflow is not implemented yet."
-              description="There are currently no product database models, misconception engine, verification policy, intervention engine, or transfer evaluator. Those remain future phases and are not simulated on this page."
+              title="The foundation, visual explanation, static workspace, and curated dataset are real. Persistent sessions are not implemented yet."
+              description="There are currently no product database models, persistent sessions, real misconception classifier, or OpenAI-connected reasoning generator. The dataset is prototype-scale and auditable, not externally validated research evidence."
             />
             <ElevatedSurface className="p-6 sm:p-8">
               <div className="flex items-center gap-3">
@@ -171,7 +174,11 @@ export default function TechnologyPage() {
                 </div>
                 <div className="flex justify-between gap-4 border-b border-border pb-3">
                   <span className="text-text-secondary">Static workspace</span>
-                  <span className="text-attention">next phase</span>
+                  <span className="text-success">verified</span>
+                </div>
+                <div className="flex justify-between gap-4 border-b border-border pb-3">
+                  <span className="text-text-secondary">Education dataset</span>
+                  <span className="text-success">validated</span>
                 </div>
                 <div className="flex justify-between gap-4">
                   <span className="text-text-secondary">
@@ -190,6 +197,12 @@ export default function TechnologyPage() {
                   live model result.
                 </p>
               </div>
+              <SecondaryButton asChild className="mt-7">
+                <Link href="/technology/dataset">
+                  Open dataset explorer
+                  <ArrowRight className="size-4" aria-hidden="true" />
+                </Link>
+              </SecondaryButton>
             </ElevatedSurface>
           </div>
         </SectionContainer>

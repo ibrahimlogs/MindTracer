@@ -1,6 +1,6 @@
 # Learning Workspace
 
-Step 3 implements a complete static MindTrace learning journey with deterministic mocked data. It demonstrates the intended product behavior without OpenAI calls, persistence, authentication, payments, live misconception classification, or real benchmark calculations.
+Step 3 implements a complete static MindTrace learning journey with deterministic mocked data. Step 4 now backs the shared educational content with a validated prototype dataset. The journey still demonstrates intended product behavior without OpenAI calls, persistence, authentication, payments, live misconception classification, or real benchmark calculations.
 
 ## Routes
 
@@ -12,7 +12,7 @@ Step 3 implements a complete static MindTrace learning journey with deterministi
 
 ## Workspace architecture
 
-The workspace is driven by typed fixture data under `src/data/demo`, a Zustand store in `src/stores/learning-session-store.ts`, and reusable panels under `src/components/problem`, `src/components/visualization`, `src/components/mindtrace`, `src/components/reasoning`, and `src/components/demo`.
+The workspace is driven by typed learner scripts under `src/data/demo`, shared educational records under `src/data/education`, a Zustand store in `src/stores/learning-session-store.ts`, and reusable panels under `src/components/problem`, `src/components/visualization`, `src/components/mindtrace`, `src/components/reasoning`, and `src/components/demo`.
 
 Desktop uses a three-panel layout: problem workspace, visual reasoning canvas, and structured MindTrace guide. Tablet and mobile collapse into a sequential flow with a compact stage indicator and no horizontal overflow.
 
@@ -26,9 +26,9 @@ Adjacent transitions are validated for Previous and Next controls. Form submissi
 
 ## Mock data structure
 
-- `demo-problem.ts` contains the advertising and sales task.
-- `demo-learners.ts` contains Learner A and Learner B explanations, hypotheses, verification prompts, interventions, revised explanations, and report copy.
-- `demo-transfer.ts` contains the study-hours transfer task and deterministic answer evaluation.
+- `demo-problem.ts` loads the Advertising and Sales task from the education problem dataset.
+- `demo-learners.ts` keeps Learner A and Learner B scripted responses, while hypothesis labels, verification templates, interventions, rubrics, and misconception metadata resolve from the education dataset.
+- `demo-transfer.ts` loads the Study Hours and Score transfer task from the education problem dataset and keeps deterministic answer evaluation.
 - `demo-learning.ts` contains shared product types.
 
 ## Learner A flow
@@ -45,4 +45,4 @@ Both paths share a transfer task: study hours and score follow `+3` per hour. Th
 
 ## Simulated features
 
-The reasoning analysis, hypotheses, verification questions, interventions, revised answers, transfer evidence, auto-play, and report are all deterministic prototype simulations. Future phases will replace these fixtures with reviewed datasets, then durable sessions, verified misconception logic, targeted interventions, and model-backed structured outputs.
+The reasoning analysis, hypotheses, revised answers, transfer evidence, auto-play, and report are deterministic prototype simulations. Verification questions, shared interventions, rubrics, misconception labels, and transfer problem metadata now come from the prototype curated education dataset. Future phases will add durable sessions, database-backed contracts, verified misconception logic, targeted intervention selection, and model-backed structured outputs.
