@@ -7,6 +7,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { Button } from "@/components/ui/button";
 import { ElevatedSurface } from "@/components/ui/surface";
 import { demoLearners } from "@/data/demo/demo-learners";
+import { getMisconceptionById, getRubricById } from "@/data/education";
 
 export const metadata: Metadata = {
   title: "Reasoning Delta Report",
@@ -50,6 +51,9 @@ export default function ReportPage() {
                     Transfer complete
                   </span>
                 </div>
+                <p className="mt-4 font-mono text-xs text-text-muted">
+                  Rubric: {getRubricById(learner.rubricId).title}
+                </p>
                 <div className="mt-6 grid gap-3">
                   <section className="rounded-lg border border-border bg-surface-inset p-4">
                     <h3 className="text-xs font-medium tracking-[0.14em] text-text-muted uppercase">
@@ -65,7 +69,10 @@ export default function ReportPage() {
                     </h3>
                     <p className="mt-2 text-sm leading-6 text-text-secondary">
                       {learner.hypotheses
-                        .map((hypothesis) => hypothesis.label)
+                        .map(
+                          (hypothesis) =>
+                            getMisconceptionById(hypothesis.id).title,
+                        )
                         .join(" and ")}
                     </p>
                   </section>

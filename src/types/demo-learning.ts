@@ -19,11 +19,19 @@ export type LearnerId = "learner-a" | "learner-b";
 export type DemoSpeed = "slow" | "normal" | "fast";
 
 export interface DemoProblem {
+  problemId: string;
   context: string;
   columns: readonly [string, string];
   rows: readonly { input: number; output: number }[];
   question: string;
   correctAnswer: string;
+  rubricId: string;
+  targetMisconceptionIds: readonly string[];
+  transferProblemIds: readonly string[];
+  interventionVisualizerConfig: {
+    visualizerType: string;
+    focus: string;
+  };
 }
 
 export interface MockHypothesis {
@@ -57,17 +65,21 @@ export interface MockReasoningDelta {
 }
 
 export interface MockTransferResult {
+  problemId: string;
   context: string;
   columns: readonly [string, string];
   rows: readonly { input: number; output: number }[];
   question: string;
   correctAnswer: string;
   explanation: string;
+  rubricId: string;
 }
 
 export interface DemoLearner {
   id: LearnerId;
   name: string;
+  primaryMisconceptionIds: readonly string[];
+  rubricId: string;
   answer: string;
   explanation: string;
   selectedApproach: string;

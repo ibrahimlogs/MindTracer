@@ -9,6 +9,7 @@ const routes = [
   },
   { path: "/report/example-session", heading: "Evidence, not just a score." },
   { path: "/technology", heading: "Adaptation proposed by AI." },
+  { path: "/technology/dataset", heading: "Curated records" },
 ] as const;
 
 for (const route of routes) {
@@ -146,6 +147,53 @@ test("health API returns a success envelope", async ({ request }) => {
     data: { status: "ok" },
     error: null,
   });
+});
+
+test("dataset explorer route loads and opens concept detail", async ({
+  page,
+}) => {
+  await page.goto("/technology/dataset");
+
+  await expect(page.getByText("Development dataset explorer")).toBeVisible();
+  await page
+    .getByRole("button", { name: /Constant Difference Recognize/i })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Constant Difference" }),
+  ).toBeVisible();
+});
+
+test("dataset explorer opens problem detail with transfer mapping", async ({
+  page,
+}) => {
+  await page.goto("/technology/dataset");
+
+  await page.getByRole("button", { name: /Advertising and Sales/i }).click();
+  await expect(
+    page.getByRole("heading", { name: "Advertising and Sales" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("study_score_001", { exact: true }),
+  ).toBeVisible();
+});
+
+test("dataset explorer opens misconception ladder", async ({ page }) => {
+  await page.goto("/technology/dataset");
+
+  await page.getByRole("button", { name: /Direction without rate/i }).click();
+  await expect(
+    page.getByText("Intervention ladders", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("Level 8", { exact: true })).toBeVisible();
+});
+
+test("dataset explorer filters evaluation cases", async ({ page }) => {
+  await page.goto("/technology/dataset");
+
+  await page.getByLabel("Review status").selectOption("needs_review");
+  await expect(
+    page.getByRole("button", { name: /needs_review/i }).first(),
+  ).toBeVisible();
 });
 
 test("guided comparison shows different learner paths", async ({ page }) => {

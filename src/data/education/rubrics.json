@@ -1,0 +1,579 @@
+[
+  {
+    "rubricId": "constant_difference_rubric",
+    "title": "Constant Difference Rubric",
+    "description": "Evaluates reasoning about repeated additive change in sequences and tables.",
+    "dimensions": [
+      {
+        "dimensionId": "observationAccuracy",
+        "title": "Observation accuracy",
+        "description": "Identifies relevant table or sequence values.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Look for accurate references to given values.",
+        "positiveEvidence": [
+          "Cites consecutive values",
+          "Preserves given context"
+        ],
+        "negativeEvidence": ["Misreads a row", "Ignores the data"]
+      },
+      {
+        "dimensionId": "relationshipType",
+        "title": "Relationship type",
+        "description": "Distinguishes constant difference from other patterns.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Check whether the learner names repeated addition.",
+        "positiveEvidence": ["Names constant change", "Compares differences"],
+        "negativeEvidence": [
+          "Only says increasing",
+          "Uses unsupported multiplication"
+        ]
+      },
+      {
+        "dimensionId": "evidenceUse",
+        "title": "Evidence use",
+        "description": "Uses multiple data points to support the pattern.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Look for at least one row-to-row comparison.",
+        "positiveEvidence": [
+          "Checks neighboring values",
+          "References repeated evidence"
+        ],
+        "negativeEvidence": ["Guesses from trend", "Uses one value only"]
+      },
+      {
+        "dimensionId": "ruleFormation",
+        "title": "Rule formation",
+        "description": "Forms a repeatable rule for extension.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Check if the explanation can generate new values.",
+        "positiveEvidence": ["Counts steps", "Repeats the difference"],
+        "negativeEvidence": ["Approximate answer only", "No operation stated"]
+      },
+      {
+        "dimensionId": "formalRepresentation",
+        "title": "Formal representation",
+        "description": "Connects the pattern to symbols when needed.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Do not require equations for foundation tasks unless prompted.",
+        "positiveEvidence": [
+          "Uses a valid expression",
+          "Names input/output roles"
+        ],
+        "negativeEvidence": [
+          "Uses symbols with reversed roles",
+          "Unneeded equation is wrong"
+        ]
+      },
+      {
+        "dimensionId": "uncertaintyAwareness",
+        "title": "Uncertainty awareness",
+        "description": "Signals confidence and checks uncertainty appropriately.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Look for careful checking when confidence is low.",
+        "positiveEvidence": ["Says what needs checking", "Tests the pattern"],
+        "negativeEvidence": ["Confident unsupported answer", "No explanation"]
+      },
+      {
+        "dimensionId": "transfer",
+        "title": "Transfer",
+        "description": "Applies the same repeated-change idea in a new context.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Use only transfer responses for this dimension.",
+        "positiveEvidence": [
+          "Uses same rate idea in new values",
+          "Explains without hint"
+        ],
+        "negativeEvidence": ["Copies old answer", "Needs identical wording"]
+      },
+      {
+        "dimensionId": "supportDependence",
+        "title": "Support dependence",
+        "description": "Captures how much support was needed.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Record support level without labeling ability.",
+        "positiveEvidence": [
+          "Repairs after a low-level question",
+          "Uses highlighted evidence"
+        ],
+        "negativeEvidence": [
+          "Requires full reconstruction",
+          "Cannot retry after support"
+        ]
+      }
+    ]
+  },
+  {
+    "rubricId": "additive_multiplicative_rubric",
+    "title": "Additive vs Multiplicative Rubric",
+    "description": "Evaluates whether the learner selects and tests the correct relationship type.",
+    "dimensions": [
+      {
+        "dimensionId": "observationAccuracy",
+        "title": "Observation accuracy",
+        "description": "Reads row values and candidate rules accurately.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Check table values and predicted values.",
+        "positiveEvidence": [
+          "Accurate predicted-observed comparison",
+          "Correct row citation"
+        ],
+        "negativeEvidence": ["Wrong row value", "Invented value"]
+      },
+      {
+        "dimensionId": "relationshipType",
+        "title": "Relationship type",
+        "description": "Distinguishes additive change, multiplicative ratio, and offset.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Look for explicit comparison of differences or ratios.",
+        "positiveEvidence": [
+          "Tests ratio or difference",
+          "Names offset when present"
+        ],
+        "negativeEvidence": [
+          "Uses multiplication from one row",
+          "Uses difference when ratio is constant"
+        ]
+      },
+      {
+        "dimensionId": "evidenceUse",
+        "title": "Evidence use",
+        "description": "Tests candidate rules across rows.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "A strong response tests more than one row.",
+        "positiveEvidence": ["Finds counterexample", "Checks all rows"],
+        "negativeEvidence": ["One-row rule", "Ignores mismatch"]
+      },
+      {
+        "dimensionId": "ruleFormation",
+        "title": "Rule formation",
+        "description": "Forms a rule that matches the relationship type.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Check whether the rule reproduces data.",
+        "positiveEvidence": [
+          "Keeps rate and offset",
+          "Uses multiplier consistently"
+        ],
+        "negativeEvidence": ["Rule fails known row", "Offset omitted"]
+      },
+      {
+        "dimensionId": "formalRepresentation",
+        "title": "Formal representation",
+        "description": "Represents the relationship verbally or symbolically.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Symbols should match context when used.",
+        "positiveEvidence": ["Correct verbal rule", "Equation matches rows"],
+        "negativeEvidence": ["Generic formula copied", "Variables reversed"]
+      },
+      {
+        "dimensionId": "uncertaintyAwareness",
+        "title": "Uncertainty awareness",
+        "description": "Treats a first rule as a hypothesis to verify.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Reward rule testing over unsupported confidence.",
+        "positiveEvidence": [
+          "Says the rule needs checking",
+          "Uses counterexample"
+        ],
+        "negativeEvidence": ["Overconfident one-row claim", "No check"]
+      },
+      {
+        "dimensionId": "transfer",
+        "title": "Transfer",
+        "description": "Chooses the same relationship type in a new context.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Evaluate relation type, not just answer.",
+        "positiveEvidence": [
+          "Uses ratio for growth",
+          "Uses offset for linear fee"
+        ],
+        "negativeEvidence": ["Copies old operation", "Misses context change"]
+      },
+      {
+        "dimensionId": "supportDependence",
+        "title": "Support dependence",
+        "description": "Records support needed to test and repair the rule.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Describe support, not learner ability.",
+        "positiveEvidence": [
+          "Repairs after contrast",
+          "Uses verification question"
+        ],
+        "negativeEvidence": ["Needs full reconstruction", "No retry evidence"]
+      }
+    ]
+  },
+  {
+    "rubricId": "table_to_equation_rubric",
+    "title": "Table to Linear Equation Rubric",
+    "description": "Evaluates conversion from table evidence to verbal and symbolic linear rules.",
+    "dimensions": [
+      {
+        "dimensionId": "observationAccuracy",
+        "title": "Observation accuracy",
+        "description": "Reads inputs, outputs, and row structure accurately.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Check whether x and y values are read correctly.",
+        "positiveEvidence": ["Identifies input column", "Uses known row"],
+        "negativeEvidence": ["Swaps columns", "Misreads output"]
+      },
+      {
+        "dimensionId": "relationshipType",
+        "title": "Relationship type",
+        "description": "Identifies the relation as linear when appropriate.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Look for rate plus possible intercept.",
+        "positiveEvidence": ["Finds slope", "Checks constant difference"],
+        "negativeEvidence": ["Assumes proportionality", "Uses one-row equation"]
+      },
+      {
+        "dimensionId": "evidenceUse",
+        "title": "Evidence use",
+        "description": "Uses table evidence to justify equation parts.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Each symbol should trace back to evidence.",
+        "positiveEvidence": ["Tests equation on rows", "Derives intercept"],
+        "negativeEvidence": ["Copies y=mx+b", "No row check"]
+      },
+      {
+        "dimensionId": "ruleFormation",
+        "title": "Rule formation",
+        "description": "Forms a complete linear rule.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Check rate, intercept, and target substitution.",
+        "positiveEvidence": ["Includes m and b", "Substitutes target input"],
+        "negativeEvidence": ["Slope only", "Missing intercept"]
+      },
+      {
+        "dimensionId": "formalRepresentation",
+        "title": "Formal representation",
+        "description": "Uses variables and symbols meaningfully.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Equation must match variable roles.",
+        "positiveEvidence": ["Defines x and y", "Equation matches table"],
+        "negativeEvidence": ["Variables reversed", "Unexplained symbols"]
+      },
+      {
+        "dimensionId": "uncertaintyAwareness",
+        "title": "Uncertainty awareness",
+        "description": "Checks whether symbolic work matches the table.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Look for self-checks against known rows.",
+        "positiveEvidence": ["Verifies equation", "Notes possible mismatch"],
+        "negativeEvidence": ["No verification", "Confident copied formula"]
+      },
+      {
+        "dimensionId": "transfer",
+        "title": "Transfer",
+        "description": "Builds an equation in a new context.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Use transfer task evidence only.",
+        "positiveEvidence": [
+          "Finds new slope and intercept",
+          "Substitutes new input"
+        ],
+        "negativeEvidence": ["Reuses old numbers", "Does not adapt context"]
+      },
+      {
+        "dimensionId": "supportDependence",
+        "title": "Support dependence",
+        "description": "Records support needed to connect table and equation.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Record support level neutrally.",
+        "positiveEvidence": ["Repairs after bridge", "Uses variable map"],
+        "negativeEvidence": [
+          "Requires full reconstruction",
+          "Cannot explain equation"
+        ]
+      }
+    ]
+  },
+  {
+    "rubricId": "transfer_reasoning_rubric",
+    "title": "Transfer Reasoning Rubric",
+    "description": "Evaluates whether a learner applies a learned idea independently in a new context.",
+    "dimensions": [
+      {
+        "dimensionId": "observationAccuracy",
+        "title": "Observation accuracy",
+        "description": "Reads the transfer context and values accurately.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Check that transfer values, not original values, are used.",
+        "positiveEvidence": ["Uses transfer table values", "Names new context"],
+        "negativeEvidence": [
+          "Copies original problem values",
+          "Misreads transfer row"
+        ]
+      },
+      {
+        "dimensionId": "relationshipType",
+        "title": "Relationship type",
+        "description": "Identifies the same core concept in changed values.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Look for relationship type, not surface wording.",
+        "positiveEvidence": [
+          "Finds same concept with new numbers",
+          "Names repeated rate"
+        ],
+        "negativeEvidence": ["Copies old answer", "Uses irrelevant operation"]
+      },
+      {
+        "dimensionId": "evidenceUse",
+        "title": "Evidence use",
+        "description": "Uses transfer evidence independently.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Strong evidence cites new row comparisons.",
+        "positiveEvidence": ["Compares transfer rows", "Tests transfer rule"],
+        "negativeEvidence": ["No transfer evidence", "Relies on hint"]
+      },
+      {
+        "dimensionId": "ruleFormation",
+        "title": "Rule formation",
+        "description": "Forms a new rule for the transfer problem.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "The rule should use new values.",
+        "positiveEvidence": ["Uses new rate", "Counts new steps"],
+        "negativeEvidence": ["Uses old rate when values differ", "No rule"]
+      },
+      {
+        "dimensionId": "formalRepresentation",
+        "title": "Formal representation",
+        "description": "Uses formal notation when helpful.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Do not require notation unless transfer asks for it.",
+        "positiveEvidence": [
+          "Valid equation for transfer",
+          "Clear verbal rule"
+        ],
+        "negativeEvidence": ["Copied equation", "Variables unclear"]
+      },
+      {
+        "dimensionId": "uncertaintyAwareness",
+        "title": "Uncertainty awareness",
+        "description": "Checks the transfer answer before submitting.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Look for independent verification.",
+        "positiveEvidence": [
+          "Checks against transfer rows",
+          "Notes confidence accurately"
+        ],
+        "negativeEvidence": ["Unsupported confidence", "No check"]
+      },
+      {
+        "dimensionId": "transfer",
+        "title": "Transfer",
+        "description": "Captures independent transfer performance.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "This is the primary dimension for transfer tasks.",
+        "positiveEvidence": [
+          "Applies concept without hint",
+          "Explains changed context"
+        ],
+        "negativeEvidence": ["Needs original wording", "Cannot apply concept"]
+      },
+      {
+        "dimensionId": "supportDependence",
+        "title": "Support dependence",
+        "description": "Records how much support was needed during transfer.",
+        "allowedStates": [
+          "strong",
+          "developing",
+          "missing",
+          "incorrect",
+          "insufficient_evidence"
+        ],
+        "evaluationGuidance": "Record level of help without score language.",
+        "positiveEvidence": ["Independent response", "Low-level prompt only"],
+        "negativeEvidence": [
+          "Full reconstruction needed",
+          "No transfer attempt"
+        ]
+      }
+    ]
+  }
+]

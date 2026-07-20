@@ -4,7 +4,7 @@
 
 MindTrace Reasoning Lab is an AI learning product designed to distinguish the different reasoning patterns that can produce the same wrong answer. The planned system will form misconception hypotheses, verify them with targeted questions, provide the smallest useful intervention, and test independent transfer.
 
-The repository currently contains a verified technical foundation, the premium visual product phase, and a complete static Learning Workspace. The workspace demonstrates the diagnostic learning workflow with deterministic mocked data; it does not run live AI analysis or persist sessions.
+The repository currently contains a verified technical foundation, the premium visual product phase, a complete static Learning Workspace, and a prototype curated educational dataset. The workspace demonstrates the diagnostic learning workflow with deterministic mocked data backed by shared concept, problem, misconception, rubric, intervention, and transfer records; it does not run live AI analysis or persist sessions.
 
 ## Tech stack
 
@@ -52,6 +52,7 @@ pnpm build               # create a production build
 pnpm start               # serve the production build
 pnpm lint                # lint source and configuration files
 pnpm typecheck           # run strict TypeScript checks
+pnpm validate:education  # validate the curated education dataset
 pnpm format              # format the repository
 pnpm format:check        # verify formatting
 pnpm prisma:migrate      # create/apply a future development migration
@@ -68,12 +69,13 @@ pnpm build               # required before the production E2E server
 pnpm test:e2e            # run browser, accessibility, fallback, and route checks
 ```
 
-The Playwright suite verifies critical routes, landing sections, CTA targets, anchor navigation, native mobile navigation, reduced-motion and WebGL fallbacks, hydration warnings, common mobile/tablet overflow, and the mocked Learning Workspace journey.
+The Playwright suite verifies critical routes, landing sections, CTA targets, anchor navigation, native mobile navigation, reduced-motion and WebGL fallbacks, hydration warnings, common mobile/tablet overflow, the mocked Learning Workspace journey, and the development dataset explorer.
 
 ## Current scope
 
-Implemented: technical foundation, design system, public landing page, optional reasoning visualization, technology positioning, static demo selector, mocked Learning Workspace, deterministic learner comparison, and static Reasoning Delta report.
+Implemented: technical foundation, design system, public landing page, optional reasoning visualization, technology positioning, static demo selector, mocked Learning Workspace, deterministic learner comparison, static Reasoning Delta report, and prototype curated educational dataset.
 
 Not implemented: authentication, payments, product database models, persistent session lifecycle, real misconception classification, AI generation, or real benchmark calculations.
 
 See `LEARNING_WORKSPACE.md` for the Step 3 architecture and mocked journey details.
+See `EDUCATIONAL_DATASET.md` for the Step 4 dataset structure, validation rules, and review workflow.

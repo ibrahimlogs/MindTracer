@@ -1,0 +1,1104 @@
+[
+  {
+    "misconceptionId": "total_vs_change",
+    "conceptIds": ["constant_difference"],
+    "title": "Total confused with change",
+    "shortDescription": "Uses the visible total instead of the difference between totals.",
+    "fullDescription": "The learner may read a table value correctly but treat that value as the amount being added each step.",
+    "signals": [
+      "Mentions the largest value as the amount added",
+      "Extends by adding a table total instead of a difference"
+    ],
+    "counterSignals": ["Computes differences between neighboring values"],
+    "possibleAlternativeExplanations": [
+      "Arithmetic slip after finding the right difference"
+    ],
+    "verificationQuestionTemplates": [
+      {
+        "templateId": "vq_total_vs_change_1",
+        "misconceptionId": "total_vs_change",
+        "type": "consecutive_comparison",
+        "goal": "Separate a table value from the change between values.",
+        "promptTemplate": "Between {rowA} and {rowB}, what changed in the output?",
+        "expectedEvidence": "Names the difference between outputs.",
+        "disconfirmingEvidence": "Repeats an output value as the change.",
+        "answerFormat": "number",
+        "difficulty": "foundation",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      },
+      {
+        "templateId": "vq_total_vs_change_2",
+        "misconceptionId": "total_vs_change",
+        "type": "evidence_selection",
+        "goal": "Choose the values needed to find the change.",
+        "promptTemplate": "Which two output values should be compared before extending the pattern?",
+        "expectedEvidence": "Selects consecutive outputs.",
+        "disconfirmingEvidence": "Selects only the final total.",
+        "answerFormat": "short_text",
+        "difficulty": "foundation",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      }
+    ],
+    "interventionLadder": [
+      {
+        "interventionId": "iv_total_vs_change_1",
+        "level": 1,
+        "type": "reflection",
+        "title": "Ask for the change",
+        "learnerFacingTemplate": "Before extending, name the amount that changed between two neighboring outputs.",
+        "instructionalGoal": "Prompt comparison without revealing values.",
+        "visualizerType": "none",
+        "allowedWhen": ["initial_uncertainty"],
+        "escalationCondition": "Learner repeats a total.",
+        "revealsPartialAnswer": false,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_total_vs_change_3",
+        "level": 3,
+        "type": "highlight",
+        "title": "Highlight neighboring totals",
+        "learnerFacingTemplate": "Look only at these two neighboring output values and compare them.",
+        "instructionalGoal": "Focus attention on consecutive values.",
+        "visualizerType": "highlighted_table",
+        "allowedWhen": ["comparison_needed"],
+        "escalationCondition": "Learner still names a total.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_total_vs_change_8",
+        "level": 8,
+        "type": "reconstruction",
+        "title": "Rebuild change from totals",
+        "learnerFacingTemplate": "The change is found by subtracting neighboring totals, then repeating that change.",
+        "instructionalGoal": "Fully reconstruct the comparison process.",
+        "visualizerType": "consecutive_difference",
+        "allowedWhen": ["high_support_requested"],
+        "escalationCondition": "Learner cannot form the comparison.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": true
+      }
+    ],
+    "escalationRules": [
+      "Escalate when the learner uses a total as the repeated change."
+    ],
+    "allowedNextActions": [
+      "ask_verification",
+      "show_highlighted_values",
+      "offer_micro_example"
+    ],
+    "severity": "medium",
+    "status": "active"
+  },
+  {
+    "misconceptionId": "direction_without_rate",
+    "conceptIds": ["constant_difference"],
+    "title": "Direction without rate",
+    "shortDescription": "Notices increase or decrease but not the repeated amount.",
+    "fullDescription": "The learner sees that values move upward or downward, but prediction is based on direction rather than a measured repeated change.",
+    "signals": [
+      "Uses words like increasing without naming the amount",
+      "Predicts an approximate next value"
+    ],
+    "counterSignals": [
+      "Names the repeated difference between consecutive outputs"
+    ],
+    "possibleAlternativeExplanations": [
+      "Learner may know the rate but omit it from a brief explanation"
+    ],
+    "verificationQuestionTemplates": [
+      {
+        "templateId": "vq_direction_without_rate_1",
+        "misconceptionId": "direction_without_rate",
+        "type": "consecutive_comparison",
+        "goal": "Check whether the learner can quantify change.",
+        "promptTemplate": "When {inputColumn} increases from {inputA} to {inputB}, how much does {outputColumn} increase?",
+        "expectedEvidence": "Computes the output difference.",
+        "disconfirmingEvidence": "Only says it increases.",
+        "answerFormat": "number",
+        "difficulty": "foundation",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      },
+      {
+        "templateId": "vq_direction_without_rate_2",
+        "misconceptionId": "direction_without_rate",
+        "type": "explanation_check",
+        "goal": "Ask for a prediction using a measured rate.",
+        "promptTemplate": "Explain the next step using the amount of change, not only the direction.",
+        "expectedEvidence": "Uses repeated change explicitly.",
+        "disconfirmingEvidence": "Uses approximate language without a rate.",
+        "answerFormat": "short_text",
+        "difficulty": "beginner",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      }
+    ],
+    "interventionLadder": [
+      {
+        "interventionId": "iv_direction_without_rate_1",
+        "level": 1,
+        "type": "reflection",
+        "title": "Name the amount",
+        "learnerFacingTemplate": "You noticed the direction. What amount changes each step?",
+        "instructionalGoal": "Preserve observation while asking for rate.",
+        "visualizerType": "none",
+        "allowedWhen": ["direction_noted"],
+        "escalationCondition": "Learner cannot name a change.",
+        "revealsPartialAnswer": false,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_direction_without_rate_3",
+        "level": 3,
+        "type": "highlight",
+        "title": "Highlight consecutive differences",
+        "learnerFacingTemplate": "Compare these neighboring values before extending the pattern.",
+        "instructionalGoal": "Make the rate visible.",
+        "visualizerType": "consecutive_difference",
+        "allowedWhen": ["rate_missing"],
+        "escalationCondition": "Learner still estimates.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_direction_without_rate_8",
+        "level": 8,
+        "type": "reconstruction",
+        "title": "Reconstruct repeated rate",
+        "learnerFacingTemplate": "Find the output change between each neighboring pair, confirm it repeats, then apply it step by step.",
+        "instructionalGoal": "Fully rebuild constant-difference reasoning.",
+        "visualizerType": "consecutive_difference",
+        "allowedWhen": ["high_support_requested"],
+        "escalationCondition": "Learner cannot extend with rate.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": true
+      }
+    ],
+    "escalationRules": [
+      "Escalate when the learner repeats directional language without measurable evidence."
+    ],
+    "allowedNextActions": [
+      "ask_verification",
+      "show_difference_visual",
+      "retry"
+    ],
+    "severity": "medium",
+    "status": "active"
+  },
+  {
+    "misconceptionId": "approximate_pattern_guess",
+    "conceptIds": ["constant_difference"],
+    "title": "Approximate pattern guess",
+    "shortDescription": "Extends by estimation instead of a tested rule.",
+    "fullDescription": "The learner senses a pattern but chooses a plausible value without checking the repeated structure.",
+    "signals": [
+      "Uses words such as probably or around",
+      "Gives a nearby answer without showing a rule"
+    ],
+    "counterSignals": ["Explains a repeated operation that reaches the answer"],
+    "possibleAlternativeExplanations": [
+      "The learner may be summarizing a correct mental calculation too quickly"
+    ],
+    "verificationQuestionTemplates": [
+      {
+        "templateId": "vq_approximate_pattern_guess_1",
+        "misconceptionId": "approximate_pattern_guess",
+        "type": "prediction_check",
+        "goal": "Ask for a rule-based next step.",
+        "promptTemplate": "What exact operation takes the last known output to the next output?",
+        "expectedEvidence": "Names a repeated operation.",
+        "disconfirmingEvidence": "Uses vague estimation.",
+        "answerFormat": "short_text",
+        "difficulty": "foundation",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      },
+      {
+        "templateId": "vq_approximate_pattern_guess_2",
+        "misconceptionId": "approximate_pattern_guess",
+        "type": "evidence_selection",
+        "goal": "Ground the prediction in table evidence.",
+        "promptTemplate": "Which row-to-row evidence supports your prediction?",
+        "expectedEvidence": "Cites consecutive changes.",
+        "disconfirmingEvidence": "Cites general trend only.",
+        "answerFormat": "short_text",
+        "difficulty": "beginner",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      }
+    ],
+    "interventionLadder": [
+      {
+        "interventionId": "iv_approximate_pattern_guess_1",
+        "level": 1,
+        "type": "reflection",
+        "title": "Replace guess with evidence",
+        "learnerFacingTemplate": "What table evidence would make this prediction exact rather than approximate?",
+        "instructionalGoal": "Shift from plausibility to evidence.",
+        "visualizerType": "none",
+        "allowedWhen": ["approximate_language"],
+        "escalationCondition": "Learner cannot cite evidence.",
+        "revealsPartialAnswer": false,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_approximate_pattern_guess_3",
+        "level": 3,
+        "type": "highlight",
+        "title": "Highlight repeated steps",
+        "learnerFacingTemplate": "Use the highlighted repeated changes to make the prediction exact.",
+        "instructionalGoal": "Anchor extension in repeated differences.",
+        "visualizerType": "consecutive_difference",
+        "allowedWhen": ["evidence_missing"],
+        "escalationCondition": "Learner still estimates.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_approximate_pattern_guess_8",
+        "level": 8,
+        "type": "reconstruction",
+        "title": "Exact extension reconstruction",
+        "learnerFacingTemplate": "Confirm the repeated change, count the steps to the target input, and repeat the change for each step.",
+        "instructionalGoal": "Fully reconstruct exact pattern extension.",
+        "visualizerType": "consecutive_difference",
+        "allowedWhen": ["high_support_requested"],
+        "escalationCondition": "Learner cannot count extension steps.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": true
+      }
+    ],
+    "escalationRules": [
+      "Escalate when estimation remains after evidence is requested."
+    ],
+    "allowedNextActions": [
+      "ask_evidence_selection",
+      "show_highlighted_values",
+      "retry"
+    ],
+    "severity": "low",
+    "status": "active"
+  },
+  {
+    "misconceptionId": "additive_as_multiplicative",
+    "conceptIds": ["additive_multiplicative_relationships"],
+    "title": "Additive pattern treated as multiplication",
+    "shortDescription": "Uses multiplication when the table is better explained by repeated addition plus possible offset.",
+    "fullDescription": "The learner notices a relationship with multiplication but does not test whether that rule matches every row.",
+    "signals": [
+      "States an exact multiplication rule from one row",
+      "Ignores rows that are one above or below the product"
+    ],
+    "counterSignals": ["Tests the multiplication rule against multiple rows"],
+    "possibleAlternativeExplanations": [
+      "The learner may use multiplication as shorthand for the rate only"
+    ],
+    "verificationQuestionTemplates": [
+      {
+        "templateId": "vq_additive_as_multiplicative_1",
+        "misconceptionId": "additive_as_multiplicative",
+        "type": "rule_test",
+        "goal": "Test the multiplication claim against a row.",
+        "promptTemplate": "If {outputColumn} were exactly double {inputColumn}, what should {outputColumn} be when {inputColumn} is {inputValue}? Does that match the table?",
+        "expectedEvidence": "Finds a mismatch between predicted and observed values.",
+        "disconfirmingEvidence": "Does not compare prediction with observation.",
+        "answerFormat": "yes_no_with_reason",
+        "difficulty": "beginner",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      },
+      {
+        "templateId": "vq_additive_as_multiplicative_2",
+        "misconceptionId": "additive_as_multiplicative",
+        "type": "counterexample_check",
+        "goal": "Look for a row that contradicts the rule.",
+        "promptTemplate": "Which row is a counterexample to the exact multiplication rule?",
+        "expectedEvidence": "Identifies a row where the rule fails.",
+        "disconfirmingEvidence": "Uses only the row that seems to fit.",
+        "answerFormat": "short_text",
+        "difficulty": "beginner",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      }
+    ],
+    "interventionLadder": [
+      {
+        "interventionId": "iv_additive_as_multiplicative_1",
+        "level": 1,
+        "type": "reflection",
+        "title": "Test the rule",
+        "learnerFacingTemplate": "Your rule is a useful candidate. Which row can test it?",
+        "instructionalGoal": "Treat rule as testable hypothesis.",
+        "visualizerType": "none",
+        "allowedWhen": ["multiplication_claim"],
+        "escalationCondition": "Learner does not test a row.",
+        "revealsPartialAnswer": false,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_additive_as_multiplicative_3",
+        "level": 3,
+        "type": "contrast",
+        "title": "Contrast predicted and observed values",
+        "learnerFacingTemplate": "Compare the prediction from your rule with the observed table value.",
+        "instructionalGoal": "Reveal mismatch without giving final rule.",
+        "visualizerType": "additive_multiplicative_contrast",
+        "allowedWhen": ["rule_mismatch"],
+        "escalationCondition": "Learner does not interpret mismatch.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_additive_as_multiplicative_8",
+        "level": 8,
+        "type": "reconstruction",
+        "title": "Rebuild additive rule",
+        "learnerFacingTemplate": "Use the mismatch to keep the rate and add the missing offset, then test the full rule.",
+        "instructionalGoal": "Fully reconstruct rate plus offset.",
+        "visualizerType": "slope_intercept_bridge",
+        "allowedWhen": ["high_support_requested"],
+        "escalationCondition": "Learner cannot repair the rule.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": true
+      }
+    ],
+    "escalationRules": [
+      "Escalate when the learner accepts a one-row multiplication rule without testing."
+    ],
+    "allowedNextActions": ["ask_rule_test", "show_contrast", "retry"],
+    "severity": "high",
+    "status": "active"
+  },
+  {
+    "misconceptionId": "multiplicative_as_additive",
+    "conceptIds": ["additive_multiplicative_relationships"],
+    "title": "Multiplicative pattern treated as additive",
+    "shortDescription": "Uses a fixed difference where a fixed ratio explains the pattern.",
+    "fullDescription": "The learner extends a multiplicative pattern by adding one observed difference instead of checking ratios.",
+    "signals": [
+      "Adds the first difference repeatedly",
+      "Ignores changing differences in a growth table"
+    ],
+    "counterSignals": ["Compares ratios between consecutive outputs"],
+    "possibleAlternativeExplanations": [
+      "The learner may be working with an intentionally linear subset"
+    ],
+    "verificationQuestionTemplates": [
+      {
+        "templateId": "vq_multiplicative_as_additive_1",
+        "misconceptionId": "multiplicative_as_additive",
+        "type": "consecutive_comparison",
+        "goal": "Check whether differences remain constant.",
+        "promptTemplate": "Are the output differences the same from row to row?",
+        "expectedEvidence": "Recognizes differences change.",
+        "disconfirmingEvidence": "Assumes the first difference repeats.",
+        "answerFormat": "yes_no_with_reason",
+        "difficulty": "beginner",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      },
+      {
+        "templateId": "vq_multiplicative_as_additive_2",
+        "misconceptionId": "multiplicative_as_additive",
+        "type": "rule_test",
+        "goal": "Check for constant ratio.",
+        "promptTemplate": "What multiplier connects each output to the next output?",
+        "expectedEvidence": "Names the repeated ratio.",
+        "disconfirmingEvidence": "Names only an additive difference.",
+        "answerFormat": "number",
+        "difficulty": "beginner",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      }
+    ],
+    "interventionLadder": [
+      {
+        "interventionId": "iv_multiplicative_as_additive_1",
+        "level": 1,
+        "type": "reflection",
+        "title": "Compare differences and ratios",
+        "learnerFacingTemplate": "Check whether the differences or the ratios stay consistent.",
+        "instructionalGoal": "Prompt relationship-type comparison.",
+        "visualizerType": "none",
+        "allowedWhen": ["additive_claim"],
+        "escalationCondition": "Learner checks only differences.",
+        "revealsPartialAnswer": false,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_multiplicative_as_additive_3",
+        "level": 3,
+        "type": "contrast",
+        "title": "Contrast difference and ratio",
+        "learnerFacingTemplate": "The differences change, so inspect the multiplier between outputs.",
+        "instructionalGoal": "Steer toward ratio evidence.",
+        "visualizerType": "additive_multiplicative_contrast",
+        "allowedWhen": ["difference_not_constant"],
+        "escalationCondition": "Learner cannot find ratio.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_multiplicative_as_additive_8",
+        "level": 8,
+        "type": "reconstruction",
+        "title": "Reconstruct multiplicative extension",
+        "learnerFacingTemplate": "Find the repeated multiplier and apply it for each remaining step.",
+        "instructionalGoal": "Fully rebuild multiplicative reasoning.",
+        "visualizerType": "additive_multiplicative_contrast",
+        "allowedWhen": ["high_support_requested"],
+        "escalationCondition": "Learner cannot apply multiplier.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": true
+      }
+    ],
+    "escalationRules": [
+      "Escalate when the learner continues using a fixed difference after differences change."
+    ],
+    "allowedNextActions": ["ask_ratio_check", "show_contrast", "retry"],
+    "severity": "high",
+    "status": "active"
+  },
+  {
+    "misconceptionId": "intercept_ignored",
+    "conceptIds": [
+      "additive_multiplicative_relationships",
+      "table_to_linear_equation"
+    ],
+    "title": "Starting offset ignored",
+    "shortDescription": "Finds the rate but misses the starting offset.",
+    "fullDescription": "The learner identifies a useful rate but writes a rule without the constant amount needed to match the table.",
+    "signals": [
+      "Uses y = mx when table values are consistently offset",
+      "Prediction is off by the same amount across rows"
+    ],
+    "counterSignals": ["Includes a starting amount or intercept"],
+    "possibleAlternativeExplanations": [
+      "The task may use proportional data with zero intercept"
+    ],
+    "verificationQuestionTemplates": [
+      {
+        "templateId": "vq_intercept_ignored_1",
+        "misconceptionId": "intercept_ignored",
+        "type": "rule_test",
+        "goal": "Test a no-offset rule against an observed row.",
+        "promptTemplate": "What does {ruleWithoutOffset} predict for {inputValue}, and what does the table show?",
+        "expectedEvidence": "Finds a consistent difference between prediction and observation.",
+        "disconfirmingEvidence": "Accepts the no-offset rule despite mismatch.",
+        "answerFormat": "short_text",
+        "difficulty": "beginner",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      },
+      {
+        "templateId": "vq_intercept_ignored_2",
+        "misconceptionId": "intercept_ignored",
+        "type": "explanation_check",
+        "goal": "Ask what must be added after using the rate.",
+        "promptTemplate": "After using the rate, what extra amount is needed to match the table row?",
+        "expectedEvidence": "Identifies offset.",
+        "disconfirmingEvidence": "Repeats rate only.",
+        "answerFormat": "number",
+        "difficulty": "intermediate",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      }
+    ],
+    "interventionLadder": [
+      {
+        "interventionId": "iv_intercept_ignored_1",
+        "level": 1,
+        "type": "reflection",
+        "title": "Keep rate, test offset",
+        "learnerFacingTemplate": "Your rate may be useful. Test whether it matches a row exactly.",
+        "instructionalGoal": "Preserve rate while checking offset.",
+        "visualizerType": "none",
+        "allowedWhen": ["rate_found"],
+        "escalationCondition": "Learner does not compare prediction and observation.",
+        "revealsPartialAnswer": false,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_intercept_ignored_3",
+        "level": 3,
+        "type": "contrast",
+        "title": "Reveal constant mismatch",
+        "learnerFacingTemplate": "Compare predicted and observed values. What same amount is missing?",
+        "instructionalGoal": "Make offset visible.",
+        "visualizerType": "slope_intercept_bridge",
+        "allowedWhen": ["offset_missing"],
+        "escalationCondition": "Learner cannot name missing amount.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_intercept_ignored_8",
+        "level": 8,
+        "type": "reconstruction",
+        "title": "Rebuild rate plus offset",
+        "learnerFacingTemplate": "Use the rate first, then add the starting offset and test the full equation.",
+        "instructionalGoal": "Fully reconstruct linear equation with intercept.",
+        "visualizerType": "slope_intercept_bridge",
+        "allowedWhen": ["high_support_requested"],
+        "escalationCondition": "Learner cannot write repaired rule.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": true
+      }
+    ],
+    "escalationRules": [
+      "Escalate when predictions remain consistently off by the same amount."
+    ],
+    "allowedNextActions": ["ask_rule_test", "show_offset_visual", "retry"],
+    "severity": "high",
+    "status": "active"
+  },
+  {
+    "misconceptionId": "ratio_difference_confusion",
+    "conceptIds": ["additive_multiplicative_relationships"],
+    "title": "Ratio and difference confusion",
+    "shortDescription": "Mixes additive differences and multiplicative ratios.",
+    "fullDescription": "The learner may compute both differences and ratios but apply the wrong one for the relationship type.",
+    "signals": [
+      "Mentions both adding and multiplying without deciding which is constant",
+      "Applies a difference after finding a ratio"
+    ],
+    "counterSignals": ["Compares which quantity stays constant"],
+    "possibleAlternativeExplanations": [
+      "Some contexts may intentionally combine rate and offset"
+    ],
+    "verificationQuestionTemplates": [
+      {
+        "templateId": "vq_ratio_difference_confusion_1",
+        "misconceptionId": "ratio_difference_confusion",
+        "type": "evidence_selection",
+        "goal": "Identify the constant evidence type.",
+        "promptTemplate": "Which stays the same: the difference or the ratio?",
+        "expectedEvidence": "Chooses the repeated evidence type.",
+        "disconfirmingEvidence": "Uses both without comparison.",
+        "answerFormat": "choice",
+        "difficulty": "beginner",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      },
+      {
+        "templateId": "vq_ratio_difference_confusion_2",
+        "misconceptionId": "ratio_difference_confusion",
+        "type": "explanation_check",
+        "goal": "Explain why one relationship type fits.",
+        "promptTemplate": "Why does this pattern use {relationshipType} rather than the other operation?",
+        "expectedEvidence": "References constant difference or constant ratio.",
+        "disconfirmingEvidence": "Restates an operation without evidence.",
+        "answerFormat": "short_text",
+        "difficulty": "intermediate",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      }
+    ],
+    "interventionLadder": [
+      {
+        "interventionId": "iv_ratio_difference_confusion_1",
+        "level": 1,
+        "type": "reflection",
+        "title": "Choose the stable evidence",
+        "learnerFacingTemplate": "Check which evidence stays the same before choosing an operation.",
+        "instructionalGoal": "Separate evidence types.",
+        "visualizerType": "none",
+        "allowedWhen": ["mixed_operations"],
+        "escalationCondition": "Learner does not compare stability.",
+        "revealsPartialAnswer": false,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_ratio_difference_confusion_3",
+        "level": 3,
+        "type": "contrast",
+        "title": "Difference-ratio contrast",
+        "learnerFacingTemplate": "Compare the difference row and ratio row side by side.",
+        "instructionalGoal": "Make relationship type visible.",
+        "visualizerType": "additive_multiplicative_contrast",
+        "allowedWhen": ["relationship_type_unclear"],
+        "escalationCondition": "Learner still mixes operations.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_ratio_difference_confusion_8",
+        "level": 8,
+        "type": "reconstruction",
+        "title": "Rebuild with one evidence type",
+        "learnerFacingTemplate": "Select the evidence that stays constant and use only that operation to extend the pattern.",
+        "instructionalGoal": "Fully reconstruct relationship-type selection.",
+        "visualizerType": "additive_multiplicative_contrast",
+        "allowedWhen": ["high_support_requested"],
+        "escalationCondition": "Learner cannot choose an operation.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": true
+      }
+    ],
+    "escalationRules": [
+      "Escalate when the learner alternates between addition and multiplication without evidence."
+    ],
+    "allowedNextActions": ["ask_evidence_selection", "show_contrast", "retry"],
+    "severity": "medium",
+    "status": "active"
+  },
+  {
+    "misconceptionId": "slope_found_intercept_missing",
+    "conceptIds": ["table_to_linear_equation"],
+    "title": "Slope found, intercept missing",
+    "shortDescription": "Finds the change rate but does not include the intercept in the equation.",
+    "fullDescription": "The learner identifies slope from table differences but writes an incomplete equation because the starting value is not represented.",
+    "signals": [
+      "Correctly names slope",
+      "Equation has no constant term when one is needed"
+    ],
+    "counterSignals": ["Tests x = 0 or derives an intercept from a row"],
+    "possibleAlternativeExplanations": [
+      "The problem may be proportional with zero intercept"
+    ],
+    "verificationQuestionTemplates": [
+      {
+        "templateId": "vq_slope_found_intercept_missing_1",
+        "misconceptionId": "slope_found_intercept_missing",
+        "type": "rule_test",
+        "goal": "Test slope-only equation.",
+        "promptTemplate": "Does the slope-only equation match the first row?",
+        "expectedEvidence": "Detects missing constant term.",
+        "disconfirmingEvidence": "Accepts slope-only mismatch.",
+        "answerFormat": "yes_no_with_reason",
+        "difficulty": "intermediate",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      },
+      {
+        "templateId": "vq_slope_found_intercept_missing_2",
+        "misconceptionId": "slope_found_intercept_missing",
+        "type": "variable_role_check",
+        "goal": "Connect intercept to output when input is zero.",
+        "promptTemplate": "What output would the rule have when the input is 0?",
+        "expectedEvidence": "Identifies intercept meaning.",
+        "disconfirmingEvidence": "Uses slope as the zero-input output.",
+        "answerFormat": "number",
+        "difficulty": "intermediate",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      }
+    ],
+    "interventionLadder": [
+      {
+        "interventionId": "iv_slope_found_intercept_missing_1",
+        "level": 1,
+        "type": "reflection",
+        "title": "Test slope-only",
+        "learnerFacingTemplate": "You found the rate. Now test whether the rate alone matches a row.",
+        "instructionalGoal": "Move from slope to full equation.",
+        "visualizerType": "none",
+        "allowedWhen": ["slope_found"],
+        "escalationCondition": "Learner does not test equation.",
+        "revealsPartialAnswer": false,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_slope_found_intercept_missing_3",
+        "level": 3,
+        "type": "bridge",
+        "title": "Show missing intercept space",
+        "learnerFacingTemplate": "Place the rate in the equation, then look for the constant amount still needed.",
+        "instructionalGoal": "Visually reserve the intercept term.",
+        "visualizerType": "slope_intercept_bridge",
+        "allowedWhen": ["intercept_missing"],
+        "escalationCondition": "Learner cannot find constant.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_slope_found_intercept_missing_8",
+        "level": 8,
+        "type": "reconstruction",
+        "title": "Reconstruct full equation",
+        "learnerFacingTemplate": "Use y = mx + b, substitute a known row, and solve for the missing intercept.",
+        "instructionalGoal": "Fully reconstruct intercept derivation.",
+        "visualizerType": "slope_intercept_bridge",
+        "allowedWhen": ["high_support_requested"],
+        "escalationCondition": "Learner cannot solve for intercept.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": true
+      }
+    ],
+    "escalationRules": [
+      "Escalate when the learner keeps slope but omits the constant term."
+    ],
+    "allowedNextActions": ["ask_rule_test", "show_bridge", "retry"],
+    "severity": "high",
+    "status": "active"
+  },
+  {
+    "misconceptionId": "x_y_reversed",
+    "conceptIds": ["table_to_linear_equation"],
+    "title": "Input and output reversed",
+    "shortDescription": "Swaps x and y roles when forming or using an equation.",
+    "fullDescription": "The learner may treat the output as the input or substitute values into the wrong variable role.",
+    "signals": [
+      "Uses output values as x",
+      "Equation predicts input from output when the question asks output from input"
+    ],
+    "counterSignals": ["Names which column is input and which is output"],
+    "possibleAlternativeExplanations": [
+      "The task may ask for inverse reasoning explicitly"
+    ],
+    "verificationQuestionTemplates": [
+      {
+        "templateId": "vq_x_y_reversed_1",
+        "misconceptionId": "x_y_reversed",
+        "type": "variable_role_check",
+        "goal": "Identify input and output roles.",
+        "promptTemplate": "Which column is the input, and which column is the output for this question?",
+        "expectedEvidence": "Correctly names x and y roles.",
+        "disconfirmingEvidence": "Swaps columns.",
+        "answerFormat": "short_text",
+        "difficulty": "foundation",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      },
+      {
+        "templateId": "vq_x_y_reversed_2",
+        "misconceptionId": "x_y_reversed",
+        "type": "variable_role_check",
+        "goal": "Check substitution role.",
+        "promptTemplate": "When the question gives {givenValue}, which variable receives that value?",
+        "expectedEvidence": "Substitutes into the input variable.",
+        "disconfirmingEvidence": "Substitutes into output variable.",
+        "answerFormat": "short_text",
+        "difficulty": "beginner",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      }
+    ],
+    "interventionLadder": [
+      {
+        "interventionId": "iv_x_y_reversed_1",
+        "level": 1,
+        "type": "reflection",
+        "title": "Name variable roles",
+        "learnerFacingTemplate": "Before calculating, label which quantity is input and which is output.",
+        "instructionalGoal": "Clarify variable roles.",
+        "visualizerType": "none",
+        "allowedWhen": ["role_confusion"],
+        "escalationCondition": "Learner swaps variables.",
+        "revealsPartialAnswer": false,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_x_y_reversed_3",
+        "level": 3,
+        "type": "map",
+        "title": "Map input to output",
+        "learnerFacingTemplate": "Trace the given input across the table to the output column.",
+        "instructionalGoal": "Visually map roles.",
+        "visualizerType": "variable_role_map",
+        "allowedWhen": ["substitution_confusion"],
+        "escalationCondition": "Learner still reverses roles.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_x_y_reversed_8",
+        "level": 8,
+        "type": "reconstruction",
+        "title": "Reconstruct variable substitution",
+        "learnerFacingTemplate": "Label x as input, y as output, substitute the given x, then solve for y.",
+        "instructionalGoal": "Fully reconstruct variable-role reasoning.",
+        "visualizerType": "variable_role_map",
+        "allowedWhen": ["high_support_requested"],
+        "escalationCondition": "Learner cannot substitute correctly.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": true
+      }
+    ],
+    "escalationRules": [
+      "Escalate when the learner substitutes the given value into the output variable."
+    ],
+    "allowedNextActions": ["ask_variable_role_check", "show_role_map", "retry"],
+    "severity": "medium",
+    "status": "active"
+  },
+  {
+    "misconceptionId": "equation_memorized_without_meaning",
+    "conceptIds": ["table_to_linear_equation"],
+    "title": "Equation memorized without meaning",
+    "shortDescription": "Copies equation form without connecting terms to the table.",
+    "fullDescription": "The learner may know y = mx + b but cannot explain what m or b represents in the given context.",
+    "signals": [
+      "Writes equation form with unexplained terms",
+      "Cannot connect symbols to table values"
+    ],
+    "counterSignals": ["Explains rate and intercept in context"],
+    "possibleAlternativeExplanations": [
+      "The learner may understand but wrote a terse answer"
+    ],
+    "verificationQuestionTemplates": [
+      {
+        "templateId": "vq_equation_memorized_without_meaning_1",
+        "misconceptionId": "equation_memorized_without_meaning",
+        "type": "explanation_check",
+        "goal": "Connect each symbol to context.",
+        "promptTemplate": "What does each part of your equation mean in this context?",
+        "expectedEvidence": "Names rate and intercept meaning.",
+        "disconfirmingEvidence": "Defines symbols generically only.",
+        "answerFormat": "short_text",
+        "difficulty": "intermediate",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      },
+      {
+        "templateId": "vq_equation_memorized_without_meaning_2",
+        "misconceptionId": "equation_memorized_without_meaning",
+        "type": "rule_test",
+        "goal": "Test equation against a row.",
+        "promptTemplate": "Use your equation on one known row. Does it reproduce the table value?",
+        "expectedEvidence": "Substitutes and checks against table.",
+        "disconfirmingEvidence": "Does not test equation.",
+        "answerFormat": "yes_no_with_reason",
+        "difficulty": "intermediate",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      }
+    ],
+    "interventionLadder": [
+      {
+        "interventionId": "iv_equation_memorized_without_meaning_1",
+        "level": 1,
+        "type": "reflection",
+        "title": "Explain equation parts",
+        "learnerFacingTemplate": "Name what the rate and constant mean in this situation.",
+        "instructionalGoal": "Connect symbols to context.",
+        "visualizerType": "none",
+        "allowedWhen": ["symbolic_without_context"],
+        "escalationCondition": "Learner gives generic symbol definitions.",
+        "revealsPartialAnswer": false,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_equation_memorized_without_meaning_3",
+        "level": 3,
+        "type": "bridge",
+        "title": "Bridge table to symbols",
+        "learnerFacingTemplate": "Match the table change to the rate term and the starting value to the constant term.",
+        "instructionalGoal": "Ground equation in table evidence.",
+        "visualizerType": "slope_intercept_bridge",
+        "allowedWhen": ["meaning_missing"],
+        "escalationCondition": "Learner cannot map terms.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_equation_memorized_without_meaning_8",
+        "level": 8,
+        "type": "reconstruction",
+        "title": "Rebuild equation from meaning",
+        "learnerFacingTemplate": "Start with the table change, name the starting value, then write the equation from those meanings.",
+        "instructionalGoal": "Fully reconstruct symbolic meaning.",
+        "visualizerType": "slope_intercept_bridge",
+        "allowedWhen": ["high_support_requested"],
+        "escalationCondition": "Learner cannot link symbols to context.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": true
+      }
+    ],
+    "escalationRules": [
+      "Escalate when equation form appears without contextual explanation."
+    ],
+    "allowedNextActions": ["ask_explanation_check", "show_bridge", "retry"],
+    "severity": "medium",
+    "status": "active"
+  },
+  {
+    "misconceptionId": "one_row_equation_guess",
+    "conceptIds": [
+      "additive_multiplicative_relationships",
+      "table_to_linear_equation"
+    ],
+    "title": "One-row equation guess",
+    "shortDescription": "Builds a rule from one row without testing other rows.",
+    "fullDescription": "The learner may create a rule that fits a single input-output pair but fails elsewhere in the table.",
+    "signals": [
+      "Uses only one row as evidence",
+      "Rule fits one row but fails another"
+    ],
+    "counterSignals": ["Tests the rule against multiple rows"],
+    "possibleAlternativeExplanations": [
+      "The task may provide only one row plus another constraint"
+    ],
+    "verificationQuestionTemplates": [
+      {
+        "templateId": "vq_one_row_equation_guess_1",
+        "misconceptionId": "one_row_equation_guess",
+        "type": "rule_test",
+        "goal": "Test the rule against another row.",
+        "promptTemplate": "Choose a different row and test whether your rule matches it.",
+        "expectedEvidence": "Checks rule on another row.",
+        "disconfirmingEvidence": "Uses the original row only.",
+        "answerFormat": "yes_no_with_reason",
+        "difficulty": "beginner",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      },
+      {
+        "templateId": "vq_one_row_equation_guess_2",
+        "misconceptionId": "one_row_equation_guess",
+        "type": "evidence_selection",
+        "goal": "Require multiple evidence points.",
+        "promptTemplate": "Which two rows support your rule?",
+        "expectedEvidence": "Identifies two matching rows.",
+        "disconfirmingEvidence": "Identifies one row only.",
+        "answerFormat": "short_text",
+        "difficulty": "beginner",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      }
+    ],
+    "interventionLadder": [
+      {
+        "interventionId": "iv_one_row_equation_guess_1",
+        "level": 1,
+        "type": "reflection",
+        "title": "Use a second row",
+        "learnerFacingTemplate": "A rule needs more than one check. Which other row can test it?",
+        "instructionalGoal": "Encourage rule testing.",
+        "visualizerType": "none",
+        "allowedWhen": ["single_row_rule"],
+        "escalationCondition": "Learner cannot choose a second row.",
+        "revealsPartialAnswer": false,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_one_row_equation_guess_3",
+        "level": 3,
+        "type": "highlight",
+        "title": "Highlight two test rows",
+        "learnerFacingTemplate": "Test your rule on both highlighted rows.",
+        "instructionalGoal": "Make multi-row evidence visible.",
+        "visualizerType": "highlighted_table",
+        "allowedWhen": ["rule_not_tested"],
+        "escalationCondition": "Learner cannot compare results.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_one_row_equation_guess_8",
+        "level": 8,
+        "type": "reconstruction",
+        "title": "Rebuild rule from multiple rows",
+        "learnerFacingTemplate": "Use two row checks to reject one-row guesses and keep the rule that matches the table.",
+        "instructionalGoal": "Fully reconstruct rule validation.",
+        "visualizerType": "highlighted_table",
+        "allowedWhen": ["high_support_requested"],
+        "escalationCondition": "Learner cannot validate a rule.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": true
+      }
+    ],
+    "escalationRules": ["Escalate when a rule remains based on one row only."],
+    "allowedNextActions": ["ask_rule_test", "show_highlighted_rows", "retry"],
+    "severity": "medium",
+    "status": "active"
+  },
+  {
+    "misconceptionId": "arithmetic_only_error",
+    "conceptIds": ["constant_difference", "table_to_linear_equation"],
+    "title": "Arithmetic-only error",
+    "shortDescription": "Uses a sound strategy but makes a calculation slip.",
+    "fullDescription": "The learner's explanation shows the target concept, but the numerical answer contains a computation error.",
+    "signals": [
+      "Explanation uses correct relationship",
+      "Final arithmetic does not match stated steps"
+    ],
+    "counterSignals": ["Both reasoning and arithmetic are consistent"],
+    "possibleAlternativeExplanations": [
+      "The learner may have copied the answer incorrectly"
+    ],
+    "verificationQuestionTemplates": [
+      {
+        "templateId": "vq_arithmetic_only_error_1",
+        "misconceptionId": "arithmetic_only_error",
+        "type": "arithmetic_check",
+        "goal": "Check the final computation.",
+        "promptTemplate": "Recalculate only the final arithmetic step. What do your stated steps give?",
+        "expectedEvidence": "Corrects computation while preserving strategy.",
+        "disconfirmingEvidence": "Changes strategy unnecessarily.",
+        "answerFormat": "number",
+        "difficulty": "foundation",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      },
+      {
+        "templateId": "vq_arithmetic_only_error_2",
+        "misconceptionId": "arithmetic_only_error",
+        "type": "explanation_check",
+        "goal": "Compare answer to explanation.",
+        "promptTemplate": "Does your final answer match the operations in your explanation?",
+        "expectedEvidence": "Finds mismatch between answer and work.",
+        "disconfirmingEvidence": "Does not compare work to answer.",
+        "answerFormat": "yes_no_with_reason",
+        "difficulty": "foundation",
+        "revealsAnswer": false,
+        "reusableAcrossProblems": true
+      }
+    ],
+    "interventionLadder": [
+      {
+        "interventionId": "iv_arithmetic_only_error_1",
+        "level": 1,
+        "type": "reflection",
+        "title": "Preserve strategy, check arithmetic",
+        "learnerFacingTemplate": "Your method may be right. Recheck only the final calculation.",
+        "instructionalGoal": "Avoid unnecessary conceptual correction.",
+        "visualizerType": "none",
+        "allowedWhen": ["strategy_sound"],
+        "escalationCondition": "Learner cannot locate arithmetic step.",
+        "revealsPartialAnswer": false,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_arithmetic_only_error_3",
+        "level": 3,
+        "type": "highlight",
+        "title": "Highlight final operation",
+        "learnerFacingTemplate": "Focus on this final operation and recompute it carefully.",
+        "instructionalGoal": "Isolate arithmetic from reasoning.",
+        "visualizerType": "arithmetic_check",
+        "allowedWhen": ["calculation_mismatch"],
+        "escalationCondition": "Learner still miscalculates.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": false
+      },
+      {
+        "interventionId": "iv_arithmetic_only_error_8",
+        "level": 8,
+        "type": "reconstruction",
+        "title": "Reconstruct final computation",
+        "learnerFacingTemplate": "Keep the reasoning steps, then compute each arithmetic step in order to reach the final value.",
+        "instructionalGoal": "Fully reconstruct arithmetic path.",
+        "visualizerType": "arithmetic_check",
+        "allowedWhen": ["high_support_requested"],
+        "escalationCondition": "Learner cannot complete calculation.",
+        "revealsPartialAnswer": true,
+        "revealsFullAnswer": true
+      }
+    ],
+    "escalationRules": [
+      "Escalate only within arithmetic support when the concept evidence is sound."
+    ],
+    "allowedNextActions": [
+      "ask_arithmetic_check",
+      "show_calculation_step",
+      "retry"
+    ],
+    "severity": "low",
+    "status": "active"
+  }
+]
