@@ -1,9 +1,16 @@
 import { getStageIndex } from "@/lib/demo-learning/stages";
-import type { DemoLearner, LearningStage } from "@/types/demo-learning";
+import type { SessionSnapshot } from "@/lib/session-engine";
+import type {
+  DemoLearner,
+  DemoMode,
+  LearningStage,
+} from "@/types/demo-learning";
 
 interface GuidePanelProps {
   learner: DemoLearner;
   stage: LearningStage;
+  analysis: SessionSnapshot["analysis"];
+  mode: DemoMode;
 }
 
 function GuideSection({
@@ -25,8 +32,14 @@ function GuideSection({
   );
 }
 
-export function GuidePanel({ learner, stage }: GuidePanelProps) {
+export function GuidePanel({
+  learner,
+  stage,
+  analysis,
+  mode,
+}: GuidePanelProps) {
   const index = getStageIndex(stage);
+  const summary = analysis?.summary;
 
   return (
     <aside className="space-y-3" aria-label="MindTrace guide">
@@ -39,15 +52,67 @@ export function GuidePanel({ learner, stage }: GuidePanelProps) {
         </h2>
       </div>
       <GuideSection title="What you already understand">
-        You correctly noticed part of the relationship in the table.
-      </GuideSection>
-      {index >= getStageIndex("reasoning_analysis") ? (
-        <GuideSection title="What I am checking">
+        {summary?.preservedUnderstanding.length ? (
           <ul className="space-y-2">
-            {learner.analysis.interpretation.slice(0, 2).map((item) => (
+            {summary.preservedUnderstanding.map((item) => (
               <li key={item}>{item}</li>
             ))}
           </ul>
+        ) : (
+          "You correctly noticed part of the relationship in the table."
+        )}
+      </GuideSection>
+      {index >= getStageIndex("reasoning_analysis") ? (
+        <GuideSection title="What I am checking">
+          {summary ? (
+            <div className="space-y-3">
+              <div>
+                <p className="text-xs text-text-muted">Still unclear</p>
+                <ul className="mt-1 space-y-2">
+                  {summary.stillUnclear.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+              <p>{summary.nextSystemAction}</p>
+            </div>
+          ) : (
+            <ul className="space-y-2">
+              {learner.analysis.interpretation.slice(0, 2).map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          )}
+        </GuideSection>
+      ) : null}
+      {mode === "pipeline" && analysis ? (
+        <GuideSection title="Structured learner evidence">
+          <div className="space-y-3">
+            <p>Source: {analysis.source}</p>
+            <p>Confidence: {analysis.result.extractionConfidenceBand}</p>
+            <p>
+              Clarification needed:{" "}
+              {analysis.result.needsClarification ? "yes" : "no"}
+            </p>
+            <div>
+              <p className="text-xs text-text-muted">Observed</p>
+              <ul className="mt-1 space-y-1">
+                {analysis.result.observedClaims.slice(0, 3).map((claim) => (
+                  <li key={claim.claim}>{claim.claim}</li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="text-xs text-text-muted">Inferred</p>
+              <ul className="mt-1 space-y-1">
+                {analysis.result.inferredReasoningSteps
+                  .slice(0, 3)
+                  .map((step) => (
+                    <li key={step.step}>{step.step}</li>
+                  ))}
+              </ul>
+            </div>
+          </div>
         </GuideSection>
       ) : null}
       {index >= getStageIndex("hypothesis_ready") ? (

@@ -25,9 +25,9 @@ function createSession(learnerKey: "learner-a" | "learner-b" = "learner-a") {
   });
 }
 
-function progressToInterventionShown(sessionId: string) {
+async function progressToInterventionShown(sessionId: string) {
   sessionEngine.submitInitialAttempt(sessionId, attempt, "idem-initial-0001");
-  sessionEngine.generateAnalysis(sessionId, "idem-analysis-0001");
+  await sessionEngine.generateAnalysis(sessionId, "idem-analysis-0001");
   sessionEngine.generateHypotheses(sessionId, "idem-hypotheses-0001");
   sessionEngine.submitVerification(
     sessionId,
@@ -140,9 +140,9 @@ describe("session engine", () => {
     ).toThrow(SessionEngineError);
   });
 
-  it("completes the deterministic session and then rejects writes", () => {
+  it("completes the deterministic session and then rejects writes", async () => {
     const session = createSession();
-    progressToInterventionShown(session.publicId);
+    await progressToInterventionShown(session.publicId);
     sessionEngine.submitRetry(
       session.publicId,
       { ...attempt, answer: "11", submissionKey: "retry-complete-1" },

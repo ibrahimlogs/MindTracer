@@ -6,6 +6,11 @@ const booleanString = z
   .enum(["true", "false"])
   .transform((value) => value === "true");
 
+const optionalIntegerString = z
+  .string()
+  .regex(/^\d+$/)
+  .transform((value) => Number.parseInt(value, 10));
+
 export const publicEnvSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.url().default("http://localhost:3000"),
 });
@@ -20,6 +25,13 @@ export const serverEnvSchema = publicEnvSchema.extend({
     .min(1, "OPENAI_API_KEY is required")
     .optional()
     .or(z.literal("").transform(() => undefined)),
+  OPENAI_REASONING_MODEL: z.string().min(1).default("gpt-5.6"),
+  OPENAI_REASONING_TIMEOUT_MS: optionalIntegerString.default(12000),
+  OPENAI_REASONING_MAX_RETRIES: optionalIntegerString.default(1),
+  OPENAI_STORE_RESPONSES: booleanString.default(false),
+  REASONING_ANALYZER_MODE: z
+    .enum(["openai", "deterministic", "fallback"])
+    .default("deterministic"),
   DEMO_MODE: booleanString.default(true),
   ALLOW_IN_MEMORY_SESSION_FALLBACK: booleanString.default(true),
 });
@@ -34,6 +46,11 @@ export function getServerEnv(): ServerEnv {
   const result = serverEnvSchema.safeParse({
     DATABASE_URL: process.env.DATABASE_URL,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    OPENAI_REASONING_MODEL: process.env.OPENAI_REASONING_MODEL,
+    OPENAI_REASONING_TIMEOUT_MS: process.env.OPENAI_REASONING_TIMEOUT_MS,
+    OPENAI_REASONING_MAX_RETRIES: process.env.OPENAI_REASONING_MAX_RETRIES,
+    OPENAI_STORE_RESPONSES: process.env.OPENAI_STORE_RESPONSES,
+    REASONING_ANALYZER_MODE: process.env.REASONING_ANALYZER_MODE,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     DEMO_MODE: process.env.DEMO_MODE,
     ALLOW_IN_MEMORY_SESSION_FALLBACK:

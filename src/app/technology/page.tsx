@@ -148,8 +148,8 @@ export default function TechnologyPage() {
           <div className="grid gap-8 lg:grid-cols-[1fr_0.82fr]">
             <SectionHeader
               eyebrow="Current implementation status"
-              title="The foundation, visual explanation, dataset, and session API are real. AI reasoning remains deterministic."
-              description="The PostgreSQL schema, migration, seed path, anonymous session APIs, idempotency checks, and refresh/resume fallback are implemented. There is still no authentication, real misconception classifier, or OpenAI-connected reasoning generator."
+              title="The foundation, dataset, session API, and reasoning extractor are real. Diagnosis remains bounded."
+              description="The PostgreSQL schema, seed path, anonymous session APIs, idempotency checks, refresh/resume fallback, and structured reasoning extraction are implemented. There is still no authentication, real misconception ranking, or AI-generated verification/intervention."
             />
             <ElevatedSurface className="p-6 sm:p-8">
               <div className="flex items-center gap-3">
@@ -190,9 +190,9 @@ export default function TechnologyPage() {
                 </div>
                 <div className="flex justify-between gap-4">
                   <span className="text-text-secondary">
-                    AI learning workflow
+                    AI reasoning extraction
                   </span>
-                  <span className="text-text-muted">not implemented</span>
+                  <span className="text-success">structured</span>
                 </div>
               </div>
               <div className="mt-7 flex gap-3 border-l border-attention/40 pl-4">

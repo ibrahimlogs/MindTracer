@@ -5,8 +5,8 @@
 - [x] **Step 3 - Static Learning Workspace and Mocked Reasoning Journey:** Complete non-AI learning experience with deterministic content and mocked reasoning states.
 - [x] **Step 4 - Structured Educational Dataset and Misconception Library:** Prototype curated dataset, misconception taxonomy, validation command, typed loaders, dataset explorer, and Step 3 demo integration.
 - [x] **Step 5 - Persistent Session Engine, Database Schema and API Contracts:** PostgreSQL schema and migration, dataset seed script, anonymous session APIs, server lifecycle guards, idempotency, refresh/resume hydration, fallback mode, cleanup script, and documentation.
-- [ ] **Step 6 - OpenAI Structured Reasoning Extraction:** Replace deterministic reasoning extraction with schema-constrained OpenAI output behind server boundaries.
-- [ ] **Step 7 - Misconception hypotheses:** Add schema-constrained hypothesis generation and audit records.
+- [x] **Step 6 - OpenAI Structured Reasoning Extraction:** Analyzer interface, deterministic/OpenAI/fallback implementations, Responses API Structured Outputs, prompt versioning, safety validation, evaluation harness, smoke-test command, safe UI summary, and session integration.
+- [ ] **Step 7 - Misconception Hypothesis Ranking and Verification Engine:** Rank misconception hypotheses and select verification checks from structured evidence.
 - [ ] **Step 8 - Targeted verification:** Implement discriminating questions and evidence updates.
 - [ ] **Step 9 - Minimal intervention:** Deliver bounded hints tied to a verified misconception.
 - [ ] **Step 10 - Transfer evaluation and evidence report:** Measure independent application and explain observations separately from inference.
@@ -46,5 +46,18 @@
 - The old `demo-session` URL remains a compatibility alias.
 - `pnpm sessions:cleanup` provides dry-run expired-session cleanup; deletion requires `-- --execute`.
 - Known limitations: AI reasoning remains deterministic, no authentication exists, sessions are anonymous, cleanup is manual, in-memory fallback is process-local, and this workspace did not validate against a live PostgreSQL instance.
+
+## Step 6 verification record
+
+- `src/lib/ai/reasoning` implements the reasoning extractor boundary with deterministic, OpenAI, and fallback analyzers.
+- OpenAI mode uses the Responses API with Zod Structured Outputs, prompt `reasoning-extractor-v1`, `store: false`, timeout, bounded retry, Zod validation, safety validation, and safe telemetry.
+- The analyzer extracts observed claims, inferred steps, relationship and operation evidence, uncertainty, explanation quality, clarification need, and a safe learner summary. It does not diagnose misconceptions, teach, correct, reveal the answer, infer intelligence/personality/learning style, or provide chain-of-thought.
+- `/api/sessions/[sessionId]/analysis` now stores a structured analysis snapshot in fallback mode and advances to `hypothesis_ready` only after valid analysis.
+- The Learning Workspace shows analysis progress, preserved understanding, what remains unclear, and pipeline-only safe observed/inferred/unclear evidence.
+- `pnpm evaluate:reasoning -- --mode=deterministic` evaluates the 30 prototype cases and writes gitignored local artifacts.
+- `pnpm test:openai:smoke` is available and skips when `OPENAI_API_KEY` is absent.
+- Implementation verified with deterministic tests and mocked/no-key OpenAI failure paths. Live OpenAI smoke test was not performed because no API key is configured.
+- Pending verification: Run migration, seed and persistence smoke tests against live PostgreSQL before final submission.
+- Known limitations: misconception ranking remains deterministic/future work, OpenAI quality is not claimed without live reviewed outputs, and database-backed ReasoningAnalysis persistence was not verified against live PostgreSQL in this workspace.
 
 Only a step that is implemented and passes its defined checks should be marked complete.

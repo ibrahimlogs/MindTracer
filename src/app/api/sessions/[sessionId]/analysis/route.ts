@@ -17,8 +17,22 @@ export async function POST(request: NextRequest, { params }: RouteProps) {
   try {
     const path = sessionPathSchema.parse(await params);
     const idempotencyKey = parseIdempotencyKey(request);
+    const session = await sessionEngine.generateAnalysis(
+      path.sessionId,
+      idempotencyKey,
+      requestId,
+    );
     return sessionSuccess(
-      sessionEngine.generateAnalysis(path.sessionId, idempotencyKey),
+      {
+        sessionId: session.publicId,
+        stage: session.currentStage,
+        analysisSource: session.analysis?.source ?? "deterministic",
+        summary: session.analysis?.summary ?? null,
+        extractionConfidenceBand:
+          session.analysis?.result.extractionConfidenceBand ?? null,
+        needsClarification: session.analysis?.result.needsClarification ?? null,
+        session,
+      },
       201,
       requestId,
     );

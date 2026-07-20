@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 
 import { ReasoningDelta } from "@/components/reasoning";
 import { getStageIndex } from "@/lib/demo-learning/stages";
+import type { SessionSnapshot } from "@/lib/session-engine";
 import type { DemoLearner, LearningStage } from "@/types/demo-learning";
 
 import { AnimatedDataTable } from "./animated-data-table";
@@ -16,11 +17,13 @@ import { TransferVisualizer } from "./transfer-visualizer";
 interface ReasoningWorkspaceCanvasProps {
   learner: DemoLearner;
   stage: LearningStage;
+  analysis: SessionSnapshot["analysis"];
 }
 
 export function ReasoningWorkspaceCanvas({
   learner,
   stage,
+  analysis,
 }: ReasoningWorkspaceCanvasProps) {
   const index = getStageIndex(stage);
 
@@ -40,9 +43,26 @@ export function ReasoningWorkspaceCanvas({
           <AnimatedDataTable
             highlights={learner.id === "learner-a" ? [0, 1, 2] : [1]}
           />
-          <p className="text-sm text-text-secondary">
-            Evidence highlighted: {learner.analysis.evidence.join(", ")}.
-          </p>
+          <div className="rounded-lg border border-border bg-surface-inset p-4">
+            <p className="text-xs font-medium tracking-[0.14em] text-text-muted uppercase">
+              Reasoning extraction
+            </p>
+            <ul className="mt-3 space-y-2 text-sm text-text-secondary">
+              <li>Reading your explanation</li>
+              <li>Identifying the evidence you used</li>
+              <li>Separating observations from assumptions</li>
+              <li>Preparing the next reasoning check</li>
+            </ul>
+            {analysis ? (
+              <p className="mt-3 text-sm text-success">
+                Structured analysis ready: {analysis.source}.
+              </p>
+            ) : (
+              <p className="mt-3 text-sm text-text-muted">
+                Evidence highlighted: {learner.analysis.evidence.join(", ")}.
+              </p>
+            )}
+          </div>
         </div>
       ) : null}
       {stage === "hypothesis_ready" || stage === "verification_required" ? (

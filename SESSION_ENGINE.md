@@ -29,7 +29,13 @@ Step 5 keeps reasoning deterministic through replaceable interfaces:
 - `ReasoningDeltaEvaluator`
 - `TransferEvaluator`
 
-These currently use the curated dataset and demo records. OpenAI extraction is intentionally not implemented in Step 5.
+Reasoning extraction is now delegated to Step 6 analyzer implementations:
+
+- deterministic
+- OpenAI Responses API
+- fallback from OpenAI to deterministic after retryable failure
+
+The remaining services still use curated dataset and demo records.
 
 ## Idempotency
 
@@ -55,4 +61,4 @@ Without `--execute`, cleanup is a dry run. No cleanup runs during normal request
 - In-memory fallback is process-local and not durable.
 - Database-backed repository operations are scaffolded through Prisma schema, migration, and seed scripts; this workspace validation did not have a live PostgreSQL URL.
 - Sessions are anonymous.
-- No authentication, OpenAI reasoning extraction, production analytics, or automated cleanup exists yet.
+- No authentication, production analytics, or automated cleanup exists yet.

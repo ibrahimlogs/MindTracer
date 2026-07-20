@@ -102,4 +102,29 @@ Payloads are validated with Zod. Replaying the same key and same payload returns
 
 ## Deterministic Step 5 behavior
 
-Analysis, hypotheses, verification, interventions, reasoning delta, and transfer evaluation are deterministic and dataset-backed. The route shape is ready for Step 6 OpenAI structured extraction, but no OpenAI calls are made here.
+Hypotheses, verification, interventions, reasoning delta, and transfer evaluation are deterministic and dataset-backed.
+
+## Step 6 analysis response
+
+`POST /api/sessions/[sessionId]/analysis` now runs the selected reasoning analyzer.
+
+Learner-facing response data includes:
+
+```json
+{
+  "sessionId": "mt_...",
+  "stage": "hypothesis_ready",
+  "analysisSource": "deterministic",
+  "summary": {
+    "preservedUnderstanding": ["You noticed that the values increase."],
+    "stillUnclear": [
+      "It is not yet clear whether the repeated change between rows was compared."
+    ],
+    "nextSystemAction": "MindTrace will check one small part of the reasoning before choosing support."
+  },
+  "extractionConfidenceBand": "medium",
+  "needsClarification": true
+}
+```
+
+The endpoint does not return raw prompt text, internal notes, OpenAI response IDs, or model metadata to learners. Pipeline/developer mode may display safe observed/inferred/unclear fields from the hydrated session snapshot.
