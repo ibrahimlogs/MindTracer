@@ -6,6 +6,7 @@ export * from "./demo-introduction";
 export * from "./demo-progress";
 export * from "./evaluation-summary";
 export * from "./intervention-scene";
+export * from "./judge-demo-client";
 export * from "./judge-demo-shell";
 export * from "./learner-scene";
 export * from "./transfer-scene";

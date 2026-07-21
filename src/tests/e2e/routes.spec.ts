@@ -132,6 +132,34 @@ test("landing hydration produces no warnings", async ({ page }) => {
   expect(errors.filter((message) => /hydration/i.test(message))).toEqual([]);
 });
 
+test("judge mode hydration tolerates restored browser state", async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
+  });
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      "mindtrace-judge-demo",
+      JSON.stringify({
+        focus: "learner-a",
+        isPlaying: false,
+        mode: "interactive",
+        playback: "fast",
+        sceneIndex: 3,
+        started: true,
+      }),
+    );
+  });
+
+  await page.goto("/demo/judge");
+  await page.waitForLoadState("networkidle");
+
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  expect(errors.filter((message) => /hydration/i.test(message))).toEqual([]);
+});
+
 for (const viewport of [
   { width: 390, height: 844 },
   { width: 768, height: 1024 },

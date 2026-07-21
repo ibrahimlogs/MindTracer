@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { JudgeDemoShell } from "@/components/judge";
+import { JudgeDemoClient } from "@/components/judge";
 import { PageShell } from "@/components/layout/primitives";
 import { SiteFooter } from "@/components/layout/site-footer";
 
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function JudgeDemoPage() {
   return (
     <PageShell>
-      <JudgeDemoShell />
+      <JudgeDemoClient />
       <SiteFooter />
     </PageShell>
   );

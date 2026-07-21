@@ -2,57 +2,124 @@
 
 > Same answer. Different minds.
 
-Screenshot placeholder: add a final Judge Mode screenshot before public submission.
+MindTrace Reasoning Lab is a competition-grade AI learning prototype focused on one educational problem: two learners can give the same wrong answer for completely different reasons.
 
-Live demo placeholder: add the deployed URL after Vercel deployment.
+Most learning software notices the answer is wrong. MindTrace is designed to investigate the reasoning behind the answer. It forms misconception hypotheses, verifies them with targeted questions, gives the smallest useful intervention, and checks whether the learner can transfer the concept independently.
 
-Demo video placeholder: add the recorded walkthrough URL after submission recording.
+This repository is intentionally not a finished commercial product yet. It is a working technical and product foundation with a polished judge demo, deterministic learning workflow, sample educational data, safety boundaries, evaluation checks, and the architecture needed for future OpenAI-powered reasoning analysis.
 
-MindTrace Reasoning Lab is an AI learning product designed to distinguish the different reasoning patterns that can produce the same wrong answer. The system forms misconception hypotheses, verifies them with targeted questions, provides the smallest useful intervention, and tests independent transfer.
+## Submission status
 
-The key innovation is treating diagnosis as a verified hypothesis: the AI proposes and adapts, while the learning system governs IDs, verification, hint levels, answer-leakage checks, rubrics, and transfer.
+Recommended judging route:
 
-Quick start:
-
-```bash
-corepack pnpm install
-corepack pnpm dev
+```text
+/demo/judge
 ```
 
-Then open `/demo/judge`.
+Other useful review routes:
+
+```text
+/
+/demo
+/demo/session/example-session
+/report/example-session
+/technology
+/technology/dataset
+/technology/evaluation
+```
+
+Current build status:
+
+- Public pages render without database credentials.
+- Judge Mode works without OpenAI or database secrets.
+- The learner demo can run with explicit in-memory fallback mode.
+- Production build passes.
+- Unit and browser tests are included.
+- OpenAI integration exists as a server-only, lazy placeholder/adapter boundary.
+- PostgreSQL persistence is scaffolded through Prisma, but a live database is not required to review the public demo path.
+
+## What judges should look at first
+
+1. Open `/demo/judge`.
+2. Click **Begin** to watch the guided explanation.
+3. Notice that both learners share the same wrong answer, but the system shows different reasoning paths.
+4. Continue through hypothesis, verification, intervention, retry, reasoning delta, and transfer.
+5. Open `/technology/dataset` to inspect the curated sample educational records.
+6. Open `/technology/evaluation` to see the prototype behavior checks.
+
+The value of the project is not “another quiz app.” The value is the product model: diagnosis is treated as a verified hypothesis, and support is selected based on reasoning evidence rather than correctness alone.
 
 ## Tech stack
 
-- Next.js App Router, React, and strict TypeScript
-- Tailwind CSS v4 and shadcn/ui foundations
-- Framer Motion and a semantic reduced-motion system
-- React Three Fiber, Drei, and Three.js for the optional hero enhancement
-- Zustand, React Hook Form, and Zod
-- Prisma with a PostgreSQL-compatible datasource
-- Server-only, lazy OpenAI SDK placeholder
+- Next.js App Router
+- React
+- TypeScript with strict mode
+- Tailwind CSS v4
+- shadcn/ui foundations
+- Framer Motion
+- React Three Fiber, Drei, and Three.js for optional visual enhancement
+- Zustand
+- React Hook Form
+- Zod
+- Prisma
+- PostgreSQL-compatible database support
+- OpenAI SDK server-only adapter boundary
 - Lucide icons
-- Vitest, Testing Library, and Playwright
-- ESLint and Prettier
+- Vitest
+- Testing Library
+- Playwright
+- ESLint
+- Prettier
+- pnpm
+
+## Requirements
+
+- Node.js 20.9 or newer
+- Corepack
+- pnpm through Corepack
+
+Optional for full backend persistence:
+
+- PostgreSQL-compatible database
+- `DATABASE_URL`
+
+Optional for live OpenAI smoke tests:
+
+- `OPENAI_API_KEY`
+
+For normal judge review of the public pages and Judge Mode, database and OpenAI secrets are not required.
 
 ## Installation
 
-Requirements: Node.js 20.9 or newer. PostgreSQL is required for durable session persistence; public pages and explicit demo fallback mode do not require a live database.
+Clone the repository, then run:
 
 ```bash
 corepack enable
-pnpm install
-pnpm prisma:generate
+corepack pnpm install
+corepack pnpm prisma:generate
 ```
 
-If Corepack cannot create a global shim, prefix commands with `corepack`, for example `corepack pnpm install`.
+If `corepack enable` cannot create a global shim on your machine, keep using the `corepack pnpm ...` form shown above.
 
 ## Environment setup
 
-Copy `.env.example` to `.env.local` when working on server integrations:
+Create a local environment file only if you want to test backend integrations:
+
+```bash
+cp .env.example .env.local
+```
+
+On Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env.local
+```
+
+Example environment values:
 
 ```dotenv
 DATABASE_URL=
-OPENAI_API_KEY=your-server-only-key
+OPENAI_API_KEY=
 APP_ENV=development
 OPENAI_REASONING_MODEL=gpt-5.6
 OPENAI_REASONING_TIMEOUT_MS=12000
@@ -73,80 +140,248 @@ ALLOW_CACHED_JUDGE_FALLBACK=true
 ALLOW_IN_MEMORY_SESSION_FALLBACK=true
 ```
 
-Server variables are validated lazily when the database or AI client is requested. The landing, demo teaser, technology page, tests, production build, and explicit in-memory fallback sessions work without secrets. `OPENAI_API_KEY` is never exposed through a `NEXT_PUBLIC_` variable.
+Important security notes:
+
+- Do not put real API keys in client-side variables.
+- Only variables prefixed with `NEXT_PUBLIC_` can be exposed to the browser.
+- `OPENAI_API_KEY` is server-only.
+- Environment validation uses Zod.
+- Server integrations are validated lazily when requested, so public pages can render without secrets.
+
+## Running the project
+
+Start the development server:
+
+```bash
+corepack pnpm dev
+```
+
+Open:
+
+```text
+http://localhost:3000
+```
+
+Best demo route:
+
+```text
+http://localhost:3000/demo/judge
+```
+
+Production build:
+
+```bash
+corepack pnpm build
+corepack pnpm start
+```
+
+## Main routes
+
+| Route                           | Purpose                                                                   |
+| ------------------------------- | ------------------------------------------------------------------------- |
+| `/`                             | Landing page explaining the product idea and value proposition            |
+| `/demo/judge`                   | Recommended judge demo: same wrong answer, different reasoning paths      |
+| `/demo`                         | Learner-facing demo entry                                                 |
+| `/demo/session/example-session` | Example learning workspace                                                |
+| `/report/example-session`       | Example final reasoning report                                            |
+| `/technology`                   | Technical and educational architecture overview                           |
+| `/technology/dataset`           | Curated sample concepts, problems, misconceptions, and evaluation records |
+| `/technology/evaluation`        | Prototype behavior and regression checks                                  |
 
 ## Development commands
 
 ```bash
-pnpm dev                 # start the development server
-pnpm build               # create a production build
-pnpm start               # serve the production build
-pnpm lint                # lint source and configuration files
-pnpm typecheck           # run strict TypeScript checks
-pnpm validate:education  # validate the curated education dataset
-pnpm prisma:seed         # seed educational records when DATABASE_URL is set
-pnpm sessions:cleanup    # dry-run expired anonymous session cleanup
-pnpm evaluate:reasoning  # run prototype reasoning-extraction evaluation
-pnpm evaluate:verification # run prototype verification evaluation
-pnpm evaluate:intervention # run prototype intervention-selection evaluation
-pnpm evaluate:reasoning-delta # run prototype Reasoning Delta evaluation
-pnpm evaluate:transfer # run prototype transfer evaluation
-pnpm test:openai:journey-smoke # optional full journey smoke test; skips without key
-pnpm test:postgres:smoke # optional live PostgreSQL smoke; requires SAFE_TEST_DATABASE=true
-pnpm format              # format the repository
-pnpm format:check        # verify formatting
-pnpm prisma:migrate      # create/apply a future development migration
-pnpm prisma:studio       # inspect a configured database
+corepack pnpm dev                      # start local development server
+corepack pnpm build                    # create production build
+corepack pnpm start                    # serve production build
+corepack pnpm lint                     # run ESLint
+corepack pnpm typecheck                # run strict TypeScript checks
+corepack pnpm format                   # format repository
+corepack pnpm format:check             # check formatting
+corepack pnpm validate:education       # validate curated education dataset
+corepack pnpm prisma:generate          # generate Prisma client
+corepack pnpm prisma:seed              # seed educational data when DATABASE_URL is set
+corepack pnpm prisma:studio            # inspect configured database
+corepack pnpm sessions:cleanup         # dry-run expired anonymous session cleanup
 ```
 
 ## Test commands
 
 ```bash
-pnpm test                # run unit tests once
-pnpm test:watch          # run unit tests in watch mode
-pnpm test:e2e:install    # install Chromium once
-pnpm build               # required before the production E2E server
-pnpm test:e2e            # run browser, accessibility, fallback, and route checks
-pnpm test:openai:smoke   # optional live OpenAI smoke test; skips without key
-pnpm test:openai:ranking-smoke      # optional live ranking smoke test; skips without key
-pnpm test:openai:verification-smoke # optional live verification smoke test; skips without key
-pnpm test:openai:intervention-smoke # optional live intervention smoke test; skips without key
-pnpm test:openai:delta-smoke        # optional live Delta smoke test; skips without key
-pnpm test:openai:transfer-smoke     # optional live transfer smoke test; skips without key
-pnpm test:openai:journey-smoke      # optional live journey smoke test; skips without key
-pnpm test:postgres:smoke            # optional PostgreSQL smoke test; guarded
+corepack pnpm test                     # run unit tests
+corepack pnpm test:watch               # run unit tests in watch mode
+corepack pnpm test:e2e:install         # install Playwright Chromium once
+corepack pnpm test:e2e                 # run browser and route checks
 ```
 
-The Playwright suite verifies critical routes, landing sections, CTA targets, anchor navigation, native mobile navigation, reduced-motion and WebGL fallbacks, hydration warnings, common mobile/tablet overflow, the API-created Learning Workspace journey, generated session URLs, refresh/resume behavior, and the development dataset explorer.
+Optional integration smoke tests:
 
-## Current scope
+```bash
+corepack pnpm test:openai:smoke
+corepack pnpm test:openai:ranking-smoke
+corepack pnpm test:openai:verification-smoke
+corepack pnpm test:openai:intervention-smoke
+corepack pnpm test:openai:delta-smoke
+corepack pnpm test:openai:transfer-smoke
+corepack pnpm test:openai:journey-smoke
+corepack pnpm test:postgres:smoke
+```
 
-Implemented: technical foundation, design system, public landing page, optional reasoning visualization, technology positioning, demo selector, Judge Mode, Learning Workspace, anonymous session APIs, generated session URLs, refresh/resume fallback behavior, structured reasoning extraction, misconception candidate retrieval/ranking, verification question selection/response evaluation, adaptive bounded interventions, retry analysis, Reasoning Delta, transfer selection/evaluation, animated intervention and delta visualizers, evidence-based final reports, health/readiness endpoints, and prototype curated educational dataset.
+The OpenAI smoke tests skip safely without an API key. The PostgreSQL smoke test is guarded and should only be run against a safe test database.
 
-Not implemented: authentication, payments, production analytics, real benchmark calculations, deployment, or demo-video recording.
+## Current implementation
 
-See `LEARNING_WORKSPACE.md` for the Step 3 architecture and mocked journey details.
-See `EDUCATIONAL_DATASET.md` for the Step 4 dataset structure, validation rules, and review workflow.
-See `SESSION_ENGINE.md`, `API_CONTRACTS.md`, and `DATABASE.md` for the Step 5 session, API, and persistence foundation.
-See `OPENAI_REASONING_ANALYSIS.md`, `REASONING_EVALUATION.md`, and `AI_PRIVACY.md` for the Step 6 reasoning extraction boundary.
-See `MISCONCEPTION_ENGINE.md`, `VERIFICATION_ENGINE.md`, and `VERIFICATION_EVALUATION.md` for the Step 7 ranking and verification boundary.
-See `INTERVENTION_ENGINE.md`, `VISUALIZATION_SYSTEM.md`, and `INTERVENTION_EVALUATION.md` for the Step 8 adaptive support boundary.
-See `REASONING_DELTA.md`, `TRANSFER_SYSTEM.md`, `REASONING_DELTA_EVALUATION.md`, and `TRANSFER_EVALUATION.md` for the Step 9 retry, delta, transfer, and reporting boundary.
-See `JUDGE_GUIDE.md`, `SUBMISSION.md`, `DEMO_SCRIPT.md`, `SECURITY_REVIEW.md`, `DEPLOYMENT.md`, and `KNOWN_LIMITATIONS.md` for the Step 10 submission package.
-See `VISUAL_REDESIGN.md` for the learner-first visual and UX refinement.
+Implemented:
 
-## Judge Mode
+- Premium learner-first landing page
+- Judge Mode guided demo
+- Interactive prototype label for manual Judge Mode exploration
+- Demo session workspace
+- Anonymous session API foundation
+- Generated session URLs
+- Refresh/resume fallback behavior
+- Curated educational sample dataset
+- Concept, problem, misconception, rubric, and evaluation records
+- Dataset validation
+- Deterministic reasoning extraction boundary
+- Misconception candidate retrieval and ranking boundary
+- Verification question selection and response evaluation boundary
+- Adaptive bounded intervention selection boundary
+- Retry analysis
+- Reasoning Delta comparison
+- Transfer selection and evaluation
+- Evidence-based final report route
+- Health and readiness endpoints
+- Reduced-motion and WebGL fallback checks
+- Hydration regression coverage for Judge Mode restored browser state
+- Server-only lazy OpenAI adapter boundary
+- Prisma/PostgreSQL persistence foundation
 
-`/demo/judge` is the recommended submission path. Guided Mode uses scripted learner responses and reviewed cached fallback so the demo remains reviewable without environment secrets. Interactive Mode is prototype-labeled and restricted to curated problems.
+Not implemented yet:
 
-## Evaluation and limitations
+- Authentication
+- Payment
+- Production deployment
+- Real classroom account management
+- Teacher dashboard
+- Full production analytics
+- Broad benchmark claims
+- Fully live AI workflow for all product paths
+- Long-term learner history
+- Real school data import
 
-`/technology/evaluation` presents prototype system-behavior checks. These deterministic and handcrafted evaluations are regression and safety checks, not claims of broad educational efficacy.
+## Why the project is incomplete by design
 
-## Privacy
+MindTrace is being built in phases. The current phase proves the foundation:
 
-OpenAI API keys are server-only. Do not submit personal learner data to smoke tests. See `AI_PRIVACY.md`.
+- Can the product explain the reasoning-diagnosis idea clearly?
+- Can the app run without secrets for judging?
+- Are the educational records structured and validated?
+- Are AI boundaries server-only and testable?
+- Can deterministic fallbacks make the demo reliable?
+- Can the system show a full diagnosis-to-transfer journey before production AI is fully enabled?
+
+The answer is yes. The next phase should deepen the visual product experience and connect more of the workflow to live model-backed reasoning where appropriate.
+
+## How Codex and GPT-5.6 accelerated the work
+
+Codex with GPT-5.6 was used as the primary engineering collaborator throughout the build. It accelerated:
+
+- Next.js, TypeScript, Tailwind, Prisma, testing, and folder architecture setup
+- Product architecture decisions around reasoning hypotheses, verification, intervention, retry, delta, and transfer
+- Judge Mode implementation and demo reliability
+- Deterministic fallback design so judges can test without secrets
+- Educational data modeling and validation
+- Unit and Playwright test coverage
+- Hydration issue diagnosis and fix on `/demo/judge`
+- Documentation, architecture notes, security boundaries, and known limitations
+
+Key decisions made with Codex:
+
+- Keep OpenAI usage server-only and lazy.
+- Avoid requiring a database to render public pages.
+- Use deterministic fallbacks for reviewability.
+- Treat AI output as a proposal, not unquestioned truth.
+- Make transfer evidence part of the learning loop.
+- Keep incomplete features clearly labeled rather than pretending the product is production-finished.
+
+## Architecture notes
+
+High-level flow:
+
+```text
+Learner answer
+  → reasoning evidence
+  → misconception hypotheses
+  → targeted verification
+  → smallest useful intervention
+  → retry
+  → reasoning delta
+  → independent transfer
+  → report
+```
+
+The current implementation keeps the AI workflow bounded behind adapter interfaces. Deterministic implementations make the demo stable and testable; model-backed adapters can be enabled later where live reasoning is needed.
+
+Useful architecture documents:
+
+- `ARCHITECTURE.md`
+- `LEARNING_WORKSPACE.md`
+- `EDUCATIONAL_DATASET.md`
+- `SESSION_ENGINE.md`
+- `API_CONTRACTS.md`
+- `DATABASE.md`
+- `OPENAI_REASONING_ANALYSIS.md`
+- `MISCONCEPTION_ENGINE.md`
+- `VERIFICATION_ENGINE.md`
+- `INTERVENTION_ENGINE.md`
+- `REASONING_DELTA.md`
+- `TRANSFER_SYSTEM.md`
+- `KNOWN_LIMITATIONS.md`
+
+## Data and privacy
+
+- The repository uses curated sample education data.
+- Do not submit personal learner data to smoke tests.
+- OpenAI responses are not stored by default.
+- API keys are never exposed as `NEXT_PUBLIC_` variables.
+- The project is currently designed for prototype review, not production student deployment.
+
+## Troubleshooting
+
+If port `3000` is already in use, stop the existing process or run Next.js on another port:
+
+```bash
+corepack pnpm dev -- -p 3001
+```
+
+If Prisma client is missing:
+
+```bash
+corepack pnpm prisma:generate
+```
+
+If Playwright browsers are missing:
+
+```bash
+corepack pnpm test:e2e:install
+```
+
+If environment secrets are not configured, review these routes first:
+
+```text
+/
+/demo/judge
+/demo
+/technology
+/technology/dataset
+/technology/evaluation
+```
+
+## Recommended next step
+
+The exact next recommended step is the visual product phase: refine the learner-facing experience, improve the interactive reasoning visualization, and decide which currently deterministic adapters should be connected to live OpenAI reasoning first.
 
 ## License
 
-No open-source license has been selected yet. See `LICENSE`.
+No open-source license has been selected yet. Add a license before making the repository public for judging.
