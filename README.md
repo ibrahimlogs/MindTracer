@@ -2,6 +2,12 @@
 
 > Same answer. Different minds.
 
+## Live project links
+
+- **Live website:** https://mind-tracer-eru5yjgzg-md-ibrahim-s-projects.vercel.app/
+- **Demo video:** https://youtu.be/i95If4qeV34
+- **Recommended judge route:** https://mind-tracer-eru5yjgzg-md-ibrahim-s-projects.vercel.app/demo/judge
+
 MindTrace Reasoning Lab is a competition-grade AI learning prototype focused on one educational problem: two learners can give the same wrong answer for completely different reasons.
 
 Most learning software notices the answer is wrong. MindTrace is designed to investigate the reasoning behind the answer. It forms misconception hypotheses, verifies them with targeted questions, gives the smallest useful intervention, and checks whether the learner can transfer the concept independently.
